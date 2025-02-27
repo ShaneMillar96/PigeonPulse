@@ -12,3 +12,4 @@
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/ref/PigeonPulse.Dal.dll
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/PigeonPulse.Dal.runtimeconfig.json
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/PigeonPulse.Dal.genruntimeconfig.cache
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/PigeonPulse.Dal.sourcelink.json

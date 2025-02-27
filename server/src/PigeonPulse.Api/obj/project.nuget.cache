@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Pa/JdOqVCAU=",
-  "success": false,
+  "dgSpecHash": "N3nu8LfugB0=",
+  "success": true,
   "projectFilePath": "/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Api/PigeonPulse.Api.csproj",
   "expectedPackageFiles": [
-    "/Users/shane.millar/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/automapper/14.0.0/automapper.14.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/9.0.2/microsoft.aspnetcore.authentication.jwtbearer.9.0.2.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.aspnetcore.openapi/9.0.1/microsoft.aspnetcore.openapi.9.0.1.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.entityframeworkcore/9.0.1/microsoft.entityframeworkcore.9.0.1.nupkg.sha512",
@@ -31,15 +32,5 @@
     "/Users/shane.millar/.nuget/packages/npgsql.entityframeworkcore.postgresql/9.0.3/npgsql.entityframeworkcore.postgresql.9.0.3.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1107",
-      "level": "Error",
-      "message": "Version conflict detected for AutoMapper. Install/reference AutoMapper 14.0.0 directly to project PigeonPulse.Api to resolve this issue. \n PigeonPulse.Api -> PigeonPulse.Services -> AutoMapper (>= 14.0.0) \n PigeonPulse.Api -> AutoMapper.Extensions.Microsoft.DependencyInjection 12.0.1 -> AutoMapper (= 12.0.1).",
-      "libraryId": "AutoMapper",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  "logs": []
 }

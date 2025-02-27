@@ -1,0 +1,41 @@
+# .NET Core Build Artifacts
+bin/
+obj/
+*.csproj.user
+*.sln.DotSettings.user
+*.suo
+*.user
+
+# Docker and Database Files
+database/postgres_data/
+docker-compose.override.yml
+
+# IDE-Specific Files
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs and Temporary Files
+*.log
+*.tmp
+*.cache
+
+# Dependency Folders
+packages/
+node_modules/  # For future React frontend
+
+# Environment Files (optional, uncomment if you want to exclude)
+# appsettings.json
+# appsettings.*.json
+# *.env
+
+# OS-Specific Files
+.DS_Store
+Thumbs.db
+
+# Test and Coverage Output
+test-results/
+coverage/
+
+# Publish Output
+publish/
