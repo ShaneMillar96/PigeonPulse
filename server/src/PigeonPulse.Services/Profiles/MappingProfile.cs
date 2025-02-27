@@ -1,6 +1,8 @@
 using AutoMapper;
-using PigeonPulse.Services.Dtos;
 using PigeonPulse.Dal.Models.application;
+using PigeonPulse.Services.Dtos.Pigeon;
+using PigeonPulse.Services.Dtos.Race;
+using PigeonPulse.Services.Dtos.User;
 
 namespace PigeonPulse.Services.Profiles;
 

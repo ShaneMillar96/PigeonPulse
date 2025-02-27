@@ -1,8 +1,7 @@
-namespace PigeonPulse.Services.Dtos;
+namespace PigeonPulse.Services.Dtos.Race;
 
-public class RaceResultDto
+public class CreateRaceResultDto
 {
-    public int Id { get; set; }
     public int PigeonId { get; set; }
     public int RaceId { get; set; }
     public DateTime FinishTime { get; set; }

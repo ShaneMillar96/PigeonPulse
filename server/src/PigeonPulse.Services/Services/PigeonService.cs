@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos;
+using PigeonPulse.Services.Dtos.Pigeon;
 using PigeonPulse.Services.Interfaces;
 
 namespace PigeonPulse.Services.Services
@@ -18,13 +19,13 @@ namespace PigeonPulse.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<PigeonDto> CreatePigeonAsync(int userId, string name, string ringNumber)
+        public async Task<PigeonDto> CreatePigeonAsync(int userId, CreatePigeonDto pigeonDto)
         {
             var pigeon = new Pigeon
             {
                 UserId = userId,
-                Name = name,
-                RingNumber = ringNumber,
+                Name = pigeonDto.Name,
+                RingNumber = pigeonDto.RingNumber,
                 CreatedDate = DateTime.UtcNow
             };
             _context.Pigeons.Add(pigeon);

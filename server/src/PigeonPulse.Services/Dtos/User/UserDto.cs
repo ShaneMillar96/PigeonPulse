@@ -1,4 +1,4 @@
-namespace PigeonPulse.Services.Dtos;
+namespace PigeonPulse.Services.Dtos.User;
 
 public class UserDto
 {

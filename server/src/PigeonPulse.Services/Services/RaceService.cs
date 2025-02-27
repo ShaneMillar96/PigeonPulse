@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos;
+using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
 
 namespace PigeonPulse.Services.Services
@@ -18,14 +19,14 @@ namespace PigeonPulse.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<RaceDto> CreateRaceAsync(string name, DateTime date, decimal distance, string weatherConditions)
+        public async Task<RaceDto> CreateRaceAsync(CreateRaceDto raceDto)
         {
             var race = new Race
             {
-                Name = name,
-                Date = date,
-                Distance = distance,
-                WeatherConditions = weatherConditions,
+                Name = raceDto.Name,
+                Date = raceDto.Date,
+                Distance = raceDto.Distance,
+                WeatherConditions = raceDto.WeatherConditions,
                 CreatedDate = DateTime.UtcNow
             };
             _context.Races.Add(race);
@@ -33,14 +34,14 @@ namespace PigeonPulse.Services.Services
             return _mapper.Map<RaceDto>(race);
         }
 
-        public async Task<RaceResultDto> AddRaceResultAsync(int pigeonId, int raceId, DateTime finishTime, decimal speed)
+        public async Task<RaceResultDto> AddRaceResultAsync(CreateRaceResultDto raceResultDto)
         {
             var result = new Raceresult
             {
-                PigeonId = pigeonId,
-                RaceId = raceId,
-                FinishTime = finishTime,
-                Speed = speed,
+                PigeonId = raceResultDto.PigeonId,
+                RaceId = raceResultDto.RaceId,
+                FinishTime = raceResultDto.FinishTime,
+                Speed = raceResultDto.Speed,
                 CreatedDate = DateTime.UtcNow
             };
             _context.RaceResults.Add(result);

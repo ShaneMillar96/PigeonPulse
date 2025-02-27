@@ -2,7 +2,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Models.application;
-using PigeonPulse.Services.Dtos;
+using PigeonPulse.Services.Dtos.Account;
+using PigeonPulse.Services.Dtos.User;
 using PigeonPulse.Services.Interfaces;
 
 namespace PigeonPulse.Services.Services
@@ -18,13 +19,13 @@ namespace PigeonPulse.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDto> RegisterAsync(string username, string email, string password)
+        public async Task<UserDto> RegisterAsync(RegisterDto userDto)
         {
             var user = new User
             {
-                Username = username,
-                Email = email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                Username = userDto.Username,
+                Email = userDto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
                 CreatedDate = DateTime.UtcNow
             };
             _context.Users.Add(user);
@@ -32,15 +33,15 @@ namespace PigeonPulse.Services.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> LoginAsync(string email, string password)
+        public async Task<UserDto> LoginAsync(LoginDto userDto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.PasswordHash))
                 throw new Exception("Invalid credentials");
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int id)
+        public async Task<UserDto?> GetUserByIdAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);
             return user == null ? null : _mapper.Map<UserDto>(user);

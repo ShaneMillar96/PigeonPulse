@@ -1,6 +1,6 @@
-namespace PigeonPulse.Services.Dtos;
+namespace PigeonPulse.Api.Models.View;
 
-public class PigeonDto
+public class PigeonViewModel
 {
     public int Id { get; set; }
     public int UserId { get; set; }

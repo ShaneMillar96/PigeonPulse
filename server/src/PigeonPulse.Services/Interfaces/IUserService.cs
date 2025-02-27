@@ -1,10 +1,11 @@
-using PigeonPulse.Services.Dtos;
+using PigeonPulse.Services.Dtos.Account;
+using PigeonPulse.Services.Dtos.User;
 
 namespace PigeonPulse.Services.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDto> RegisterAsync(string username, string email, string password);
-    Task<UserDto> LoginAsync(string email, string password);
-    Task<UserDto> GetUserByIdAsync(int id);
+    Task<UserDto> RegisterAsync(RegisterDto user);
+    Task<UserDto> LoginAsync(LoginDto user);
+    Task<UserDto?> GetUserByIdAsync(int id);
 }
