@@ -4,10 +4,12 @@ const axiosInstance = axios.create({
     baseURL: 'http://localhost:5264/api', // Local backend URL
 });
 
-// Add interceptors (e.g., for auth tokens later)
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Add token here if implementing JWT later
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => Promise.reject(error)

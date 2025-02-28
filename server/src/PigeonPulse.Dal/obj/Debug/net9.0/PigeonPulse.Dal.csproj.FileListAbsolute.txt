@@ -13,3 +13,9 @@
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/PigeonPulse.Dal.runtimeconfig.json
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/PigeonPulse.Dal.genruntimeconfig.cache
 /Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/PigeonPulse.Dal.sourcelink.json
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/Microsoft.AspNetCore.Http.Abstractions.dll
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/Microsoft.Extensions.Features.dll
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/Microsoft.AspNetCore.Http.Features.dll
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/Microsoft.Net.Http.Headers.dll
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/bin/Debug/net9.0/Microsoft.AspNetCore.Connections.Abstractions.dll
+/Users/shane.millar/Desktop/Projects/PigeonPulse/server/src/PigeonPulse.Dal/obj/Debug/net9.0/PigeonPu.C11AB7A3.Up2Date

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using PigeonPulse.Dal.Interfaces;
 
 namespace PigeonPulse.Dal.Models.application;
 
 [Table("pigeons")]
 [Index("RingNumber", Name = "pigeons_ring_number_key", IsUnique = true)]
-public partial class Pigeon
+public partial class Pigeon : ICreatedByTracking
 {
     [Key]
     [Column("id")]

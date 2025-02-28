@@ -1,26 +1,25 @@
 import { useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { RegisterRequest, LoginRequest, User } from '../interfaces/auth';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { toast } from 'react-toastify'; // Import toast
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     const register = async (data: RegisterRequest) => {
         setLoading(true);
         try {
             const response = await axiosInstance.post<User>('/auth/register', data);
-            console.log(response);
             setUser(response.data);
             setError(null);
-            toast.success('Registration successful! Please log in.'); // Show success toast
+            toast.success('Registration successful! Please log in.');
         } catch (err) {
             setError('Registration failed');
-            toast.error('Registration failed. Please try again.'); // Show error toast
+            toast.error('Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -29,14 +28,15 @@ export const useAuth = () => {
     const login = async (data: LoginRequest) => {
         setLoading(true);
         try {
-            const response = await axiosInstance.post<User>('/auth/login', data);
-            setUser(response.data);
+            const response = await axiosInstance.post<{ token: string }>('/auth/login', data);
+            const token = response.data.token;
+            localStorage.setItem('token', token); // Store token
             setError(null);
-            toast.success('Login successful!'); // Show success toast
-            navigate('/pigeons'); // Navigate to Pigeons page after successful login
+            toast.success('Login successful!');
+            navigate('/pigeons');
         } catch (err) {
             setError('Login failed');
-            toast.error('Login failed. Please try again.'); // Show error toast
+            toast.error('Login failed. Please try again.');
         } finally {
             setLoading(false);
         }

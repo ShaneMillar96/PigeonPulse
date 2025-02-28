@@ -24,10 +24,10 @@ docker-compose.override.yml
 packages/
 node_modules/  # For future React frontend
 
-# Environment Files (optional, uncomment if you want to exclude)
-# appsettings.json
-# appsettings.*.json
+# Environment Files (optional, but excluding specific sensitive files)
+# Uncomment if you want to exclude environment files, but keep appsettings.json tracked
 # *.env
+# appsettings.*.json
 
 # OS-Specific Files
 .DS_Store
@@ -39,3 +39,14 @@ coverage/
 
 # Publish Output
 publish/
+
+# Additional files from the image (specific to your project structure)
+PigeonPulse.Api.csproj_AssemblyInfoInputs.cache
+PigeonPulse.Api.csproj_AssemblyReference.cache
+PigeonPulse.Api.csproj_CoreCompileInputs.cache
+PigeonPulse.Api.csproj_jt.gss
+PigeonPulse.Dal.csproj_AssemblyInfoInputs.cache
+PigeonPulse.Dal.csproj_AssemblyReference.cache
+PigeonPulse.Dal.csproj_CoreCompileInputs.cache
+PigeonPulse.Dal.csproj_FileListAbsolute.txt
+PigeonPulse.Services.csproj_AssemblyInfoInputs.cache

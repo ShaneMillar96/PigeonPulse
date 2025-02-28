@@ -6,28 +6,28 @@ export const usePigeons = () => {
     const [pigeons, setPigeons] = useState<Pigeon[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [hasFetched, setHasFetched] = useState(false); // Track if we've attempted to fetch
+    const [hasFetched, setHasFetched] = useState(false);
 
-    const fetchPigeons = useCallback(async (userId: number) => {
-        if (hasFetched && error) return; // Prevent re-fetching if it failed previously
+    const fetchPigeons = useCallback(async () => {
+        if (hasFetched && error) return;
 
         setLoading(true);
         try {
-            const response = await axiosInstance.get<Pigeon[]>(`/pigeon/user/${userId}`);
+            const response = await axiosInstance.get<Pigeon[]>('/pigeon'); // New endpoint
             setPigeons(response.data);
             setError(null);
-            setHasFetched(true); // Mark as fetched
+            setHasFetched(true);
         } catch (err) {
             setError('Failed to fetch pigeons');
         } finally {
             setLoading(false);
         }
-    }, [hasFetched, error]); // Dependencies: only re-create if hasFetched or error changes
+    }, [hasFetched, error]);
 
-    const createPigeon = async (userId: number, data: PigeonRequest) => {
+    const createPigeon = async (data: PigeonRequest) => {
         setLoading(true);
         try {
-            const response = await axiosInstance.post<Pigeon>(`/pigeon?userId=${userId}`, data);
+            const response = await axiosInstance.post<Pigeon>('/pigeon', data);
             setPigeons((prev) => [...prev, response.data]);
             setError(null);
         } catch (err) {

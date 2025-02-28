@@ -8,18 +8,17 @@ import { Footer } from '../components/layout/Footer';
 export const Pigeons: React.FC = () => {
     const [form, setForm] = useState({ name: '', ringNumber: '' });
     const { pigeons, fetchPigeons, createPigeon, loading, error } = usePigeons();
-    const userId = 3; // Hardcoded for now, replace with auth context later
 
     useEffect(() => {
-        fetchPigeons(userId);
-    }, [fetchPigeons, userId]);
+        fetchPigeons();
+    }, [fetchPigeons]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await createPigeon(userId, form);
+        await createPigeon(form);
         setForm({ name: '', ringNumber: '' });
     };
 
