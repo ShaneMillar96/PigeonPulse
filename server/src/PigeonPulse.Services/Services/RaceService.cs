@@ -21,14 +21,8 @@ namespace PigeonPulse.Services.Services
 
         public async Task<RaceDto> CreateRaceAsync(CreateRaceDto raceDto)
         {
-            var race = new Race
-            {
-                Name = raceDto.Name,
-                Date = raceDto.Date,
-                Distance = raceDto.Distance,
-                WeatherConditions = raceDto.WeatherConditions,
-                CreatedDate = DateTime.UtcNow
-            };
+            var race = _mapper.Map<Race>(raceDto);
+          
             _context.Races.Add(race);
             await _context.SaveChangesAsync();
             return _mapper.Map<RaceDto>(race);
