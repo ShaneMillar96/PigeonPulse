@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PigeonPulse.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fc7165e57bb5c4b93b281586540dedf6f54ab23")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9765b9a71ac1a7ee0eb83fbeeac93a6f10d5c024")]
 [assembly: System.Reflection.AssemblyProductAttribute("PigeonPulse.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PigeonPulse.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

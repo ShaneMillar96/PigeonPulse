@@ -19,15 +19,10 @@ namespace PigeonPulse.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDto> RegisterAsync(RegisterDto userDto)
+        public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
-            var user = new User
-            {
-                Username = userDto.Username,
-                Email = userDto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                CreatedDate = DateTime.UtcNow
-            };
+            var user = _mapper.Map<User>(registerDto);
+      
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return _mapper.Map<UserDto>(user);

@@ -1,5 +1,5 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Identity.Data;
+using PigeonPulse.Api.Models.Request;
 using PigeonPulse.Services.Dtos.Account;
 
 namespace PigeonPulse.Api.Profiles;
@@ -19,5 +19,7 @@ public class AccountProfile : Profile
     private void ConfigureModelToDto()
     {
         CreateMap<RegisterRequest, RegisterDto>();
+        CreateMap<LoginRequest, LoginDto>();
+
     }
 }
