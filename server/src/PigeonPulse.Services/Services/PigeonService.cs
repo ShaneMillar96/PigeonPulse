@@ -21,13 +21,8 @@ namespace PigeonPulse.Services.Services
 
         public async Task<PigeonDto> CreatePigeonAsync(int userId, CreatePigeonDto pigeonDto)
         {
-            var pigeon = new Pigeon
-            {
-                UserId = userId,
-                Name = pigeonDto.Name,
-                RingNumber = pigeonDto.RingNumber,
-                CreatedDate = DateTime.UtcNow
-            };
+            var pigeon = _mapper.Map<Pigeon>(pigeonDto);
+            pigeon.UserId = userId;
             _context.Pigeons.Add(pigeon);
             await _context.SaveChangesAsync();
             return _mapper.Map<PigeonDto>(pigeon);

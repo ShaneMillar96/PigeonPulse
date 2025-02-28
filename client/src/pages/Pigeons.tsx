@@ -8,7 +8,7 @@ import { Footer } from '../components/layout/Footer';
 export const Pigeons: React.FC = () => {
     const [form, setForm] = useState({ name: '', ringNumber: '' });
     const { pigeons, fetchPigeons, createPigeon, loading, error } = usePigeons();
-    const userId = 1; // Hardcoded for now, replace with auth context later
+    const userId = 3; // Hardcoded for now, replace with auth context later
 
     useEffect(() => {
         fetchPigeons(userId);

@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<PigeonPulseDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(config => config.AllowNullCollections = true, typeof(Program).Assembly,
-    typeof(UserService).Assembly);
+    typeof(UserService).Assembly, typeof(PigeonService).Assembly);
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPigeonService, PigeonService>();
