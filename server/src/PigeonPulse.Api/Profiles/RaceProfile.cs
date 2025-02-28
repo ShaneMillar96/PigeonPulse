@@ -16,10 +16,14 @@ public class RaceProfile : Profile
     private void ConfigureDtoToModel()
     {
         CreateMap<RaceDto, RaceViewModel>();
+        CreateMap<RaceResultDto, RaceResultViewModel>();
+
     }
 
     private void ConfigureModelToDto()
     {
         CreateMap<RaceRequest, CreateRaceDto>();
+        CreateMap<RaceResultRequest, CreateRaceResultDto>();
+
     }
 }

@@ -1,61 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { usePigeons } from '../hooks/usePigeons';
-import { Button } from '../components/common/Button';
-import { Input } from '../components/common/Input';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
+import { Link } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa'; 
 
 export const Pigeons: React.FC = () => {
-    const [form, setForm] = useState({ name: '', ringNumber: '' });
-    const { pigeons, fetchPigeons, createPigeon, loading, error } = usePigeons();
+    const { pigeons, fetchPigeons, loading, error } = usePigeons();
 
     useEffect(() => {
         fetchPigeons();
     }, [fetchPigeons]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await createPigeon(form);
-        setForm({ name: '', ringNumber: '' });
-    };
 
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow container mx-auto p-4">
                 <h1 className="text-2xl font-bold mb-4">My Pigeons</h1>
-                <form onSubmit={handleSubmit} className="mb-6 max-w-md">
-                    <div className="mb-4">
-                        <Input
-                            name="name"
-                            value={form.name}
-                            onChange={handleChange}
-                            placeholder="Pigeon Name"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <Input
-                            name="ringNumber"
-                            value={form.ringNumber}
-                            onChange={handleChange}
-                            placeholder="Ring Number"
-                        />
-                    </div>
-                    <Button type="submit" disabled={loading}>
-                        {loading ? 'Adding...' : 'Add Pigeon'}
-                    </Button>
-                </form>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
-                <ul className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Add Pigeon Card */}
+                    <Link
+                        to="/add-pigeon"
+                        className="bg-gray-800 text-white p-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors flex items-center justify-center cursor-pointer h-48"
+                    >
+                        <FaPlus className="text-4xl" />
+                        <span className="ml-2">Add Pigeon</span>
+                    </Link>
+
+                    {/* Pigeon Cards */}
                     {pigeons.map((pigeon) => (
-                        <li key={pigeon.id} className="p-2 border rounded">
-                            {pigeon.name} - {pigeon.ringNumber}
-                        </li>
+                        <div
+                            key={pigeon.id}
+                            className="bg-gray-800 text-white p-4 rounded-lg shadow-md h-48 flex items-center justify-center"
+                        >
+                            <p className="text-center">
+                                {pigeon.name} - {pigeon.ringNumber}
+                            </p>
+                        </div>
                     ))}
-                </ul>
+                </div>
+                {loading && <p className="text-center mt-4">Loading...</p>}
             </main>
             <Footer />
         </div>

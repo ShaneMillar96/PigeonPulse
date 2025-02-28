@@ -5,10 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export const useAuth = () => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(null); // Optional: keep for user data if needed
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    // Check if user is authenticated by checking the token
+    const isAuthenticated = () => {
+        const token = localStorage.getItem('token');
+        return !!token; // Return true if token exists, false otherwise
+    };
 
     const register = async (data: RegisterRequest) => {
         setLoading(true);
@@ -17,6 +23,7 @@ export const useAuth = () => {
             setUser(response.data);
             setError(null);
             toast.success('Registration successful! Please log in.');
+            navigate('/login');
         } catch (err) {
             setError('Registration failed');
             toast.error('Registration failed. Please try again.');
@@ -42,5 +49,13 @@ export const useAuth = () => {
         }
     };
 
-    return { user, loading, error, register, login };
+    const logout = () => {
+        setUser(null); // Clear user state (optional)
+        localStorage.removeItem('token'); // Remove JWT token
+        setError(null); // Clear any errors
+        navigate('/'); // Redirect to home page
+        toast.info('Logged out successfully!');
+    };
+
+    return { user, loading, error, register, login, logout, isAuthenticated }; // Add isAuthenticated
 };

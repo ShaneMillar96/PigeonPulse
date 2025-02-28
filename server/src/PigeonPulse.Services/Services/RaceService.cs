@@ -54,5 +54,15 @@ namespace PigeonPulse.Services.Services
             var results = await _context.RaceResults.Where(r => r.PigeonId == pigeonId).ToListAsync();
             return _mapper.Map<List<RaceResultDto>>(results);
         }
+        
+        public async Task<List<RaceDto>> GetAllRacesAsync()
+        {
+            var races = await _context.Races
+                .Include(r => r.Raceresults)
+                .ThenInclude(rr => rr.Pigeon)
+                .ToListAsync();
+            
+            return _mapper.Map<List<RaceDto>>(races);
+        }
     }
 }

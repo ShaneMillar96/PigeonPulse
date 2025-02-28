@@ -1,9 +1,10 @@
 export interface Race {
     id: number;
     name: string;
-    date: string; 
+    date: string; // ISO date string or Date object
     distance: number;
-    weatherConditions: string;
+    weatherConditions: string | null;
+    raceresults: RaceResult[];
 }
 
 export interface RaceResult {
@@ -11,5 +12,6 @@ export interface RaceResult {
     pigeonId: number;
     raceId: number;
     finishTime: string; 
-    speed: number;
+    speed: number | null;
+    pigeonName: string; 
 }

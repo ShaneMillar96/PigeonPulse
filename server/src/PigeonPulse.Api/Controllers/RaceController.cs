@@ -19,6 +19,13 @@ namespace PigeonPulse.Api.Controllers
             _raceService = raceService;
             _mapper = mapper;
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetRaces()
+        {
+            var races = await _raceService.GetAllRacesAsync();
+            return Ok(_mapper.Map<List<RaceViewModel>>(races));
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateRace([FromBody] RaceRequest request)
