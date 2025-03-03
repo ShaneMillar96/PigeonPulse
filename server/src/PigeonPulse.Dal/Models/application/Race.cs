@@ -18,6 +18,9 @@ public partial class Race
     [Column("date", TypeName = "timestamp without time zone")]
     public DateTime Date { get; set; }
 
+    [Column("race_status_id")]
+    public int RaceStatusId { get; set; }
+
     [Column("distance")]
     [Precision(10, 2)]
     public decimal Distance { get; set; }
@@ -31,6 +34,10 @@ public partial class Race
 
     [InverseProperty("Race")]
     public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
+
+    [ForeignKey("RaceStatusId")]
+    [InverseProperty("Races")]
+    public virtual RaceStatus RaceStatus { get; set; } = null!;
 
     [InverseProperty("Race")]
     public virtual ICollection<Raceresult> Raceresults { get; set; } = new List<Raceresult>();

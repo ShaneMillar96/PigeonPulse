@@ -5,16 +5,16 @@ import { Input } from '../components/common/Input';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from "../utils/axiosInstance.ts";
+import { toast } from 'react-toastify';
 
 export const AddRace: React.FC = () => {
     const [form, setForm] = useState({
         name: '',
         date: '',
         distance: '',
-        weatherConditions: ''
+        weatherConditions: '',
     });
-    const { fetchRaces, loading, error } = useRaces(); // Note: We’ll create a createRace function later
+    const { createRace, loading, error } = useRaces();
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -22,19 +22,23 @@ export const AddRace: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!form.name || !form.date || !form.distance) {
+            toast.error('Name, date, and distance are required.');
+            return;
+        }
         try {
-            const raceData = {
+            await createRace({
                 name: form.name,
-                date: new Date(form.date).toISOString(),
+                date: form.date,
                 distance: parseFloat(form.distance),
-                weatherConditions: form.weatherConditions || null
-            };
-            await axiosInstance.post('/race', raceData); // Adjust endpoint as needed
-            await fetchRaces(); // Refresh races after creation
-            navigate('/races'); // Redirect back to Races page
-            setForm({ name: '', date: '', distance: '', weatherConditions: '' }); // Reset form
+                weatherConditions: form.weatherConditions || null,
+            });
+            if (!error) {
+                navigate('/races');
+                setForm({ name: '', date: '', distance: '', weatherConditions: '' });
+            }
         } catch (err) {
-            setError('Failed to add race');
+            // Error handled in hook
         }
     };
 
@@ -58,7 +62,6 @@ export const AddRace: React.FC = () => {
                             name="date"
                             value={form.date}
                             onChange={handleChange}
-                            placeholder="Race Date"
                         />
                     </div>
                     <div className="mb-4">

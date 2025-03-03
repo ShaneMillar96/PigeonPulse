@@ -15,13 +15,25 @@ CREATE TABLE Pigeons (
      FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
     );
 
+CREATE TABLE race_status (
+                             id SERIAL PRIMARY KEY,
+                             name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO race_status (name) VALUES
+                                   ('New'),
+                                   ('Basketed'),
+                                   ('Finished');
+
 CREATE TABLE Races (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     date TIMESTAMP NOT NULL,
+    race_status_id INT NOT NULL,
     distance DECIMAL(10,2) NOT NULL,
     weather_conditions VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (race_status_id) REFERENCES race_status(id) ON DELETE CASCADE
 );
 
 CREATE TABLE RaceResults (

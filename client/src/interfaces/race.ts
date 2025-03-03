@@ -1,19 +1,21 @@
 export interface Race {
     id: number;
     name: string;
-    date: string; // ISO date string or Date object
+    date: string;
     distance: number;
     weatherConditions: string | null;
+    raceStatus: string;
     raceresults: RaceResult[];
+    baskets: Basket[];
 }
 
 export interface RaceResult {
     id: number;
     pigeonId: number;
     raceId: number;
-    finishTime: string; 
+    finishTime: string;
     speed: number | null;
-    pigeonName: string; 
+    pigeonName: string;
 }
 
 export interface Basket {
@@ -21,13 +23,14 @@ export interface Basket {
     userId: number;
     pigeonId: number;
     raceId: number;
-    basketedAt: string; 
-    pigeonName: string; 
+    basketedAt: string;
+    pigeonName: string;
 }
 
-export interface RaceResultRequest {
-    pigeonId: number;
-    raceId: number;
-    finishTime: string;
-    speed: number | null;
+export interface Pigeon {
+    id: number;
+    userId: number;
+    name: string;
+    ringNumber: string;
+    createdDate: string;
 }

@@ -3,21 +3,35 @@ import { useRaces } from '../hooks/useRaces';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaShoppingBasket, FaTrophy } from 'react-icons/fa'; // Updated icons
+import { FaPlus, FaShoppingBasket, FaTrophy, FaTachometerAlt } from 'react-icons/fa';
 import { Button } from '../components/common/Button';
-import { toast } from 'react-toastify';
-import { Modal } from '../components/common/Modal'; // Ensure you have or create this component
+import { Modal } from '../components/common/Modal';
+import { RaceResult } from '../interfaces/race';
 
 export const Races: React.FC = () => {
-    const { races, fetchRaces, fetchBasketsByRaceId, basketPigeon, addRaceResult, loading, error } = useRaces();
+    const {
+        races,
+        pigeons,
+        fetchRaces,
+        fetchBasketsByRaceId,
+        basketPigeon,
+        removePigeonFromBasket,
+        saveBasket,
+        addRaceResult,
+        getRaceLeaderboard,
+        loading,
+        error,
+    } = useRaces();
     const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
-    const [baskets, setBaskets] = useState<any[]>([]); // Update to Basket[] based on your interface
-    const [pigeonId, setPigeonId] = useState<number | null>(null);
+    const [baskets, setBaskets] = useState<any[]>([]);
+    const [selectedPigeons, setSelectedPigeons] = useState<number[]>([]);
     const [isBasketModalOpen, setIsBasketModalOpen] = useState(false);
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
-    const [pigeonIdForResult, setPigeonIdForResult] = useState<string>('');
-    const [speed, setSpeed] = useState<string>('');
-    const [finishTime, setFinishTime] = useState<string>('');
+    const [isLeaderboardModalOpen, setIsLeaderboardModalOpen] = useState(false);
+    const [pigeonIdForResult, setPigeonIdForResult] = useState('');
+    const [speed, setSpeed] = useState('');
+    const [finishTime, setFinishTime] = useState('');
+    const [leaderboard, setLeaderboard] = useState<RaceResult[]>([]);
 
     useEffect(() => {
         fetchRaces();
@@ -27,40 +41,56 @@ export const Races: React.FC = () => {
         setSelectedRaceId(raceId);
         const basketsData = await fetchBasketsByRaceId(raceId);
         setBaskets(basketsData);
-        setIsBasketModalOpen(true); 
+        setSelectedPigeons(basketsData.map((b) => b.pigeonId));
+        setIsBasketModalOpen(true);
     };
 
-    const handleBasketPigeon = async (raceId: number, pigeonId: number) => {
-        await basketPigeon(pigeonId, raceId);
-        if (!error) {
-            const updatedBaskets = await fetchBasketsByRaceId(raceId);
-            setBaskets(updatedBaskets);
-            toast.success('Pigeon basketed successfully!');
-            setIsBasketModalOpen(false); 
-        }
+    const handleAddPigeonToBasket = async (pigeonId: number) => {
+        if (!selectedRaceId) return;
+        await basketPigeon({ pigeonId, raceId: selectedRaceId });
+        const updatedBaskets = await fetchBasketsByRaceId(selectedRaceId);
+        setBaskets(updatedBaskets);
+        setSelectedPigeons(updatedBaskets.map((b) => b.pigeonId));
+    };
+
+    const handleRemovePigeonFromBasket = async (basketId: number) => {
+        if (!selectedRaceId) return;
+        await removePigeonFromBasket(basketId);
+        const updatedBaskets = await fetchBasketsByRaceId(selectedRaceId);
+        setBaskets(updatedBaskets);
+        setSelectedPigeons(updatedBaskets.map((b) => b.pigeonId));
+    };
+
+    const handleSaveBasket = async () => {
+        if (!selectedRaceId) return;
+        await saveBasket(selectedRaceId);
+        setIsBasketModalOpen(false);
     };
 
     const handleAddRaceResult = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!pigeonIdForResult || !selectedRaceId) {
-            toast.error('Please enter a Pigeon ID and select a race.');
+            toast.error('Please enter a Pigeon ID.');
             return;
         }
-
         await addRaceResult({
-            pigeonId: parseInt(pigeonIdForResult) || 0,
+            pigeonId: parseInt(pigeonIdForResult),
             raceId: selectedRaceId,
-            finishTime: new Date(finishTime || Date.now()).toISOString(),
-            speed: parseFloat(speed) || null
+            finishTime: finishTime || new Date().toISOString(),
+            speed: speed ? parseFloat(speed) : null,
         });
-
         if (!error) {
             setPigeonIdForResult('');
             setSpeed('');
             setFinishTime('');
             setIsResultModalOpen(false);
-            toast.success('Race result added successfully!');
         }
+    };
+
+    const fetchLeaderboard = async (raceId: number) => {
+        const leaderboardData = await getRaceLeaderboard(raceId);
+        setLeaderboard(leaderboardData);
+        setIsLeaderboardModalOpen(true);
     };
 
     return (
@@ -86,7 +116,8 @@ export const Races: React.FC = () => {
                             <th className="p-2 border-b text-left">Date</th>
                             <th className="p-2 border-b text-left">Distance (km)</th>
                             <th className="p-2 border-b text-left">Weather</th>
-                            <th className="p-2 border-b text-left"></th>
+                            <th className="p-2 border-b text-left">Status</th>
+                            <th className="p-2 border-b text-left">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -100,24 +131,38 @@ export const Races: React.FC = () => {
                                 <td className="p-2 border-b text-gray-800">
                                     {race.weatherConditions || 'N/A'}
                                 </td>
+                                <td className="p-2 border-b text-gray-800">{race.raceStatus}</td>
                                 <td className="p-2 border-b flex space-x-2">
-                                    <Button
-                                        onClick={() => fetchBaskets(race.id)}
-                                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
-                                        aria-label="View Baskets"
-                                    >
-                                        <FaShoppingBasket className="text-lg" />
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setSelectedRaceId(race.id);
-                                            setIsResultModalOpen(true);
-                                        }}
-                                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
-                                        aria-label="View/Add Results"
-                                    >
-                                        <FaTrophy className="text-lg" />
-                                    </Button>
+                                    {['New', 'Basketed'].includes(race.raceStatus) && (
+                                        <Button
+                                            onClick={() => fetchBaskets(race.id)}
+                                            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
+                                            aria-label="Basket Pigeons"
+                                        >
+                                            <FaShoppingBasket className="text-lg" />
+                                        </Button>
+                                    )}
+                                    {['Basketed', 'Finished'].includes(race.raceStatus) && (
+                                        <Button
+                                            onClick={() => {
+                                                setSelectedRaceId(race.id);
+                                                setIsResultModalOpen(true);
+                                            }}
+                                            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
+                                            aria-label="Add/View Results"
+                                        >
+                                            <FaTrophy className="text-lg" />
+                                        </Button>
+                                    )}
+                                    {race.raceStatus === 'Finished' && (
+                                        <Button
+                                            onClick={() => fetchLeaderboard(race.id)}
+                                            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
+                                            aria-label="View Leaderboard"
+                                        >
+                                            <FaTachometerAlt className="text-lg" />
+                                        </Button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -127,67 +172,66 @@ export const Races: React.FC = () => {
             </main>
             <Footer />
 
-            {isBasketModalOpen && (
-                <Modal
-                    isOpen={isBasketModalOpen}
-                    onClose={() => setIsBasketModalOpen(false)}
-                    title="Basket Pigeon"
-                >
-                    <div className="p-4">
-                        <p className="text-gray-800 mb-4">
-                            Basketed Pigeons for Race ID: {selectedRaceId}
-                        </p>
-                        {baskets.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-800 mb-4">
-                                {baskets.map((basket: any) => (
-                                    <li key={basket.id} className="py-1">
-                                        {basket.pigeonName} (ID: {basket.pigeonId})
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-gray-500 mb-4">No pigeons basketed for this race.</p>
-                        )}
-                        <input
-                            type="number"
-                            placeholder="Pigeon ID to Basket"
-                            value={pigeonId || ''}
-                            onChange={(e) => setPigeonId(parseInt(e.target.value) || null)}
-                            className="p-2 border rounded w-full mb-2 text-gray-800"
-                        />
-                        <Button
-                            onClick={() => handleBasketPigeon(selectedRaceId!, pigeonId!)}
-                            disabled={!pigeonId || loading}
-                            className="mt-2 bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded"
-                        >
-                            {loading ? 'Basketing...' : 'Basket Pigeon'}
-                        </Button>
-                    </div>
-                </Modal>
-            )}
+            {/* Basket Modal */}
+            <Modal
+                isOpen={isBasketModalOpen}
+                onClose={() => setIsBasketModalOpen(false)}
+                title="Manage Basket"
+            >
+                <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-800">Select Pigeons to Basket</h3>
+                    <select
+                        value=""
+                        onChange={(e) => handleAddPigeonToBasket(parseInt(e.target.value))}
+                        className="p-2 border rounded w-full mb-4 text-gray-800"
+                    >
+                        <option value="">Select a Pigeon...</option>
+                        {pigeons
+                            .filter((p) => !selectedPigeons.includes(p.id))
+                            .map((pigeon) => (
+                                <option key={pigeon.id} value={pigeon.id}>
+                                    {pigeon.name} - {pigeon.ringNumber}
+                                </option>
+                            ))}
+                    </select>
 
-            {isResultModalOpen && selectedRaceId && (
+                    <h3 className="text-lg font-semibold mb-4 text-gray-800">Basketed Pigeons</h3>
+                    {baskets.length > 0 ? (
+                        <ul className="list-disc pl-5 text-gray-800 mb-4">
+                            {baskets.map((basket) => (
+                                <li key={basket.id} className="py-1 flex justify-between items-center">
+                                    {basket.pigeonName} (ID: {basket.pigeonId})
+                                    <Button
+                                        onClick={() => handleRemovePigeonFromBasket(basket.id)}
+                                        className="ml-4 bg-red-600 hover:bg-red-500 text-white py-1 px-2 rounded text-sm"
+                                    >
+                                        Remove
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500 mb-4">No pigeons basketed.</p>
+                    )}
+
+                    <Button
+                        onClick={handleSaveBasket}
+                        disabled={loading || baskets.length === 0}
+                        className="mt-4 bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded"
+                    >
+                        {loading ? 'Saving...' : 'Save Basket'}
+                    </Button>
+                </div>
+            </Modal>
+
+            {/* Race Result Modal */}
+            {selectedRaceId && (
                 <Modal
                     isOpen={isResultModalOpen}
                     onClose={() => setIsResultModalOpen(false)}
-                    title="Manage Race Results"
+                    title="Add Race Result"
                 >
                     <div className="p-4">
-                        <h3 className="text-lg font-semibold mb-4 text-gray-800">Existing Results</h3>
-                        {races.find(r => r.id === selectedRaceId)?.raceresults?.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-800 mb-4">
-                                {races.find(r => r.id === selectedRaceId)?.raceresults.map((result) => (
-                                    <li key={result.id} className="py-1">
-                                        Pigeon: {result.pigeonName} - Finish Time: {new Date(result.finishTime).toLocaleTimeString()}
-                                        , Speed: {result.speed || 'N/A'} km/h
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-gray-500 mb-4">No results available for this race.</p>
-                        )}
-
-                        <h3 className="text-lg font-semibold mb-4 text-gray-800">Add New Result</h3>
                         <form onSubmit={handleAddRaceResult} className="space-y-4">
                             <input
                                 type="number"
@@ -195,10 +239,10 @@ export const Races: React.FC = () => {
                                 value={pigeonIdForResult}
                                 onChange={(e) => setPigeonIdForResult(e.target.value)}
                                 className="p-2 border rounded w-full text-gray-800"
+                                required
                             />
                             <input
                                 type="datetime-local"
-                                placeholder="Finish Time"
                                 value={finishTime}
                                 onChange={(e) => setFinishTime(e.target.value)}
                                 className="p-2 border rounded w-full text-gray-800"
@@ -210,13 +254,40 @@ export const Races: React.FC = () => {
                                 onChange={(e) => setSpeed(e.target.value)}
                                 className="p-2 border rounded w-full text-gray-800"
                             />
-                            <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded">
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded"
+                            >
                                 {loading ? 'Adding...' : 'Add Result'}
                             </Button>
                         </form>
                     </div>
                 </Modal>
             )}
+
+            {/* Leaderboard Modal */}
+            <Modal
+                isOpen={isLeaderboardModalOpen}
+                onClose={() => setIsLeaderboardModalOpen(false)}
+                title="Race Leaderboard"
+            >
+                <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-800">Leaderboard</h3>
+                    {leaderboard.length > 0 ? (
+                        <ul className="list-disc pl-5 text-gray-800">
+                            {leaderboard.map((result, index) => (
+                                <li key={result.id} className="py-1">
+                                    #{index + 1} - {result.pigeonName} - Finish: {new Date(result.finishTime).toLocaleString()}
+                                    , Speed: {result.speed ? `${result.speed} km/h` : 'N/A'}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500">No results available.</p>
+                    )}
+                </div>
+            </Modal>
         </div>
     );
 };
