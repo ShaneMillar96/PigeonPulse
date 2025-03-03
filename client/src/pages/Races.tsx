@@ -3,14 +3,14 @@ import { useRaces } from '../hooks/useRaces';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaArrowDown, FaArrowUp } from 'react-icons/fa'; // For expand/collapse and add icons
+import { FaPlus, FaShoppingBasket, FaTrophy } from 'react-icons/fa'; // Updated icons
 import { Button } from '../components/common/Button';
 import { toast } from 'react-toastify';
 import { Modal } from '../components/common/Modal'; // Ensure you have or create this component
 
 export const Races: React.FC = () => {
     const { races, fetchRaces, fetchBasketsByRaceId, basketPigeon, addRaceResult, loading, error } = useRaces();
-    const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
+    const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
     const [baskets, setBaskets] = useState<any[]>([]); // Update to Basket[] based on your interface
     const [pigeonId, setPigeonId] = useState<number | null>(null);
     const [isBasketModalOpen, setIsBasketModalOpen] = useState(false);
@@ -23,19 +23,11 @@ export const Races: React.FC = () => {
         fetchRaces();
     }, [fetchRaces]);
 
-    const toggleExpand = (raceId: number) => {
-        if (expandedRaceId === raceId) {
-            setExpandedRaceId(null);
-            setBaskets([]);
-        } else {
-            setExpandedRaceId(raceId);
-            fetchBaskets(raceId);
-        }
-    };
-
     const fetchBaskets = async (raceId: number) => {
+        setSelectedRaceId(raceId);
         const basketsData = await fetchBasketsByRaceId(raceId);
         setBaskets(basketsData);
+        setIsBasketModalOpen(true); 
     };
 
     const handleBasketPigeon = async (raceId: number, pigeonId: number) => {
@@ -44,20 +36,20 @@ export const Races: React.FC = () => {
             const updatedBaskets = await fetchBasketsByRaceId(raceId);
             setBaskets(updatedBaskets);
             toast.success('Pigeon basketed successfully!');
-            setIsBasketModalOpen(false); // Close modal after success
+            setIsBasketModalOpen(false); 
         }
     };
 
     const handleAddRaceResult = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!pigeonIdForResult || !expandedRaceId) {
+        if (!pigeonIdForResult || !selectedRaceId) {
             toast.error('Please enter a Pigeon ID and select a race.');
             return;
         }
 
         await addRaceResult({
             pigeonId: parseInt(pigeonIdForResult) || 0,
-            raceId: expandedRaceId,
+            raceId: selectedRaceId,
             finishTime: new Date(finishTime || Date.now()).toISOString(),
             speed: parseFloat(speed) || null
         });
@@ -94,95 +86,40 @@ export const Races: React.FC = () => {
                             <th className="p-2 border-b text-left">Date</th>
                             <th className="p-2 border-b text-left">Distance (km)</th>
                             <th className="p-2 border-b text-left">Weather</th>
-                            <th className="p-2 border-b text-left">Actions</th>
+                            <th className="p-2 border-b text-left"></th>
                         </tr>
                         </thead>
                         <tbody>
                         {races.map((race) => (
-                            <React.Fragment key={race.id}>
-                                <tr className="hover:bg-gray-100">
-                                    <td className="p-2 border-b text-gray-800">{race.name}</td>
-                                    <td className="p-2 border-b text-gray-800">
-                                        {new Date(race.date).toLocaleDateString()}
-                                    </td>
-                                    <td className="p-2 border-b text-gray-800">{race.distance}</td>
-                                    <td className="p-2 border-b text-gray-800">
-                                        {race.weatherConditions || 'N/A'}
-                                    </td>
-                                    <td className="p-2 border-b">
-                                        <Button
-                                            onClick={() => toggleExpand(race.id)}
-                                            className="bg-gray-800 hover:bg-gray-700 text-white py-1 px-2 rounded text-sm"
-                                        >
-                                            {expandedRaceId === race.id ? (
-                                                <>
-                                                    <FaArrowUp className="inline mr-1" /> Collapse
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FaArrowDown className="inline mr-1" /> Expand
-                                                </>
-                                            )}
-                                        </Button>
-                                    </td>
-                                </tr>
-                                {expandedRaceId === race.id && (
-                                    <tr>
-                                        <td colSpan={5} className="p-4 bg-gray-50">
-                                            <div className="space-y-4">
-                                                {/* Baskets Section */}
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                                                        Basketed Pigeons
-                                                    </h3>
-                                                    {baskets.length > 0 ? (
-                                                        <ul className="list-disc pl-5 text-gray-800">
-                                                            {baskets.map((basket: any) => (
-                                                                <li key={basket.id} className="py-1">
-                                                                    {basket.pigeonName} (ID: {basket.pigeonId})
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    ) : (
-                                                        <p className="text-gray-500">No pigeons basketed for this race.</p>
-                                                    )}
-                                                    <Button
-                                                        onClick={() => setIsBasketModalOpen(true)}
-                                                        className="mt-2 bg-gray-800 hover:bg-gray-700 text-white py-1 px-2 rounded text-sm"
-                                                    >
-                                                        Basket Pigeon
-                                                    </Button>
-                                                </div>
-
-                                                {/* Results Section */}
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                                                        Race Results
-                                                    </h3>
-                                                    {race.raceresults?.length > 0 ? (
-                                                        <ul className="list-disc pl-5 text-gray-800">
-                                                            {race.raceresults.map((result) => (
-                                                                <li key={result.id} className="py-1">
-                                                                    Pigeon: {result.pigeonName} - Finish Time: {new Date(result.finishTime).toLocaleTimeString()}
-                                                                    , Speed: {result.speed || 'N/A'} km/h
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    ) : (
-                                                        <p className="text-gray-500">No results available for this race.</p>
-                                                    )}
-                                                    <Button
-                                                        onClick={() => setIsResultModalOpen(true)}
-                                                        className="mt-2 bg-gray-800 hover:bg-gray-700 text-white py-1 px-2 rounded text-sm"
-                                                    >
-                                                        Add Race Result
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-                            </React.Fragment>
+                            <tr key={race.id} className="hover:bg-gray-100">
+                                <td className="p-2 border-b text-gray-800">{race.name}</td>
+                                <td className="p-2 border-b text-gray-800">
+                                    {new Date(race.date).toLocaleDateString()}
+                                </td>
+                                <td className="p-2 border-b text-gray-800">{race.distance}</td>
+                                <td className="p-2 border-b text-gray-800">
+                                    {race.weatherConditions || 'N/A'}
+                                </td>
+                                <td className="p-2 border-b flex space-x-2">
+                                    <Button
+                                        onClick={() => fetchBaskets(race.id)}
+                                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
+                                        aria-label="View Baskets"
+                                    >
+                                        <FaShoppingBasket className="text-lg" />
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            setSelectedRaceId(race.id);
+                                            setIsResultModalOpen(true);
+                                        }}
+                                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full"
+                                        aria-label="View/Add Results"
+                                    >
+                                        <FaTrophy className="text-lg" />
+                                    </Button>
+                                </td>
+                            </tr>
                         ))}
                         </tbody>
                     </table>
@@ -190,7 +127,6 @@ export const Races: React.FC = () => {
             </main>
             <Footer />
 
-            {/* Basket Modal */}
             {isBasketModalOpen && (
                 <Modal
                     isOpen={isBasketModalOpen}
@@ -198,6 +134,20 @@ export const Races: React.FC = () => {
                     title="Basket Pigeon"
                 >
                     <div className="p-4">
+                        <p className="text-gray-800 mb-4">
+                            Basketed Pigeons for Race ID: {selectedRaceId}
+                        </p>
+                        {baskets.length > 0 ? (
+                            <ul className="list-disc pl-5 text-gray-800 mb-4">
+                                {baskets.map((basket: any) => (
+                                    <li key={basket.id} className="py-1">
+                                        {basket.pigeonName} (ID: {basket.pigeonId})
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-500 mb-4">No pigeons basketed for this race.</p>
+                        )}
                         <input
                             type="number"
                             placeholder="Pigeon ID to Basket"
@@ -206,7 +156,7 @@ export const Races: React.FC = () => {
                             className="p-2 border rounded w-full mb-2 text-gray-800"
                         />
                         <Button
-                            onClick={() => handleBasketPigeon(expandedRaceId!, pigeonId!)}
+                            onClick={() => handleBasketPigeon(selectedRaceId!, pigeonId!)}
                             disabled={!pigeonId || loading}
                             className="mt-2 bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded"
                         >
@@ -216,14 +166,28 @@ export const Races: React.FC = () => {
                 </Modal>
             )}
 
-            {/* Race Result Modal */}
-            {isResultModalOpen && expandedRaceId && (
+            {isResultModalOpen && selectedRaceId && (
                 <Modal
                     isOpen={isResultModalOpen}
                     onClose={() => setIsResultModalOpen(false)}
-                    title="Add Race Result"
+                    title="Manage Race Results"
                 >
                     <div className="p-4">
+                        <h3 className="text-lg font-semibold mb-4 text-gray-800">Existing Results</h3>
+                        {races.find(r => r.id === selectedRaceId)?.raceresults?.length > 0 ? (
+                            <ul className="list-disc pl-5 text-gray-800 mb-4">
+                                {races.find(r => r.id === selectedRaceId)?.raceresults.map((result) => (
+                                    <li key={result.id} className="py-1">
+                                        Pigeon: {result.pigeonName} - Finish Time: {new Date(result.finishTime).toLocaleTimeString()}
+                                        , Speed: {result.speed || 'N/A'} km/h
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-500 mb-4">No results available for this race.</p>
+                        )}
+
+                        <h3 className="text-lg font-semibold mb-4 text-gray-800">Add New Result</h3>
                         <form onSubmit={handleAddRaceResult} className="space-y-4">
                             <input
                                 type="number"

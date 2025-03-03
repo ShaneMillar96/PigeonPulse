@@ -1,4 +1,3 @@
-// Optional: Simple Modal component (../components/common/Modal.tsx)
 import React from 'react';
 
 export const Modal: React.FC<{
