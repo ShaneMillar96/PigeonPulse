@@ -64,3 +64,10 @@ PigeonPulse.Services.csproj_AssemblyReference.cache
 # Reference cache and other build-related files
 *_AssemblyReference.cache
 *_CoreCompileInputs.cache
+# Ignore build output directories
+server/src/PigeonPulse.Api/obj/
+server/src/PigeonPulse.Services/obj/
+
+# Ignore cache files
+*.AssemblyInfo.cs
+*.AssemblyReference.cache
