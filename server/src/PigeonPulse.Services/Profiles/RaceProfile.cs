@@ -11,12 +11,14 @@ public class RaceProfile : Profile
         ConfigureDomainToDto();
         ConfigureDtoToDomain();
     }
-    
+
     private void ConfigureDomainToDto()
     {
         CreateMap<Race, RaceDto>();
         CreateMap<RaceStatus, RaceStatusDto>();
-        CreateMap<Basket, BasketDto>();
+        CreateMap<Basket, BasketDto>()
+            .ForMember(d => d.PigeonName, o => o.MapFrom(x => x.Pigeon.Name))
+            .ForMember(d => d.RingNumber, o => o.MapFrom(x => x.Pigeon.RingNumber));
     }
 
     private void ConfigureDtoToDomain()

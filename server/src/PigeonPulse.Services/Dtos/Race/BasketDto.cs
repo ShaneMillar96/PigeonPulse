@@ -6,6 +6,7 @@ public class BasketDto
     public int UserId { get; set; }
     public int PigeonId { get; set; }
     public int RaceId { get; set; }
-    public DateTime BasketedAt { get; set; }
+    public DateTime? BasketedAt { get; set; }
     public string PigeonName { get; set; }
+    public string RingNumber { get; set; }
 }

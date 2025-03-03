@@ -94,6 +94,7 @@ namespace PigeonPulse.Services.Services
         public async Task<List<BasketDto>> GetBasketsByRaceIdAsync(int currentUser, int raceId)
         {
             var baskets = await _context.Baskets
+                .Include(x=>x.Pigeon)
                 .Where(b => b.RaceId == raceId && b.UserId == currentUser)
                 .ToListAsync();
             return _mapper.Map<List<BasketDto>>(baskets);
@@ -103,6 +104,7 @@ namespace PigeonPulse.Services.Services
         {
             var basket = _mapper.Map<Basket>(basketPigeonDto);
             basket.UserId = userId;
+            basket.BasketedAt = DateTime.Now;
             _context.Baskets.Add(basket);
             await _context.SaveChangesAsync();
             return _mapper.Map<BasketDto>(basket);

@@ -43,7 +43,7 @@ export const useRaces = () => {
     // Create a new race
     const createRace = async (raceData: Partial<Race>) => {
         try {
-            await axiosInstance.post('/api/race', raceData);
+            await axiosInstance.post('/race', raceData);
             toast.success('Race created successfully');
             await fetchRaces();
         } catch (err: any) {

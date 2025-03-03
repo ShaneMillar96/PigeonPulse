@@ -14,6 +14,7 @@ export const RaceBasket: React.FC = () => {
     const [baskets, setBaskets] = useState<any[]>([]);
     const [selectedPigeonId, setSelectedPigeonId] = useState<number | null>(null);
     const [canCompleteBasket, setCanCompleteBasket] = useState(false);
+    
 
     useEffect(() => {
         fetchPigeons();
