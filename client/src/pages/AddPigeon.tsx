@@ -1,57 +1,86 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePigeons } from '../hooks/usePigeons';
-import { Button } from '../components/common/Button';
-import { Input } from '../components/common/Input';
-import { Navbar } from '../components/layout/Navbar';
-import { Footer } from '../components/layout/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const AddPigeon: React.FC = () => {
-    const [form, setForm] = useState({ name: '', ringNumber: '' });
-    const { createPigeon, loading, error } = usePigeons();
+    const { createPigeon, updatePigeon, getPigeonById } = usePigeons();
     const navigate = useNavigate();
+    const { pigeonId } = useParams<{ pigeonId: string }>();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const [pigeon, setPigeon] = useState({
+        name: '',
+        ringNumber: '',
+        color: '',
+        strain: '',
+    });
+
+    useEffect(() => {
+        if (pigeonId) {
+            getPigeonById(Number(pigeonId)).then((data) => {
+                if (data) {
+                    setPigeon(data);
+                }
+            });
+        }
+    }, [pigeonId]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPigeon({ ...pigeon, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await createPigeon(form);
-        if (!error) {
-            navigate('/pigeons'); // Redirect back to Pigeons page on success
+        if (pigeonId) {
+            await updatePigeon(Number(pigeonId), pigeon);
+        } else {
+            await createPigeon(pigeon);
         }
-        setForm({ name: '', ringNumber: '' }); // Reset form
+        navigate('/pigeons');
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-grow container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Add Pigeon</h1>
-                <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-                    <div className="mb-4">
-                        <Input
-                            name="name"
-                            value={form.name}
-                            onChange={handleChange}
-                            placeholder="Pigeon Name"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <Input
-                            name="ringNumber"
-                            value={form.ringNumber}
-                            onChange={handleChange}
-                            placeholder="Ring Number"
-                        />
-                    </div>
-                    <Button type="submit" disabled={loading}>
-                        {loading ? 'Adding...' : 'Add Pigeon'}
-                    </Button>
-                    {error && <p className="text-red-500 mt-4">{error}</p>}
-                </form>
-            </main>
-            <Footer />
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">{pigeonId ? 'Edit Pigeon' : 'Add Pigeon'}</h1>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Pigeon Name"
+                    value={pigeon.name}
+                    onChange={handleChange}
+                    className="border p-2 w-full"
+                    required
+                />
+                <input
+                    type="text"
+                    name="ringNumber"
+                    placeholder="Ring Number"
+                    value={pigeon.ringNumber}
+                    onChange={handleChange}
+                    className="border p-2 w-full"
+                    required
+                    disabled={!!pigeonId} // Prevent changing ring number on edit
+                />
+                <input
+                    type="text"
+                    name="color"
+                    placeholder="Color"
+                    value={pigeon.color}
+                    onChange={handleChange}
+                    className="border p-2 w-full"
+                />
+                <input
+                    type="text"
+                    name="strain"
+                    placeholder="Strain"
+                    value={pigeon.strain}
+                    onChange={handleChange}
+                    className="border p-2 w-full"
+                />
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                    {pigeonId ? 'Update Pigeon' : 'Add Pigeon'}
+                </button>
+            </form>
         </div>
     );
 };

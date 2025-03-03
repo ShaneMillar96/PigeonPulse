@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Enums;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
@@ -36,6 +37,7 @@ namespace PigeonPulse.Services.Services
         {
             var race = _mapper.Map<Race>(raceDto);
             race.UserId = userId;
+            race.RaceStatusId = (int)RaceStatusEnum.New;
             _context.Races.Add(race);
             await _context.SaveChangesAsync();
             return _mapper.Map<RaceDto>(race);

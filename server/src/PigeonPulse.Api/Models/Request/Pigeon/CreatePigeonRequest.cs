@@ -4,4 +4,6 @@ public class CreatePigeonRequest
 {
     public string Name { get; set; }
     public string RingNumber { get; set; }
+    public string Strain { get; set; }
+    public string Color { get; set; }
 }

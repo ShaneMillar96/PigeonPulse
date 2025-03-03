@@ -3,6 +3,8 @@ export interface Pigeon {
     userId: number;
     name: string;
     ringNumber: string;
+    color: string;
+    strain: string;
 }
 
 export interface PigeonRequest {

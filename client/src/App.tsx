@@ -1,11 +1,13 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Pigeons } from './pages/Pigeons';
-import { Races } from './pages/Races'; 
 import { AddPigeon } from './pages/AddPigeon';
-import { AddRace } from './pages/AddRace'; 
+import { Races } from './pages/Races';
+import { AddRace } from './pages/AddRace';
+import { RaceBasket } from './pages/RaceBasket';
 
 function App() {
     return (
@@ -15,9 +17,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/pigeons" element={<Pigeons />} />
-                <Route path="/races" element={<Races />} /> {/* New route */}
                 <Route path="/add-pigeon" element={<AddPigeon />} />
-                <Route path="/add-race" element={<AddRace />} /> {/* New route */}
+                <Route path="/edit-pigeon/:pigeonId" element={<AddPigeon />} />
+                <Route path="/races" element={<Races />} />
+                <Route path="/add-race" element={<AddRace />} />
+                <Route path="/edit-race/:raceId" element={<AddRace />} />
+                <Route path="/race/:raceId/basket" element={<RaceBasket />} />
             </Routes>
         </Router>
     );

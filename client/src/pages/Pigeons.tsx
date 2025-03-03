@@ -3,14 +3,21 @@ import { usePigeons } from '../hooks/usePigeons';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { FaPlus } from 'react-icons/fa'; 
+import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 export const Pigeons: React.FC = () => {
-    const { pigeons, fetchPigeons, loading, error } = usePigeons();
+    const { pigeons, fetchPigeons, deletePigeon, loading, error } = usePigeons();
 
     useEffect(() => {
         fetchPigeons();
     }, [fetchPigeons]);
+
+    const handleDelete = async (pigeonId: number) => {
+        if (window.confirm('Are you sure you want to delete this pigeon?')) {
+            await deletePigeon(pigeonId);
+            fetchPigeons();
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -22,25 +29,34 @@ export const Pigeons: React.FC = () => {
                     {/* Add Pigeon Card */}
                     <Link
                         to="/add-pigeon"
-                        className="bg-gray-800 text-white p-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors flex items-center justify-center cursor-pointer h-48"
+                        className="bg-gray-200 flex justify-center items-center h-32 border rounded shadow hover:bg-gray-300 transition"
                     >
-                        <FaPlus className="text-4xl" />
-                        <span className="ml-2">Add Pigeon</span>
+                        <FaPlus size={32} />
                     </Link>
 
-                    {/* Pigeon Cards */}
+                    {/* Display Pigeons */}
                     {pigeons.map((pigeon) => (
-                        <div
-                            key={pigeon.id}
-                            className="bg-gray-800 text-white p-4 rounded-lg shadow-md h-48 flex items-center justify-center"
-                        >
-                            <p className="text-center">
-                                {pigeon.name} - {pigeon.ringNumber}
-                            </p>
+                        <div key={pigeon.id} className="border p-4 rounded shadow bg-white flex justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold">{pigeon.name}</h2>
+                                <p className="text-gray-600">Ring Number: {pigeon.ringNumber}</p>
+                                <p className="text-gray-600">Color: {pigeon.color}</p>
+                                <p className="text-gray-600">Strain: {pigeon.strain}</p>
+                            </div>
+                            <div className="flex space-x-2">
+                                <Link to={`/edit-pigeon/${pigeon.id}`} className="text-blue-500 hover:text-blue-700">
+                                    <FaEdit />
+                                </Link>
+                                <button
+                                    onClick={() => handleDelete(pigeon.id)}
+                                    className="text-red-500 hover:text-red-700"
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
-                {loading && <p className="text-center mt-4">Loading...</p>}
             </main>
             <Footer />
         </div>
