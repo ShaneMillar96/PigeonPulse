@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +28,9 @@ public partial class Race
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
+
+    [InverseProperty("Race")]
+    public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
 
     [InverseProperty("Race")]
     public virtual ICollection<Raceresult> Raceresults { get; set; } = new List<Raceresult>();

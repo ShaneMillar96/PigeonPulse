@@ -15,3 +15,19 @@ export interface RaceResult {
     speed: number | null;
     pigeonName: string; 
 }
+
+export interface Basket {
+    id: number;
+    userId: number;
+    pigeonId: number;
+    raceId: number;
+    basketedAt: string; 
+    pigeonName: string; 
+}
+
+export interface RaceResultRequest {
+    pigeonId: number;
+    raceId: number;
+    finishTime: string;
+    speed: number | null;
+}

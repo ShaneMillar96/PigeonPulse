@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +27,9 @@ public partial class User
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
+
+    [InverseProperty("User")]
+    public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
 
     [InverseProperty("User")]
     public virtual ICollection<Pigeon> Pigeons { get; set; } = new List<Pigeon>();

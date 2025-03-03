@@ -15,6 +15,7 @@ public class RaceProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<Race, RaceDto>();
+        CreateMap<Basket, BasketDto>();
     }
 
     private void ConfigureDtoToDomain()
@@ -22,5 +23,7 @@ public class RaceProfile : Profile
         CreateMap<CreateRaceDto, Race>()
             .ForMember(d => d.Date, o => o.MapFrom(x => DateTime.SpecifyKind(x.Date, DateTimeKind.Unspecified))) // Convert UTC to Unspecified for timestamp without time zone
             .ForMember(d => d.CreatedDate, o => o.MapFrom(x => DateTime.Now));
+
+        CreateMap<BasketPigeonDto, Basket>();
     }
 }

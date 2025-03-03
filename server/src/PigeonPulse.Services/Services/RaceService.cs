@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Models.application;
-using PigeonPulse.Services.Dtos;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
 
@@ -57,6 +56,27 @@ namespace PigeonPulse.Services.Services
                 .ToListAsync();
             
             return _mapper.Map<List<RaceDto>>(races);
+        }
+        
+        public async Task<List<BasketDto>> GetBasketsByRaceIdAsync(int raceId)
+        {
+            var baskets = await _context.Baskets
+                .Include(b => b.Pigeon)
+                .Include(b => b.User)
+                .Where(b => b.RaceId == raceId)
+                .ToListAsync();
+            
+            return _mapper.Map<List<BasketDto>>(baskets);
+
+        }
+        
+        public async Task<BasketDto> BasketPigeonAsync(int currentUserId, BasketPigeonDto createBasketPigeonDto)
+        {
+            var basket = _mapper.Map<Basket>(createBasketPigeonDto);
+            basket.UserId = currentUserId;
+            _context.Baskets.Add(basket);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<BasketDto>(basket);
         }
     }
 }

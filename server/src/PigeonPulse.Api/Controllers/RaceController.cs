@@ -1,7 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PigeonPulse.Api.Controllers.Base;
 using PigeonPulse.Api.Models.Request;
 using PigeonPulse.Api.Models.View;
+using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
 
@@ -9,12 +11,12 @@ namespace PigeonPulse.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RaceController : ControllerBase
+    public class RaceController : PigeonPulseBaseController
     {
         private readonly IMapper _mapper;
         private readonly IRaceService _raceService;
 
-        public RaceController(IRaceService raceService, IMapper mapper)
+        public RaceController(PigeonPulseDbContext context, IRaceService raceService, IMapper mapper)  : base(context)
         {
             _raceService = raceService;
             _mapper = mapper;
@@ -46,6 +48,24 @@ namespace PigeonPulse.Api.Controllers
         {
             var results = await _raceService.GetRaceResultsByPigeonIdAsync(pigeonId);
             return Ok(_mapper.Map<List<RaceResultViewModel>>(results));
+        }
+        
+        [HttpPost("basket")]
+        public async Task<IActionResult> BasketPigeon([FromBody] BasketRequest request)
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == 0) return Unauthorized();
+            var basket = await _raceService.BasketPigeonAsync(currentUserId, _mapper.Map<BasketPigeonDto>(request));
+            return Ok(basket);
+        }
+
+        [HttpGet("{raceId}/baskets")]
+        public async Task<IActionResult> GetBasketsByRaceId(int raceId)
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == 0) return Unauthorized();
+            var baskets = await _raceService.GetBasketsByRaceIdAsync(raceId);
+            return Ok(baskets);
         }
     }
 }

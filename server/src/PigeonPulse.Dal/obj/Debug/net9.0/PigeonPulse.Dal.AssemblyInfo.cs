@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PigeonPulse.Dal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d033e74bf96175bf5229a9b760b592ee2824d4ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58540e9ed3dda9a26a859ffb2535ebfa1b844412")]
 [assembly: System.Reflection.AssemblyProductAttribute("PigeonPulse.Dal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PigeonPulse.Dal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -44,9 +44,23 @@ publish/
 PigeonPulse.Api.csproj_AssemblyInfoInputs.cache
 PigeonPulse.Api.csproj_AssemblyReference.cache
 PigeonPulse.Api.csproj_CoreCompileInputs.cache
-PigeonPulse.Api.csproj_jt.gss
 PigeonPulse.Dal.csproj_AssemblyInfoInputs.cache
 PigeonPulse.Dal.csproj_AssemblyReference.cache
 PigeonPulse.Dal.csproj_CoreCompileInputs.cache
-PigeonPulse.Dal.csproj_FileListAbsolute.txt
 PigeonPulse.Services.csproj_AssemblyInfoInputs.cache
+PigeonPulse.Services.csproj_AssemblyReference.cache
+
+# DLL and PDB files (build artifacts)
+*.dll
+*.pdb
+*.dll.config
+*.dll.mdb
+*.pdb.mdb
+
+# Assembly info and cache files
+*_AssemblyInfo.cs
+*_AssemblyInfoInputs.cache
+
+# Reference cache and other build-related files
+*_AssemblyReference.cache
+*_CoreCompileInputs.cache

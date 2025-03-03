@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Interfaces;
@@ -28,6 +26,9 @@ public partial class Pigeon : ICreatedByTracking
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
+
+    [InverseProperty("Pigeon")]
+    public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
 
     [InverseProperty("Pigeon")]
     public virtual ICollection<Raceresult> Raceresults { get; set; } = new List<Raceresult>();
