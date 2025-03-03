@@ -1,7 +1,6 @@
 using AutoMapper;
-using PigeonPulse.Api.Models.Request;
+using PigeonPulse.Api.Models.Request.Race;
 using PigeonPulse.Api.Models.View;
-using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Race;
 
 namespace PigeonPulse.Api.Profiles;
@@ -23,9 +22,7 @@ public class RaceProfile : Profile
 
     private void ConfigureModelToDto()
     {
-        CreateMap<RaceRequest, CreateRaceDto>();
-        CreateMap<RaceResultRequest, CreateRaceResultDto>();
-        CreateMap<BasketRequest, BasketPigeonDto>();
-
+        CreateMap<CreateRaceRequest, CreateRaceDto>();
+        CreateMap<CreateRaceResultRequest, CreateRaceResultDto>();
     }
 }

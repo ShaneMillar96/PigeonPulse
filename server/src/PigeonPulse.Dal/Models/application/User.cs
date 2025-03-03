@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,4 +35,10 @@ public partial class User
 
     [InverseProperty("User")]
     public virtual ICollection<Pigeon> Pigeons { get; set; } = new List<Pigeon>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<RaceResult> RaceResults { get; set; } = new List<RaceResult>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<Race> Races { get; set; } = new List<Race>();
 }

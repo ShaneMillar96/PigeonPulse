@@ -1,6 +1,6 @@
-namespace PigeonPulse.Api.Models.Request;
+namespace PigeonPulse.Api.Models.Request.Pigeon;
 
-public class PigeonRequest
+public class UpdatePigeonRequest
 {
     public string Name { get; set; }
     public string RingNumber { get; set; }

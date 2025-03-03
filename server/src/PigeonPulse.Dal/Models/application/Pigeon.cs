@@ -24,6 +24,14 @@ public partial class Pigeon : ICreatedByTracking
     [StringLength(20)]
     public string RingNumber { get; set; } = null!;
 
+    [Column("color")]
+    [StringLength(50)]
+    public string? Color { get; set; }
+
+    [Column("strain")]
+    [StringLength(50)]
+    public string? Strain { get; set; }
+
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
 
@@ -31,7 +39,7 @@ public partial class Pigeon : ICreatedByTracking
     public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
 
     [InverseProperty("Pigeon")]
-    public virtual ICollection<Raceresult> Raceresults { get; set; } = new List<Raceresult>();
+    public virtual ICollection<RaceResult> RaceResults { get; set; } = new List<RaceResult>();
 
     [ForeignKey("UserId")]
     [InverseProperty("Pigeons")]

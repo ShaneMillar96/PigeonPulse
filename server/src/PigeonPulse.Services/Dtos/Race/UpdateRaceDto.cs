@@ -1,6 +1,6 @@
-namespace PigeonPulse.Api.Models.Request;
+namespace PigeonPulse.Services.Dtos.Race;
 
-public class RaceRequest
+public class UpdateRaceDto
 {
     public string Name { get; set; }
     public DateTime Date { get; set; }

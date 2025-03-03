@@ -19,7 +19,7 @@ public partial class PigeonPulseDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Pigeon> Pigeons { get; set; }
     public virtual DbSet<Race> Races { get; set; }
-    public virtual DbSet<Raceresult> RaceResults { get; set; }
+    public virtual DbSet<RaceResult> RaceResults { get; set; }
     public virtual DbSet<Basket> Baskets { get; set; }
     
     public virtual DbSet<RaceStatus> RaceStatuses { get; set; }

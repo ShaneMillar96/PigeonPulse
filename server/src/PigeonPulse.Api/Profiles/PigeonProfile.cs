@@ -1,5 +1,6 @@
 using AutoMapper;
 using PigeonPulse.Api.Models.Request;
+using PigeonPulse.Api.Models.Request.Pigeon;
 using PigeonPulse.Api.Models.View;
 using PigeonPulse.Services.Dtos.Pigeon;
 
@@ -20,6 +21,6 @@ public class PigeonProfile : Profile
 
     private void ConfigureModelToDto()
     {
-        CreateMap<PigeonRequest, CreatePigeonDto>();
+        CreateMap<CreatePigeonRequest, CreatePigeonDto>();
     }
 }
