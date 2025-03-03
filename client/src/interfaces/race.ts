@@ -4,7 +4,7 @@ export interface Race {
     date: string;
     distance: number;
     weatherConditions: string | null;
-    raceStatus: string;
+    raceStatus: RaceStatus;
     raceresults: RaceResult[];
     baskets: Basket[];
 }
@@ -16,6 +16,11 @@ export interface RaceResult {
     finishTime: string;
     speed: number | null;
     pigeonName: string;
+}
+
+export interface RaceStatus {
+    id: number;
+    name: string;
 }
 
 export interface Basket {

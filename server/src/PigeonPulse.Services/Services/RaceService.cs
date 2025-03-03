@@ -22,6 +22,7 @@ namespace PigeonPulse.Services.Services
         public async Task<List<RaceDto>> GetAllRacesAsync(int currentUser)
         {
             var races = await _context.Races
+                .Include(x => x.RaceStatus)
                 .Where(r => r.UserId == currentUser)
                 .ToListAsync();
             return _mapper.Map<List<RaceDto>>(races);
@@ -116,12 +117,12 @@ namespace PigeonPulse.Services.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<RaceDto> UpdateRaceStatusAsync(int currentUser, int raceId, string statusName)
+        public async Task<RaceDto> UpdateRaceStatusAsync(int currentUser, UpdateRaceStatusDto raceStatusDto)
         {
-            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceId && r.UserId == currentUser);
+            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceStatusDto.RaceId && r.UserId == currentUser);
             if (race == null) throw new Exception("Race not found or not authorized to update status.");
 
-            race.RaceStatusId = 1;
+            race.RaceStatusId = raceStatusDto.StatusId;
             await _context.SaveChangesAsync();
             return _mapper.Map<RaceDto>(race);
         }

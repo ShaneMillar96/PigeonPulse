@@ -7,5 +7,6 @@ public class RaceViewModel
     public DateTime Date { get; set; }
     public decimal Distance { get; set; }
     public string? WeatherConditions { get; set; }
+    public RaceStatusViewModel RaceStatus { get; set; }
     public List<RaceResultViewModel> Raceresults { get; set; } = new List<RaceResultViewModel>();
 }

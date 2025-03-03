@@ -1,174 +1,182 @@
 import { useState, useCallback, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
-import { Race, RaceResult, Basket, Pigeon } from '../interfaces/race';
+import { Race, Basket, RaceResult } from '../interfaces/race';
 import { toast } from 'react-toastify';
 
 export const useRaces = () => {
     const [races, setRaces] = useState<Race[]>([]);
-    const [pigeons, setPigeons] = useState<Pigeon[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchRaces();
+    }, []);
+
+    // Fetch all races
     const fetchRaces = useCallback(async () => {
         setLoading(true);
         try {
             const response = await axiosInstance.get<Race[]>('/race');
-            setRaces(response.data);
+            setRaces(Array.isArray(response.data) ? response.data : []);
             setError(null);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch races');
+            setError('Failed to fetch races');
             toast.error('Failed to fetch races');
+            setRaces([]);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    const fetchPigeons = useCallback(async () => {
-        setLoading(true);
+    // Fetch a specific race by ID
+    const getRaceById = async (raceId: number) => {
         try {
-            const response = await axiosInstance.get<Pigeon[]>('/pigeon'); // Updated to match backend endpoint
-            setPigeons(response.data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch pigeons');
-            toast.error('Failed to fetch pigeons');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchBasketsByRaceId = async (raceId: number) => {
-        setLoading(true);
-        try {
-            const response = await axiosInstance.get<Basket[]>(`/race/${raceId}/baskets`);
+            const response = await axiosInstance.get<Race>(`/race/${raceId}`);
             return response.data;
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch baskets');
-            toast.error('Failed to fetch baskets');
-            return [];
-        } finally {
-            setLoading(false);
+            setError('Failed to fetch race details');
+            toast.error('Failed to fetch race details');
+            return null;
         }
     };
 
-    const createRace = async (data: Omit<Race, 'id' | 'raceresults' | 'baskets' | 'raceStatus'>) => {
-        setLoading(true);
+    // Create a new race
+    const createRace = async (raceData: Partial<Race>) => {
         try {
-            const response = await axiosInstance.post<Race>('/race', {
-                ...data,
-                date: new Date(data.date).toISOString(),
-            });
-            setRaces((prev) => [...prev, response.data]);
-            setError(null);
-            toast.success('Race created successfully!');
-            return response.data;
+            await axiosInstance.post('/api/race', raceData);
+            toast.success('Race created successfully');
+            await fetchRaces();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to create race');
+            setError('Failed to create race');
             toast.error('Failed to create race');
-            throw err;
-        } finally {
-            setLoading(false);
         }
     };
 
-    const basketPigeon = async (basket: Pick<Basket, 'pigeonId' | 'raceId'>) => {
-        setLoading(true);
+    // Update a race
+    const updateRace = async (raceId: number, raceData: Partial<Race>) => {
         try {
-            await axiosInstance.post(`/race/${basket.raceId}/basket`, { pigeonId: basket.pigeonId });
-            setError(null);
-            toast.success('Pigeon added to basket!');
+            await axiosInstance.put(`/race/${raceId}`, raceData);
+            toast.success('Race updated successfully');
+            await fetchRaces();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to basket pigeon');
-            toast.error('Failed to basket pigeon');
-            throw err;
-        } finally {
-            setLoading(false);
+            setError('Failed to update race');
+            toast.error('Failed to update race');
         }
     };
 
-    const removePigeonFromBasket = async (basketId: number) => {
-        setLoading(true);
+    // Delete a race
+    const deleteRace = async (raceId: number) => {
         try {
-            await axiosInstance.delete(`/race/basket/${basketId}`);
-            setError(null);
-            toast.success('Pigeon removed from basket!');
+            await axiosInstance.delete(`/race/${raceId}`);
+            toast.success('Race deleted');
+            await fetchRaces();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to remove pigeon');
-            toast.error('Failed to remove pigeon');
-            throw err;
-        } finally {
-            setLoading(false);
+            setError('Error deleting race');
+            toast.error('Failed to delete race');
         }
     };
 
-    const saveBasket = async (raceId: number) => {
-        setLoading(true);
-        try {
-            await axiosInstance.post(`/race/${raceId}/save-basket`);
-            await axiosInstance.post(`/race/${raceId}/update-status`, { statusName: 'Basketed' });
-            setError(null);
-            toast.success('Basket saved and race status updated!');
-            await fetchRaces(); // Refresh races
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to save basket');
-            toast.error('Failed to save basket');
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const addRaceResult = async (data: Omit<RaceResult, 'id' | 'pigeonName'>) => {
-        setLoading(true);
-        try {
-            await axiosInstance.post('/race/result', {
-                ...data,
-                finishTime: new Date(data.finishTime).toISOString(),
-            });
-            setError(null);
-            toast.success('Race result added!');
-            await fetchRaces(); // Refresh races
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to add race result');
-            toast.error('Failed to add race result');
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Fetch leaderboard results
     const getRaceLeaderboard = async (raceId: number) => {
-        setLoading(true);
         try {
-            const response = await axiosInstance.get<RaceResult[]>(`/race/leaderboard/${raceId}`);
-            setError(null);
-            return response.data;
+            const response = await axiosInstance.get(`/race/${raceId}/leaderboard`);
+            return Array.isArray(response.data) ? response.data : [];
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch leaderboard');
+            setError('Error fetching leaderboard');
             toast.error('Failed to fetch leaderboard');
             return [];
-        } finally {
-            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchRaces();
-        fetchPigeons();
-    }, [fetchRaces, fetchPigeons]);
+    // Fetch race baskets
+    const fetchBasketsByRaceId = async (raceId: number) => {
+        try {
+            const response = await axiosInstance.get<Basket[]>(`/race/${raceId}/baskets`);
+            return Array.isArray(response.data) ? response.data : [];
+        } catch (err: any) {
+            setError('Failed to fetch baskets');
+            toast.error('Failed to fetch baskets');
+            return [];
+        }
+    };
+
+    // Add a pigeon to the race basket
+    const addPigeonToBasket = async (raceId: number, pigeonId: number) => {
+        try {
+            await axiosInstance.post(`/race/${raceId}/baskets`, { raceId, pigeonId });
+            toast.success('Pigeon added to race');
+            await fetchRaces();
+        } catch (err: any) {
+            setError('Error adding pigeon to basket');
+            toast.error('Error adding pigeon');
+        }
+    };
+
+    // Remove a pigeon from the race basket
+    const removePigeonFromBasket = async (basketId: number) => {
+        try {
+            await axiosInstance.delete(`/race/baskets/${basketId}`);
+            toast.success('Pigeon removed from basket');
+            await fetchRaces();
+        } catch (err: any) {
+            setError('Error removing pigeon from basket');
+            toast.error('Error removing pigeon');
+        }
+    };
+
+    // Update race status (New -> Basketed -> Finished)
+    const updateRaceStatus = async (raceId: number, statusId: string) => {
+        try {
+            console.log(raceId);
+            console.log(statusId);
+            await axiosInstance.put(`/race/${raceId}/status`, { raceId, statusId });
+            toast.info(`Race updated to ${statusId}`);
+            await fetchRaces();
+        } catch (err: any) {
+            setError(`Error updating race status to ${statusId}`);
+            toast.error('Failed to update race');
+        }
+    };
+
+    // Add race result
+    const addRaceResult = async (raceId: number, raceResult: RaceResult) => {
+        try {
+            await axiosInstance.post(`/race/${raceId}/results`, raceResult);
+            toast.success('Race result added');
+            await fetchRaces();
+        } catch (err: any) {
+            setError('Failed to add race result');
+            toast.error('Failed to add race result');
+        }
+    };
+
+    // Fetch race results
+    const getRaceResults = async (raceId: number) => {
+        try {
+            const response = await axiosInstance.get(`/race/${raceId}/results`);
+            return Array.isArray(response.data) ? response.data : [];
+        } catch (err: any) {
+            setError('Failed to fetch race results');
+            toast.error('Failed to fetch race results');
+            return [];
+        }
+    };
 
     return {
         races,
-        pigeons,
         loading,
         error,
         fetchRaces,
-        fetchBasketsByRaceId,
+        getRaceById,
         createRace,
-        basketPigeon,
-        removePigeonFromBasket,
-        saveBasket,
-        addRaceResult,
+        updateRace,
+        deleteRace,
         getRaceLeaderboard,
+        fetchBasketsByRaceId,
+        addPigeonToBasket,
+        removePigeonFromBasket,
+        updateRaceStatus,
+        addRaceResult,
+        getRaceResults,
     };
 };

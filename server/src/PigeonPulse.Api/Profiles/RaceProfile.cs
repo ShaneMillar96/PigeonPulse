@@ -16,6 +16,7 @@ public class RaceProfile : Profile
     private void ConfigureDtoToModel()
     {
         CreateMap<RaceDto, RaceViewModel>();
+        CreateMap<RaceStatusDto, RaceStatusViewModel>();
         CreateMap<RaceResultDto, RaceResultViewModel>();
 
     }

@@ -97,7 +97,7 @@ public class RaceController : PigeonPulseBaseController
     }
 
     [HttpPost("{raceId}/baskets")]
-    public async Task<IActionResult> AddPigeonToBasket(int raceId, [FromBody] BasketPigeonDto basketPigeonDto)
+    public async Task<IActionResult> AddPigeonToBasket([FromBody] BasketPigeonDto basketPigeonDto)
     {
         var userId = GetCurrentUserId();
         var basket = await _raceService.AddPigeonToBasketAsync(userId, basketPigeonDto);
@@ -112,11 +112,11 @@ public class RaceController : PigeonPulseBaseController
         return NoContent();
     }
 
-    [HttpPatch("{raceId}/status")]
-    public async Task<IActionResult> UpdateRaceStatus(int raceId, [FromBody] string statusName)
+    [HttpPut("{raceId}/status")]
+    public async Task<IActionResult> UpdateRaceStatus([FromBody] UpdateRaceStatusDto raceStatusDto)
     {
         var userId = GetCurrentUserId();
-        var race = await _raceService.UpdateRaceStatusAsync(userId, raceId, statusName);
+        var race = await _raceService.UpdateRaceStatusAsync(userId, raceStatusDto);
         return Ok(race);
     }
 

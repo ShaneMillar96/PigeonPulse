@@ -7,5 +7,6 @@ public class RaceDto
     public DateTime Date { get; set; }
     public decimal Distance { get; set; }
     public string? WeatherConditions { get; set; }
+    public RaceStatusDto RaceStatus { get; set; }
     public List<RaceResultDto> Raceresults { get; set; } = new List<RaceResultDto>();
 }

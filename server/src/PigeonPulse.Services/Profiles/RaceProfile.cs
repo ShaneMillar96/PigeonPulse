@@ -15,6 +15,7 @@ public class RaceProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<Race, RaceDto>();
+        CreateMap<RaceStatus, RaceStatusDto>();
         CreateMap<Basket, BasketDto>();
     }
 
