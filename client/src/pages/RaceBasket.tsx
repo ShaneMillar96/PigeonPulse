@@ -4,6 +4,7 @@ import { usePigeons } from '../hooks/usePigeons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
+import { FaTrash, FaPlusCircle, FaCheckCircle } from 'react-icons/fa';
 
 export const RaceBasket: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
@@ -14,7 +15,6 @@ export const RaceBasket: React.FC = () => {
     const [baskets, setBaskets] = useState<any[]>([]);
     const [selectedPigeonId, setSelectedPigeonId] = useState<number | null>(null);
     const [canCompleteBasket, setCanCompleteBasket] = useState(false);
-    
 
     useEffect(() => {
         fetchPigeons();
@@ -51,65 +51,83 @@ export const RaceBasket: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-gray-100">
             <Navbar />
-            <main className="flex-grow container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Manage Race Basket</h1>
+            <main className="flex-grow container mx-auto p-6">
+                <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Manage Race Basket</h1>
 
-                {/* Add Pigeon to Basket */}
-                <select className="border p-2 w-full" onChange={(e) => setSelectedPigeonId(Number(e.target.value))}>
-                    <option value="">Select a Pigeon</option>
-                    {pigeons.map((pigeon) => (
-                        <option key={pigeon.id} value={pigeon.id}>
-                            {pigeon.name} (Ring: {pigeon.ringNumber})
-                        </option>
-                    ))}
-                </select>
-                <button
-                    onClick={handleAddPigeon}
-                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                >
-                    Add to Race
-                </button>
+                {/* Pigeon Selection */}
+                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 className="text-lg font-semibold mb-3">Select a Pigeon to Add</h2>
+                    <div className="flex items-center space-x-4">
+                        <select
+                            className="border p-3 w-full rounded-md"
+                            onChange={(e) => setSelectedPigeonId(Number(e.target.value))}
+                        >
+                            <option value="">Select a Pigeon</option>
+                            {pigeons.map((pigeon) => (
+                                <option key={pigeon.id} value={pigeon.id}>
+                                    {pigeon.name} (Ring: {pigeon.ringNumber})
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={handleAddPigeon}
+                            className="flex items-center bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
+                        >
+                            <FaPlusCircle className="mr-2" />
+                            Add
+                        </button>
+                    </div>
+                </div>
 
-                {/* Display Basketed Pigeons */}
-                <div className="mt-4">
-                    <h2 className="text-xl font-bold mb-2">Pigeons in the Race</h2>
-                    <ul className="border rounded p-4 bg-white">
-                        {baskets.length === 0 ? (
-                            <p className="text-gray-600">No pigeons basketed yet.</p>
-                        ) : (
-                            baskets.map((basket) => (
-                                <li key={basket.id} className="flex justify-between p-2 border-b">
-                                    <span>{basket.pigeonName} (Ring: {basket.ringNumber})</span>
+                {/* Basketed Pigeons */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-lg font-semibold mb-3">Pigeons in the Race</h2>
+                    {baskets.length === 0 ? (
+                        <p className="text-gray-600 text-center py-4">No pigeons basketed yet.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {baskets.map((basket) => (
+                                <div key={basket.id} className="bg-gray-50 p-4 rounded-lg shadow-md flex justify-between items-center">
+                                    <div>
+                                        <p className="text-lg font-medium">{basket.pigeonName}</p>
+                                        <p className="text-gray-600 text-sm">Ring: {basket.ringNumber}</p>
+                                    </div>
                                     <button
                                         onClick={() => handleRemovePigeon(basket.id)}
-                                        className="text-red-500 hover:text-red-700"
+                                        className="text-red-500 hover:text-red-700 transition"
                                     >
-                                        Remove
+                                        <FaTrash />
                                     </button>
-                                </li>
-                            ))
-                        )}
-                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Complete Basket Button */}
                 {canCompleteBasket && (
-                    <button
-                        onClick={handleCompleteBasket}
-                        className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-                    >
-                        Complete Basket
-                    </button>
+                    <div className="text-center mt-6">
+                        <button
+                            onClick={handleCompleteBasket}
+                            className="flex items-center justify-center bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
+                        >
+                            <FaCheckCircle className="mr-2" />
+                            Complete Basket
+                        </button>
+                    </div>
                 )}
 
-                <button
-                    onClick={() => navigate('/races')}
-                    className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
-                >
-                    Back to Races
-                </button>
+                {/* Back Button */}
+                <div className="text-center mt-6">
+                    <button
+                        onClick={() => navigate('/races')}
+                        className="bg-gray-500 text-white px-6 py-3 rounded shadow hover:bg-gray-600 transition"
+                    >
+                        Back to Races
+                    </button>
+                </div>
             </main>
             <Footer />
         </div>
