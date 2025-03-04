@@ -13,12 +13,14 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<PigeonPulseDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(config => config.AllowNullCollections = true, typeof(Program).Assembly,
-    typeof(UserService).Assembly, typeof(PigeonService).Assembly, typeof(RaceService).Assembly);
+    typeof(UserService).Assembly, typeof(PigeonService).Assembly, typeof(RaceService).Assembly, typeof(DashboardService).Assembly);
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPigeonService, PigeonService>();
 builder.Services.AddScoped<IRaceService, RaceService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
 
 // Add IHttpContextAccessor for retrieving user context
 builder.Services.AddHttpContextAccessor();

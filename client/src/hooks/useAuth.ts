@@ -40,7 +40,7 @@ export const useAuth = () => {
             localStorage.setItem('token', token); // Store token
             setError(null);
             toast.success('Login successful!');
-            navigate('/pigeons');
+            navigate('/');
         } catch (err) {
             setError('Login failed');
             toast.error('Login failed. Please try again.');

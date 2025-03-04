@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
                     <div className="hidden md:flex space-x-6">
                         <Link to="/pigeons" className="hover:text-gray-300 transition">Pigeons</Link>
                         <Link to="/races" className="hover:text-gray-300 transition">Races</Link>
-                        <Link to="/leaderboard" className="hover:text-gray-300 transition">Leaderboard</Link>
+                        <Link to="/dashboard" className="hover:text-gray-300 transition">Dashboard</Link>
                     </div>
                 )}
 
@@ -59,7 +59,7 @@ export const Navbar: React.FC = () => {
                 <div className="md:hidden bg-gray-800 p-4 mt-2 shadow-lg">
                     <Link to="/pigeons" className="block py-2 hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>Pigeons</Link>
                     <Link to="/races" className="block py-2 hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>Races</Link>
-                    <Link to="/leaderboard" className="block py-2 hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>Leaderboard</Link>
+                    <Link to="/dashboard" className="block py-2 hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                     <div className="mt-4 border-t border-gray-600 pt-2">
                         <button
                             onClick={handleLogout}

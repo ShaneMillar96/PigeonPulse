@@ -20,6 +20,16 @@ docker-compose.override.yml
 *.tmp
 *.cache
 
+
+# Build results
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
 # Dependency Folders
 packages/
 node_modules/  # For future React frontend

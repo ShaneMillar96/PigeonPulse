@@ -10,6 +10,7 @@ import { AddRace } from './pages/AddRace';
 import { RaceBasket } from './pages/RaceBasket';
 import { RecordRaceResults } from './pages/RecordRaceResults';
 import { Leaderboard } from './pages/Leaderboard';
+import { Dashboard } from './pages/Dashboard';
 
 function App() {
     return (
@@ -27,6 +28,8 @@ function App() {
                 <Route path="/race/:raceId/basket" element={<RaceBasket />} />
                 <Route path="/race/:raceId/results" element={<RecordRaceResults />} />
                 <Route path="/race/:raceId/leaderboard" element={<Leaderboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+
             </Routes>
         </Router>
     );
