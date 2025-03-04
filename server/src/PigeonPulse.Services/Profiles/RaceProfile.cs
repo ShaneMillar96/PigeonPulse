@@ -15,6 +15,8 @@ public class RaceProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<Race, RaceDto>();
+        CreateMap<RaceResult, RaceResultDto>()
+            .ForMember(d => d.TimeRecorded, o => o.MapFrom(x => x.FinishTime.ToTimeSpan())); 
         CreateMap<RaceStatus, RaceStatusDto>();
         CreateMap<Basket, BasketDto>()
             .ForMember(d => d.PigeonName, o => o.MapFrom(x => x.Pigeon.Name))
@@ -28,5 +30,9 @@ public class RaceProfile : Profile
             .ForMember(d => d.CreatedDate, o => o.MapFrom(x => DateTime.Now));
 
         CreateMap<BasketPigeonDto, Basket>();
+        
+        CreateMap<CreateRaceResultDto, RaceResult>()
+            .ForMember(d => d.FinishTime, o => o.MapFrom(x => TimeOnly.FromTimeSpan(x.TimeRecorded)));
+
     }
 }

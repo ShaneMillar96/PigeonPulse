@@ -67,12 +67,25 @@ public class RaceController : PigeonPulseBaseController
     }
 
     [HttpPost("{raceId}/results")]
-    public async Task<IActionResult> AddRaceResult(int raceId, [FromBody] CreateRaceResultRequest request)
+    public async Task<IActionResult> AddRaceResult([FromBody] CreateRaceResultRequest request)
     {
+        if (request.TimeRecorded == default)
+        {
+            return BadRequest("TimeRecorded must be in HH:mm:ss format.");
+        }
         var userId = GetCurrentUserId();
         var result = await _raceService.AddRaceResultAsync(userId, _mapper.Map<CreateRaceResultDto>(request));
         return Ok(result);
     }
+    
+    [HttpDelete("{raceId}/results/{resultId}")]
+    public async Task<IActionResult> RemoveRaceResult(int raceId, int resultId)
+    {
+        var userId = GetCurrentUserId();
+        await _raceService.RemoveRaceResultAsync(userId, raceId, resultId);
+        return NoContent();
+    }
+
 
     [HttpGet("{raceId}/results")]
     public async Task<IActionResult> GetRaceResults(int raceId)

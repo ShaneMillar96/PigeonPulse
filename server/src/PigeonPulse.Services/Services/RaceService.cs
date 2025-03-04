@@ -74,6 +74,18 @@ namespace PigeonPulse.Services.Services
             await _context.SaveChangesAsync();
             return _mapper.Map<RaceResultDto>(result);
         }
+        
+        public async Task RemoveRaceResultAsync(int currentUser, int raceId, int resultId)
+        {
+            var result = await _context.RaceResults
+                .FirstOrDefaultAsync(r => r.Id == resultId && r.RaceId == raceId && r.UserId == currentUser);
+
+            if (result == null) throw new Exception("Race result not found or not authorized to remove.");
+
+            _context.RaceResults.Remove(result);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task<List<RaceResultDto>> GetRaceResultsByPigeonIdAsync(int pigeonId)
         {
@@ -86,6 +98,7 @@ namespace PigeonPulse.Services.Services
         public async Task<List<RaceResultDto>> GetRaceResultsByRaceIdAsync(int raceId)
         {
             var results = await _context.RaceResults
+                .Include(x => x.Pigeon)
                 .Where(r => r.RaceId == raceId)
                 .ToListAsync();
             return _mapper.Map<List<RaceResultDto>>(results);
@@ -133,7 +146,7 @@ namespace PigeonPulse.Services.Services
         {
             var results = await _context.RaceResults
                 .Where(r => r.RaceId == raceId)
-                .OrderBy(r => r.Position)
+                .OrderBy(r => r.FinishTime)
                 .ToListAsync();
             return _mapper.Map<List<RaceResultDto>>(results);
         }

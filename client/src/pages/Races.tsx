@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaTrophy, FaShoppingBasket, FaTachometerAlt, FaFlag } from 'react-icons/fa';
 
 export const Races: React.FC = () => {
-    const { races, fetchRaces, deleteRace, getRaceLeaderboard, loading, error } = useRaces();
+    const { races, fetchRaces, deleteRace, getRaceLeaderboard } = useRaces();
     const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
     const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
@@ -25,8 +25,6 @@ export const Races: React.FC = () => {
             <Navbar />
             <main className="flex-grow container mx-auto p-6">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Race Management</h1>
-                {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Add Race Button */}
                     <Link

@@ -8,7 +8,7 @@ import { AddPigeon } from './pages/AddPigeon';
 import { Races } from './pages/Races';
 import { AddRace } from './pages/AddRace';
 import { RaceBasket } from './pages/RaceBasket';
-
+import { RecordRaceResults } from './pages/RecordRaceResults';
 function App() {
     return (
         <Router>
@@ -23,6 +23,7 @@ function App() {
                 <Route path="/add-race" element={<AddRace />} />
                 <Route path="/edit-race/:raceId" element={<AddRace />} />
                 <Route path="/race/:raceId/basket" element={<RaceBasket />} />
+                <Route path="/race/:raceId/results" element={<RecordRaceResults />} />
             </Routes>
         </Router>
     );

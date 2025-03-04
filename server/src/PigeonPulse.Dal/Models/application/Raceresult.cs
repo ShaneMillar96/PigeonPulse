@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Interfaces;
@@ -24,11 +22,8 @@ public partial class RaceResult : ICreatedByTracking
     [Column("user_id")]
     public int UserId { get; set; }
 
-    [Column("finish_time", TypeName = "timestamp without time zone")]
-    public DateTime FinishTime { get; set; }
-
-    [Column("position")]
-    public int Position { get; set; }
+    [Column("finish_time")]
+    public TimeOnly FinishTime { get; set; }
 
     [ForeignKey("PigeonId")]
     [InverseProperty("RaceResults")]

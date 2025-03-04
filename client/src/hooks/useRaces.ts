@@ -150,6 +150,18 @@ export const useRaces = () => {
         }
     };
 
+    // Remove race result
+    const removeRaceResult = async (raceId: number, resultId: number) => {
+        try {
+            await axiosInstance.delete(`/race/${raceId}/results/${resultId}`, {raceId, resultId});
+            toast.success('Result removed');
+            await fetchRaces();
+        } catch (err: any) {
+            setError('Error removing Result');
+            toast.error('Error removing result');
+        }
+    };
+
     // Fetch race results
     const getRaceResults = async (raceId: number) => {
         try {
@@ -177,6 +189,7 @@ export const useRaces = () => {
         removePigeonFromBasket,
         updateRaceStatus,
         addRaceResult,
+        removeRaceResult,
         getRaceResults,
     };
 };
