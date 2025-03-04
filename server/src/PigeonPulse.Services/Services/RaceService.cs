@@ -145,6 +145,7 @@ namespace PigeonPulse.Services.Services
         public async Task<List<RaceResultDto>> GetRaceLeaderBoardAsync(int userId, int raceId)
         {
             var results = await _context.RaceResults
+                .Include(x => x.Pigeon)
                 .Where(r => r.RaceId == raceId)
                 .OrderBy(r => r.FinishTime)
                 .ToListAsync();
