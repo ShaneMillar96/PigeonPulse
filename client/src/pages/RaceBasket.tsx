@@ -26,6 +26,11 @@ export const RaceBasket: React.FC = () => {
         }
     }, [raceId]);
 
+    // Get only pigeons that have NOT been basketed yet
+    const availablePigeons = pigeons.filter(
+        (pigeon) => !baskets.some((basket) => basket.pigeonId === pigeon.id)
+    );
+
     const handleAddPigeon = async () => {
         if (!selectedPigeonId || !raceId) return;
         await addPigeonToBasket(Number(raceId), selectedPigeonId);
@@ -65,7 +70,7 @@ export const RaceBasket: React.FC = () => {
                             onChange={(e) => setSelectedPigeonId(Number(e.target.value))}
                         >
                             <option value="">Select a Pigeon</option>
-                            {pigeons.map((pigeon) => (
+                            {availablePigeons.map((pigeon) => (
                                 <option key={pigeon.id} value={pigeon.id}>
                                     {pigeon.name} (Ring: {pigeon.ringNumber})
                                 </option>
@@ -74,6 +79,7 @@ export const RaceBasket: React.FC = () => {
                         <button
                             onClick={handleAddPigeon}
                             className="flex items-center bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
+                            disabled={!selectedPigeonId}
                         >
                             <FaPlusCircle className="mr-2" />
                             Add

@@ -1,3 +1,4 @@
+using PigeonPulse.Services.Dtos.Leaderboard;
 using PigeonPulse.Services.Dtos.Race;
 
 namespace PigeonPulse.Services.Interfaces;
@@ -17,5 +18,5 @@ public interface IRaceService
     Task<BasketDto> AddPigeonToBasketAsync(int userId, BasketPigeonDto basketPigeonDto);
     Task RemovePigeonFromBasketAsync(int currentUser, int basketId);
     Task<RaceDto> UpdateRaceStatusAsync(int currentUser, UpdateRaceStatusDto raceStatusDto);
-    Task<List<RaceResultDto>> GetRaceLeaderBoardAsync(int userId, int raceId);
+    Task<LeaderboardDto> GetRaceLeaderBoardAsync(int userId, int raceId);
 }

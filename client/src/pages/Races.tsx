@@ -6,19 +6,11 @@ import { Link } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaTrophy, FaShoppingBasket, FaTachometerAlt, FaFlag } from 'react-icons/fa';
 
 export const Races: React.FC = () => {
-    const { races, fetchRaces, deleteRace, getRaceLeaderboard } = useRaces();
-    const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
-    const [leaderboard, setLeaderboard] = useState<any[]>([]);
+    const { races, fetchRaces, deleteRace } = useRaces();
 
     useEffect(() => {
         fetchRaces();
     }, [fetchRaces]);
-
-    const handleLeaderboard = async (raceId: number) => {
-        setSelectedRaceId(raceId);
-        const results = await getRaceLeaderboard(raceId);
-        setLeaderboard(results);
-    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -82,38 +74,15 @@ export const Races: React.FC = () => {
                                     </Link>
                                 )}
                                 {race.raceStatus.name === 'Finished' && (
-                                    <button onClick={() => handleLeaderboard(race.id)} className="text-purple-500 hover:text-purple-700">
+                                    <Link to={`/race/${race.id}/leaderboard`} className="text-purple-500 hover:text-purple-700">
                                         <FaTrophy size={20} />
-                                    </button>
+                                    </Link>
                                 )}
+
                             </div>
                         </div>
                     ))}
                 </div>
-
-                {/* Leaderboard Modal */}
-                {selectedRaceId && (
-                    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                            <h2 className="text-xl font-bold text-gray-800 mb-4">Leaderboard</h2>
-                            <button onClick={() => setSelectedRaceId(null)} className="absolute top-2 right-2 text-gray-600 hover:text-gray-800">
-                                ✖
-                            </button>
-                            {leaderboard.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {leaderboard.map((entry, index) => (
-                                        <li key={index} className="border-b py-2 flex justify-between">
-                                            <span>{index + 1}. {entry.pigeonName}</span>
-                                            <span className="text-gray-500">{entry.timeRecorded}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-600 text-center">No results available.</p>
-                            )}
-                        </div>
-                    </div>
-                )}
             </main>
             <Footer />
         </div>

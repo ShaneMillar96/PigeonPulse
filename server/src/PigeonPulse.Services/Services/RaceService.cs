@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Enums;
 using PigeonPulse.Dal.Models.application;
+using PigeonPulse.Services.Dtos.Leaderboard;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
 
@@ -142,14 +143,22 @@ namespace PigeonPulse.Services.Services
             return _mapper.Map<RaceDto>(race);
         }
 
-        public async Task<List<RaceResultDto>> GetRaceLeaderBoardAsync(int userId, int raceId)
+        public async Task<LeaderboardDto> GetRaceLeaderBoardAsync(int userId, int raceId)
         {
-            var results = await _context.RaceResults
-                .Include(x => x.Pigeon)
-                .Where(r => r.RaceId == raceId)
-                .OrderBy(r => r.FinishTime)
-                .ToListAsync();
-            return _mapper.Map<List<RaceResultDto>>(results);
+            var race = await _context.Races
+                .Include(r => r.RaceResults)
+                .ThenInclude(rr => rr.Pigeon)
+                .FirstOrDefaultAsync(r => r.Id == raceId);
+    
+            if (race == null) throw new Exception("Race not found.");
+
+            var leaderboardDto = _mapper.Map<LeaderboardDto>(race);
+
+            leaderboardDto.Results = leaderboardDto.Results
+                .OrderBy(r => r.TimeRecorded)
+                .ToList();
+
+            return leaderboardDto;
         }
     }
 }

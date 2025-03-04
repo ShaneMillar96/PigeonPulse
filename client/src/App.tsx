@@ -9,6 +9,8 @@ import { Races } from './pages/Races';
 import { AddRace } from './pages/AddRace';
 import { RaceBasket } from './pages/RaceBasket';
 import { RecordRaceResults } from './pages/RecordRaceResults';
+import { Leaderboard } from './pages/Leaderboard';
+
 function App() {
     return (
         <Router>
@@ -24,6 +26,7 @@ function App() {
                 <Route path="/edit-race/:raceId" element={<AddRace />} />
                 <Route path="/race/:raceId/basket" element={<RaceBasket />} />
                 <Route path="/race/:raceId/results" element={<RecordRaceResults />} />
+                <Route path="/race/:raceId/leaderboard" element={<Leaderboard />} />
             </Routes>
         </Router>
     );

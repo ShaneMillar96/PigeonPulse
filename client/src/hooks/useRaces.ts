@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 export const useRaces = () => {
     const [races, setRaces] = useState<Race[]>([]);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -80,13 +81,14 @@ export const useRaces = () => {
     const getRaceLeaderboard = async (raceId: number) => {
         try {
             const response = await axiosInstance.get(`/race/${raceId}/leaderboard`);
-            return Array.isArray(response.data) ? response.data : [];
+            return Array.isArray(response.data.results) ? response.data : { raceName: "Unknown Race", results: [] };
         } catch (err: any) {
-            setError('Error fetching leaderboard');
-            toast.error('Failed to fetch leaderboard');
-            return [];
+            console.error("Error fetching leaderboard:", err);
+            toast.error("Failed to fetch leaderboard");
+            return { raceName: "Error Loading Race", results: [] };
         }
     };
+
 
     // Fetch race baskets
     const fetchBasketsByRaceId = async (raceId: number) => {
