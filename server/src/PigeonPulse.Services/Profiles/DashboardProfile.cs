@@ -27,5 +27,19 @@ public class DashboardProfile : Profile
                     ? (src.RaceResults.Max(rr => rr.FinishTime) - src.RaceResults.Min(rr => rr.FinishTime)).ToString(
                         @"hh\:mm\:ss")
                     : "00:00:00"));
+
+        // Mapping Most Active Pigeon
+        CreateMap<Pigeon, MostActivePigeonDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.RingNumber, opt => opt.MapFrom(src => src.RingNumber))
+            .ForMember(dest => dest.RaceCount, opt => opt.MapFrom(src => src.RaceResults.Count));
+
+        // Mapping Best Long Range Pigeon
+        CreateMap<Pigeon, BestLongRangePigeonDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.RingNumber, opt => opt.MapFrom(src => src.RingNumber))
+            .ForMember(dest => dest.RaceDistance, opt => opt.MapFrom(src => src.RaceResults.Max(rr => rr.Race.Distance)));
+        
+        
     }
 }

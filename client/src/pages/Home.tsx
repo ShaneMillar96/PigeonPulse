@@ -4,7 +4,7 @@ import { Footer } from '../components/layout/Footer';
 import { useAuth } from '../hooks/useAuth';
 import PigeonLogo from '../../public/pigeonpulse-logo.png';
 import { Link } from 'react-router-dom';
-import { FaDove, FaFlagCheckered, FaTrophy } from 'react-icons/fa';
+import { FaDove, FaFlagCheckered, FaChartLine } from 'react-icons/fa';
 
 export const Home: React.FC = () => {
     const { isAuthenticated } = useAuth(); // Check if user is authenticated
@@ -26,6 +26,15 @@ export const Home: React.FC = () => {
                 {isAuthenticated() ? (
                     <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Link
+                            to="/dashboard"
+                            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition flex flex-col items-center"
+                        >
+                            <FaChartLine className="text-blue-500 text-4xl" />
+                            <h2 className="text-xl font-semibold mt-3">Dashboard</h2>
+                            <p className="text-gray-600 mt-2 text-sm">View analytics and insights on your races and pigeons.</p>
+                        </Link>
+                        
+                        <Link
                             to="/pigeons"
                             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition flex flex-col items-center"
                         >
@@ -41,15 +50,6 @@ export const Home: React.FC = () => {
                             <FaFlagCheckered className="text-green-500 text-4xl" />
                             <h2 className="text-xl font-semibold mt-3">Race Management</h2>
                             <p className="text-gray-600 mt-2 text-sm">Create and participate in races.</p>
-                        </Link>
-
-                        <Link
-                            to="/leaderboard"
-                            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition flex flex-col items-center"
-                        >
-                            <FaTrophy className="text-yellow-500 text-4xl" />
-                            <h2 className="text-xl font-semibold mt-3">Leaderboard</h2>
-                            <p className="text-gray-600 mt-2 text-sm">View rankings and performance stats.</p>
                         </Link>
                     </div>
                 ) : (

@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { FaTrophy, FaDove, FaChartLine } from 'react-icons/fa';
+import { FaTrophy, FaDove, FaChartLine, FaClock, FaPlane, FaFlagCheckered } from 'react-icons/fa';
+import RaceParticipationChart from '../components/charts/RaceParticipationChart';
+import PigeonActivityChart from '../components/charts/PigeonActivityChart';
+import StatCard from '../components/common/StatCard';
 
 export const Dashboard: React.FC = () => {
     const { dashboardData, fetchDashboard, loading, error } = useDashboard();
-    const navigate = useNavigate();
-
+    
     useEffect(() => {
         fetchDashboard();
-    }, [fetchDashboard]);
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -22,41 +23,50 @@ export const Dashboard: React.FC = () => {
                 {loading && <p className="text-center text-gray-600">Loading dashboard data...</p>}
                 {error && <p className="text-center text-red-500">{error}</p>}
 
-                {dashboardData && !loading && !error && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Best Pigeon */}
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <FaDove className="text-blue-500 text-4xl mr-4" />
-                            <div>
-                                <h2 className="text-lg font-semibold">🏅 Best Pigeon</h2>
-                                <p className="text-gray-600">{dashboardData.bestPigeon.name} ({dashboardData.bestPigeon.ringNumber})</p>
-                                <p className="text-sm text-gray-500">Fastest Time: {dashboardData.bestPigeon.fastestTime}</p>
-                            </div>
+                {dashboardData && (
+                    <>
+                        {/* Stat Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            <StatCard icon={<FaDove/>} title="Best Pigeon"
+                                      text={`${dashboardData.bestPigeon.name} (${dashboardData.bestPigeon.ringNumber})`}/>
+                            <StatCard icon={<FaTrophy/>} title="Best Race" text={dashboardData.bestRace.name}/>
+                            <StatCard icon={<FaChartLine/>} title="Overview"
+                                      text={`Pigeons: ${dashboardData.totalPigeons}, Races: ${dashboardData.totalRaces}`}/>
+                            <StatCard icon={<FaFlagCheckered/>} title="Best Long-Range Pigeon"
+                                      text={`${dashboardData.bestLongRangePigeon.name} (${dashboardData.bestLongRangePigeon.ringNumber}) - ${dashboardData.bestLongRangePigeon.raceDistance} km`}/>
+                            <StatCard icon={<FaPlane/>} title="Most Active Pigeon"
+                                      text={`${dashboardData.mostActivePigeon.name} (${dashboardData.mostActivePigeon.ringNumber}) - ${dashboardData.mostActivePigeon.raceCount} Races`}/>
                         </div>
 
-                        {/* Best Race */}
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <FaTrophy className="text-yellow-500 text-4xl mr-4" />
-                            <div>
-                                <h2 className="text-lg font-semibold">🏆 Best Race</h2>
-                                <p className="text-gray-600">{dashboardData.bestRace.name}</p>
-                                <p className="text-sm text-gray-500">Most Competitive Time Gap: {dashboardData.bestRace.timeGap}</p>
-                            </div>
+                        {/* Upcoming Races */}
+                        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                            <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                <FaClock className="text-blue-500 text-2xl mr-2"/>
+                                Upcoming Races
+                            </h2>
+                            <table className="w-full border-collapse border border-gray-300">
+                                <thead>
+                                <tr className="bg-gray-200">
+                                    <th className="border border-gray-300 px-4 py-2">Race Name</th>
+                                    <th className="border border-gray-300 px-4 py-2">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {dashboardData.upcomingRaces.map((race, index) => (
+                                    <tr key={index} className="border border-gray-300">
+                                        <td className="px-4 py-2">{race.name}</td>
+                                        <td className="px-4 py-2">{new Date(race.date).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
                         </div>
-
-                        {/* Summary Statistics */}
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <FaChartLine className="text-green-500 text-4xl mr-4" />
-                            <div>
-                                <h2 className="text-lg font-semibold">📊 Summary</h2>
-                                <p className="text-gray-600">Total Pigeons: {dashboardData.totalPigeons}</p>
-                                <p className="text-gray-600">Total Races: {dashboardData.totalRaces}</p>
-                            </div>
-                        </div>
-                    </div>
+                    </>
                 )}
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };
+
+export default Dashboard;

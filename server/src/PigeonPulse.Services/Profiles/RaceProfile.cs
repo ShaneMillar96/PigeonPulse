@@ -21,6 +21,9 @@ public class RaceProfile : Profile
         
         CreateMap<Race, RaceDto>();
         
+        CreateMap<Race, RaceSummaryDto>();
+
+        
         CreateMap<RaceResult, RaceResultDto>()
             .ForMember(d => d.TimeRecorded, o => o.MapFrom(x => x.FinishTime.ToTimeSpan())); 
         

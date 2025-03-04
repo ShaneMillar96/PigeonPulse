@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PigeonPulse.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d9011c88c6f775623a8e6e2ca1a5f90dabbf50e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9dca747e83e1a7f2a9bbf29ff04b8156b94594fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("PigeonPulse.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PigeonPulse.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
