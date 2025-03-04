@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Enums;
+using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Dashboard;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
@@ -32,7 +34,7 @@ public class DashboardService : IDashboardService
     var bestRaceDto = _mapper.Map<BestRaceDto>(bestRace);
 
     // New Insights
-    var upcomingRaces = races.Where(r => r.Date >= DateTime.UtcNow)
+    var upcomingRaces = races.Where(r => r.Date >= DateTime.UtcNow && r.RaceStatusId != (int)RaceStatusEnum.Finished)
                               .OrderBy(r => r.Date)
                               .Take(5)
                               .Select(r => _mapper.Map<RaceSummaryDto>(r))

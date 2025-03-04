@@ -4,7 +4,7 @@ import { usePigeons } from '../hooks/usePigeons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { FaCheckCircle, FaArrowLeft } from 'react-icons/fa';
+import {FaCheckCircle, FaArrowLeft, FaTrash} from 'react-icons/fa';
 
 export const RecordRaceResults: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
@@ -123,9 +123,9 @@ export const RecordRaceResults: React.FC = () => {
                                         <td className="p-3 border text-center">
                                             <button
                                                 onClick={() => handleRemoveResult(result.id)}
-                                                className="text-red-500 hover:text-red-700"
+                                                className="text-red-500 hover:text-red-700 transition"
                                             >
-                                                🗑 Remove
+                                                <FaTrash />
                                             </button>
                                         </td>
                                     </tr>
