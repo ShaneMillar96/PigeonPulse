@@ -31,6 +31,21 @@ export const usePigeons = () => {
         }
     }, [pageNumber, hasMore, loading, searchQuery]);
 
+    // fetch list of all pigeons
+    const fetchAllPigeons = async () => {
+        try {
+            const response = await axiosInstance.get(`/pigeon`, {
+                params: { pageSize: 1000, pageNumber: 1 }, // Large limit to fetch all pigeons
+            });
+            return response.data.data; // Return only pigeon list
+        } catch (error) {
+            console.error('Error fetching all pigeons:', error);
+            return [];
+        }
+    };
+
+
+
     // Search pigeons by ring number
     const searchPigeons = async (query: string) => {
         setSearchQuery(query);
@@ -82,5 +97,5 @@ export const usePigeons = () => {
         }
     };
 
-    return { pigeons, searchPigeons, loading, deletePigeon, hasMore, error, fetchPigeons, createPigeon };
+    return { pigeons, searchPigeons, loading, deletePigeon, hasMore, error, fetchPigeons, fetchAllPigeons, createPigeon };
 };

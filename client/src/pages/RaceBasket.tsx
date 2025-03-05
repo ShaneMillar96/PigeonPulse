@@ -5,19 +5,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { FaTrash, FaPlusCircle, FaCheckCircle } from 'react-icons/fa';
+import {Pigeon} from "../interfaces/race.ts";
 
 export const RaceBasket: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
     const { fetchBasketsByRaceId, addPigeonToBasket, removePigeonFromBasket, updateRaceStatus } = useRaces();
-    const { pigeons, fetchPigeons } = usePigeons();
+    const { fetchAllPigeons } = usePigeons();
     const navigate = useNavigate();
 
     const [baskets, setBaskets] = useState<any[]>([]);
+    const [pigeons, setPigeons] = useState<Pigeon[]>([]);
+
     const [selectedPigeonId, setSelectedPigeonId] = useState<number | null>(null);
     const [canCompleteBasket, setCanCompleteBasket] = useState(false);
 
     useEffect(() => {
-        fetchPigeons();
+        fetchAllPigeons().then(setPigeons); // Fetch all pigeons for selection
         if (raceId) {
             fetchBasketsByRaceId(Number(raceId)).then((data) => {
                 setBaskets(data);
@@ -25,6 +28,7 @@ export const RaceBasket: React.FC = () => {
             });
         }
     }, [raceId]);
+
 
     // Get only pigeons that have NOT been basketed yet
     const availablePigeons = pigeons.filter(
