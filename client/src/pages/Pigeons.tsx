@@ -1,13 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { usePigeons } from '../hooks/usePigeons';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import PlaceHolder from '../../public/placeholder-pigeon.png';
 
 export const Pigeons: React.FC = () => {
-    const { pigeons, fetchPigeons, deletePigeon, loading, error } = usePigeons();
+    const { pigeons, fetchPigeons, deletePigeon, loading, hasMore, searchPigeons } = usePigeons();
+    const [searchQuery, setSearchQuery] = useState('');
+    const observer = useRef<IntersectionObserver | null>(null);
+
+    // Handle search input changes
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+        searchPigeons(event.target.value); // Fetch pigeons based on search query
+    };
+
+    // Infinite scrolling: Load more when reaching bottom
+    const lastPigeonRef = useCallback(
+        (node: HTMLElement | null) => {
+            if (loading || !hasMore) return;
+            if (observer.current) observer.current.disconnect();
+            observer.current = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting) {
+                    fetchPigeons(); // Load next page
+                }
+            });
+            if (node) observer.current.observe(node);
+        },
+        [loading, hasMore, fetchPigeons]
+    );
 
     useEffect(() => {
         fetchPigeons();
@@ -16,7 +39,7 @@ export const Pigeons: React.FC = () => {
     const handleDelete = async (pigeonId: number) => {
         if (window.confirm('Are you sure you want to delete this pigeon?')) {
             await deletePigeon(pigeonId);
-            fetchPigeons();
+            searchPigeons(searchQuery); // Refresh list
         }
     };
 
@@ -25,8 +48,20 @@ export const Pigeons: React.FC = () => {
             <Navbar />
             <main className="flex-grow container mx-auto p-6">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">My Pigeons</h1>
-                {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
+                {/* Search Bar */}
+                <div className="relative mb-6 max-w-lg mx-auto">
+                    <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+                        placeholder="Search by ring number..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                    />
+                    <FaSearch className="absolute right-3 top-3 text-gray-500" />
+                </div>
+
+                {/* Display Pigeons */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Add Pigeon Button */}
                     <Link
@@ -37,9 +72,12 @@ export const Pigeons: React.FC = () => {
                         <p className="text-gray-500">Add New Pigeon</p>
                     </Link>
 
-                    {/* Display Pigeons */}
-                    {pigeons.map((pigeon) => (
-                        <div key={pigeon.id} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    {pigeons.map((pigeon, index) => (
+                        <div
+                            key={pigeon.id}
+                            ref={index === pigeons.length - 1 ? lastPigeonRef : null}
+                            className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center"
+                        >
                             <div className="w-24 h-24 mb-4">
                                 <img
                                     src={pigeon.imageUrl || PlaceHolder}
@@ -49,16 +87,6 @@ export const Pigeons: React.FC = () => {
                             </div>
                             <h2 className="text-2xl font-semibold text-gray-800">{pigeon.name}</h2>
                             <p className="text-gray-600">Ring Number: <span className="font-medium">{pigeon.ringNumber}</span></p>
-
-                            {/* Pigeon Details with Badges */}
-                            <div className="mt-2 flex space-x-2">
-                                <span className="px-3 py-1 text-sm rounded-full bg-blue-200 text-blue-800">
-                                    {pigeon.color}
-                                </span>
-                                <span className="px-3 py-1 text-sm rounded-full bg-green-200 text-green-800">
-                                    {pigeon.strain}
-                                </span>
-                            </div>
 
                             {/* Action Buttons */}
                             <div className="flex space-x-4 mt-4">
@@ -75,6 +103,13 @@ export const Pigeons: React.FC = () => {
                         </div>
                     ))}
                 </div>
+
+                {/* Loading Spinner for Infinite Scroll */}
+                {loading && (
+                    <div className="flex justify-center my-4">
+                        <div className="loader border-t-4 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                    </div>
+                )}
             </main>
             <Footer />
         </div>

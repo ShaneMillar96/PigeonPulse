@@ -28,8 +28,6 @@ namespace PigeonPulse.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var pigeons = await _pigeonService.GetPigeonsByUserIdAsync(userId, pagination);
-            
-            
             return Ok(pigeons);
         }
 
