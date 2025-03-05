@@ -1,5 +1,6 @@
 using AutoMapper;
 using PigeonPulse.Dal.Models.application;
+using PigeonPulse.Services.Dtos.Dashboard;
 using PigeonPulse.Services.Dtos.Leaderboard;
 using PigeonPulse.Services.Dtos.Race;
 
@@ -20,9 +21,6 @@ public class RaceProfile : Profile
             .ForMember(d => d.Results, opt => opt.MapFrom(x => x.RaceResults));
         
         CreateMap<Race, RaceDto>();
-        
-        CreateMap<Race, RaceSummaryDto>();
-
         
         CreateMap<RaceResult, RaceResultDto>()
             .ForMember(d => d.TimeRecorded, o => o.MapFrom(x => x.FinishTime.ToTimeSpan())); 

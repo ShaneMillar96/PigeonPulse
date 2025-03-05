@@ -6,6 +6,5 @@ namespace PigeonPulse.Services.Interfaces;
 public interface IUserService
 {
     Task<UserDto> RegisterAsync(RegisterDto user);
-    Task<UserDto> LoginAsync(LoginDto user);
-    Task<UserDto?> GetUserByIdAsync(int id);
+    Task<string?> LoginAsync(LoginDto userDto);
 }

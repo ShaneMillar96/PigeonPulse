@@ -40,6 +40,6 @@ public class DashboardProfile : Profile
             .ForMember(dest => dest.RingNumber, opt => opt.MapFrom(src => src.RingNumber))
             .ForMember(dest => dest.RaceDistance, opt => opt.MapFrom(src => src.RaceResults.Max(rr => rr.Race.Distance)));
         
-        
+        CreateMap<Race, RaceSummaryDto>();
     }
 }

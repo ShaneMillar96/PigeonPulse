@@ -1,6 +1,6 @@
-namespace PigeonPulse.Api.Models.Request;
+namespace PigeonPulse.Api.Models.Request.Account;
 
-public class RegisterRequest
+public class RegisterUserRequestModel
 {
     public string Username { get; set; }
     public string Email { get; set; }

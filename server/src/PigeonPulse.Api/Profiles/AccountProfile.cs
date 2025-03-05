@@ -1,5 +1,6 @@
 using AutoMapper;
 using PigeonPulse.Api.Models.Request;
+using PigeonPulse.Api.Models.Request.Account;
 using PigeonPulse.Services.Dtos.Account;
 
 namespace PigeonPulse.Api.Profiles;
@@ -18,8 +19,8 @@ public class AccountProfile : Profile
 
     private void ConfigureModelToDto()
     {
-        CreateMap<RegisterRequest, RegisterDto>();
-        CreateMap<LoginRequest, LoginDto>();
+        CreateMap<RegisterUserRequestModel, RegisterDto>();
+        CreateMap<LoginUserRequestModel, LoginDto>();
 
     }
 }

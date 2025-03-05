@@ -1,10 +1,91 @@
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+# Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
+!packages/*/build/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+*_i.c
+*_p.c
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.log
+*.scc
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+*.vsp
+*.vspx
+
+# Guidance Automation Toolkit
+*.gpState
+
 # .NET Core Build Artifacts
 bin/
 obj/
 *.csproj.user
 *.sln.DotSettings.user
-*.suo
-*.user
+
+# Click-Once directory
+publish/
+
+# Others
+sql/
+*.Cache
+ClientBin/
+[Ss]tyle[Cc]op.*
+~$*
+*~
+*.dbmdl
+*.[Pp]ublish.xml
+*.pfx
+*.publishsettings
+
+# Publish Web Output
+*.Publish.xml
+*.pubxml
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
 # Docker and Database Files
 database/postgres_data/
@@ -19,16 +100,6 @@ docker-compose.override.yml
 *.log
 *.tmp
 *.cache
-
-
-# Build results
-
-[Dd]ebug/
-[Rr]elease/
-x64/
-build/
-[Bb]in/
-[Oo]bj/
 
 # Dependency Folders
 packages/
@@ -47,10 +118,18 @@ Thumbs.db
 test-results/
 coverage/
 
-# Publish Output
-publish/
+# NuGet Packages
+.nuget/
 
-# Additional files from the image (specific to your project structure)
+# Visual Studio temporary files
+.vs/
+
+# JetBrains Rider IDE files
+.idea/
+
+# Cache files
+*.cache
+
 PigeonPulse.Api.csproj_AssemblyInfoInputs.cache
 PigeonPulse.Api.csproj_AssemblyReference.cache
 PigeonPulse.Api.csproj_CoreCompileInputs.cache

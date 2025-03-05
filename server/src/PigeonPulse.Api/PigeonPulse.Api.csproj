@@ -19,4 +19,11 @@
     <ProjectReference Include="..\PigeonPulse.Services\PigeonPulse.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\View\Leaderboard\" />
+    <Folder Include="Models\View\Pigeon\" />
+    <Folder Include="Models\View\Race\" />
+    <Folder Include="Models\View\User\" />
+  </ItemGroup>
+
 </Project>

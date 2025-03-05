@@ -1,4 +1,4 @@
-namespace PigeonPulse.Services.Dtos.Race;
+namespace PigeonPulse.Services.Dtos.Dashboard;
 
 public class RaceSummaryDto
 {

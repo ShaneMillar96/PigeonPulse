@@ -1,5 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Account;
@@ -12,11 +17,15 @@ namespace PigeonPulse.Services.Services
     {
         private readonly PigeonPulseDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public UserService(PigeonPulseDbContext context, IMapper mapper)
+
+        public UserService(PigeonPulseDbContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
+            _configuration = configuration;
+
         }
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
@@ -28,18 +37,35 @@ namespace PigeonPulse.Services.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> LoginAsync(LoginDto userDto)
+        public async Task<string?> LoginAsync(LoginDto userDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.PasswordHash))
                 throw new Exception("Invalid credentials");
-            return _mapper.Map<UserDto>(user);
+            
+            return GenerateJwtToken(_mapper.Map<UserDto>(user));
         }
 
-        public async Task<UserDto?> GetUserByIdAsync(int id)
+        private string GenerateJwtToken(UserDto user)
         {
-            var user = await _context.Users.FindAsync(id);
-            return user == null ? null : _mapper.Map<UserDto>(user);
+            var jwtSettings = _configuration.GetSection("Jwt");
+            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            var creds = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(int.Parse(jwtSettings["ExpiryInMinutes"])),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

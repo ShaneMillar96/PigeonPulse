@@ -550,7 +550,9 @@
         "dependencies": {
           "AutoMapper": "13.0.1",
           "BCrypt.Net-Next": "4.0.3",
-          "PigeonPulse.Dal": "1.0.0"
+          "Microsoft.IdentityModel.Tokens": "8.6.0",
+          "PigeonPulse.Dal": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "8.6.0"
         },
         "compile": {
           "bin/placeholder/PigeonPulse.Services.dll": {}
