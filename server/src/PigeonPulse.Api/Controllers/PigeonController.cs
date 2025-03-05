@@ -2,7 +2,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PigeonPulse.Api.Controllers.Base;
 using PigeonPulse.Api.Models.Request.Pigeon;
-using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Interfaces;
+using PigeonPulse.Services.Dtos.Pagination;
 using PigeonPulse.Services.Dtos.Pigeon;
 using PigeonPulse.Services.Interfaces;
 
@@ -15,7 +16,7 @@ namespace PigeonPulse.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IPigeonService _pigeonService;
 
-        public PigeonController(PigeonPulseDbContext context, IPigeonService pigeonService, IMapper mapper)
+        public PigeonController(IPigeonPulseDbContext context, IPigeonService pigeonService, IMapper mapper)
             : base(context)
         {
             _pigeonService = pigeonService;
@@ -23,10 +24,12 @@ namespace PigeonPulse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPigeons()
+        public async Task<IActionResult> GetPigeons([FromQuery] PaginationDto pagination)
         {
             var userId = GetCurrentUserId();
-            var pigeons = await _pigeonService.GetPigeonsByUserIdAsync(userId);
+            var pigeons = await _pigeonService.GetPigeonsByUserIdAsync(userId, pagination);
+            
+            
             return Ok(pigeons);
         }
 

@@ -5,7 +5,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Interfaces;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Account;
 using PigeonPulse.Services.Dtos.User;
@@ -15,12 +15,12 @@ namespace PigeonPulse.Services.Services
 {
     public class UserService : IUserService
     {
-        private readonly PigeonPulseDbContext _context;
+        private readonly IPigeonPulseDbContext _context;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
 
-        public UserService(PigeonPulseDbContext context, IMapper mapper, IConfiguration configuration)
+        public UserService(IPigeonPulseDbContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -32,14 +32,14 @@ namespace PigeonPulse.Services.Services
         {
             var user = _mapper.Map<User>(registerDto);
       
-            _context.Users.Add(user);
+            await _context.AddAsync(user);
             await _context.SaveChangesAsync();
             return _mapper.Map<UserDto>(user);
         }
 
         public async Task<string?> LoginAsync(LoginDto userDto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email);
+            var user = await _context.Get<User>().FirstOrDefaultAsync(u => u.Email == userDto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.PasswordHash))
                 throw new Exception("Invalid credentials");
             

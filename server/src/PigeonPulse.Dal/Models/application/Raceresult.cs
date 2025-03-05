@@ -6,7 +6,7 @@ using PigeonPulse.Dal.Interfaces;
 namespace PigeonPulse.Dal.Models.application;
 
 [Table("race_results")]
-[Index("RaceId", "PigeonId", Name = "race_results_race_id_pigeon_id_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("RaceId", "PigeonId", Name = "race_results_race_id_pigeon_id_key", IsUnique = true)]
 public partial class RaceResult : ICreatedByTracking
 {
     [Key]

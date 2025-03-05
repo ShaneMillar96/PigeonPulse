@@ -156,7 +156,14 @@ PigeonPulse.Services.csproj_AssemblyReference.cache
 # Ignore build output directories
 server/src/PigeonPulse.Api/obj/
 server/src/PigeonPulse.Services/obj/
+server/src/PigeonPulse.Dal/obj/
+
+# Ignore all `obj/` folders globally
+**/obj/
+
+
 
 # Ignore cache files
 *.AssemblyInfo.cs
 *.AssemblyReference.cache
+

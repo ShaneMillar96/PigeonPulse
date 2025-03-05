@@ -1,17 +1,17 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Interfaces;
 
 namespace PigeonPulse.Api.Controllers.Base;
 
-[Authorize] // Require authentication by default
+[Authorize] 
 [ApiController]
 public class PigeonPulseBaseController : ControllerBase
 {
-    private readonly PigeonPulseDbContext _context;
+    private readonly IPigeonPulseDbContext _context;
 
-    public PigeonPulseBaseController(PigeonPulseDbContext context)
+    public PigeonPulseBaseController(IPigeonPulseDbContext context)
     {
         _context = context;
     }

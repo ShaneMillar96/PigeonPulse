@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace PigeonPulse.Dal.Models.application;
 
 [Table("users")]
-[Index("Email", Name = "users_email_key", IsUnique = true)]
-[Index("Username", Name = "users_username_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Email", Name = "users_email_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Username", Name = "users_username_key", IsUnique = true)]
 public partial class User
 {
     [Key]

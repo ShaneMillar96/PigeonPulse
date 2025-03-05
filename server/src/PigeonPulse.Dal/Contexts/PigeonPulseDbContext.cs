@@ -6,14 +6,16 @@ using PigeonPulse.Dal.Interfaces;
 
 namespace PigeonPulse.Dal.Contexts;
 
-public partial class PigeonPulseDbContext : DbContext
+public partial class PigeonPulseDbContext : BaseContext, IPigeonPulseDbContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly string? _connectionString;
 
-    public PigeonPulseDbContext(DbContextOptions<PigeonPulseDbContext> options, IHttpContextAccessor httpContextAccessor)
+    public PigeonPulseDbContext(IHttpContextAccessor httpContextAccessor, DbContextOptions<PigeonPulseDbContext> options, string? connectionString = null)
         : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
+        _connectionString = connectionString;
     }
 
     public virtual DbSet<User> Users { get; set; }
@@ -21,7 +23,6 @@ public partial class PigeonPulseDbContext : DbContext
     public virtual DbSet<Race> Races { get; set; }
     public virtual DbSet<RaceResult> RaceResults { get; set; }
     public virtual DbSet<Basket> Baskets { get; set; }
-    
     public virtual DbSet<RaceStatus> RaceStatuses { get; set; }
 
     public int GetCurrentUserId()

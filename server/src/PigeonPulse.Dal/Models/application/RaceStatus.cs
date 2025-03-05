@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace PigeonPulse.Dal.Models.application;
 
 [Table("race_status")]
-[Index("Name", Name = "race_status_name_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Name", Name = "race_status_name_key", IsUnique = true)]
 public partial class RaceStatus
 {
     [Key]

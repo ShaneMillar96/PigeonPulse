@@ -1,26 +1,32 @@
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Contexts;
+using PigeonPulse.Dal.Interfaces;
 using PigeonPulse.Services.Interfaces;
 using PigeonPulse.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using PigeonPulse.Dal;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PigeonPulseDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(EnvironmentVariables.DbConnectionString));
+builder.Services.AddScoped<IPigeonPulseDbContext, PigeonPulseDbContext>();
+
 builder.Services.AddAutoMapper(config => config.AllowNullCollections = true, typeof(Program).Assembly,
     typeof(UserService).Assembly, typeof(PigeonService).Assembly, typeof(RaceService).Assembly, typeof(DashboardService).Assembly);
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPigeonService, PigeonService>();
 builder.Services.AddScoped<IRaceService, RaceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-
+builder.Services.AddScoped<IPaginationService, PaginationService>();
 
 // Add IHttpContextAccessor for retrieving user context
 builder.Services.AddHttpContextAccessor();
@@ -72,7 +78,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAllOrigins");
-app.UseAuthentication(); // Add before UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapControllers();
