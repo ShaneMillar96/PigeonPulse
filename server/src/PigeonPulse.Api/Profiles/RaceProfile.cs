@@ -1,6 +1,7 @@
 using AutoMapper;
 using PigeonPulse.Api.Models.Request.Race;
 using PigeonPulse.Api.Models.View;
+using PigeonPulse.Api.Models.View.Race;
 using PigeonPulse.Services.Dtos.Race;
 
 namespace PigeonPulse.Api.Profiles;

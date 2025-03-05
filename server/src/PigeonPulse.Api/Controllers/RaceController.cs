@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PigeonPulse.Api.Controllers.Base;
 using PigeonPulse.Api.Models.Request.Race;
 using PigeonPulse.Api.Models.View;
+using PigeonPulse.Api.Models.View.Race;
 using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Services.Dtos.Race;
 using PigeonPulse.Services.Interfaces;
@@ -31,6 +32,7 @@ public class RaceController : PigeonPulseBaseController
     {
         var currentUserId = GetCurrentUserId();
         if (currentUserId == 0) return Unauthorized();
+        
         var races = await _raceService.GetAllRacesAsync(currentUserId);
         return Ok(_mapper.Map<List<RaceViewModel>>(races));
     }
@@ -39,8 +41,9 @@ public class RaceController : PigeonPulseBaseController
     public async Task<IActionResult> CreateRace([FromBody] CreateRaceRequest request)
     {
         var userId = GetCurrentUserId();
-        var race = await _raceService.CreateRaceAsync(userId, _mapper.Map<CreateRaceDto>(request));
-        return CreatedAtAction(nameof(GetRaceById), new { raceId = race.Id }, race);
+        var raceId = await _raceService.CreateRaceAsync(userId, _mapper.Map<CreateRaceDto>(request));
+        
+        return CreatedAtAction(nameof(GetRaceById), new { raceId }, raceId);
     }
 
     [HttpGet("{raceId}")]
@@ -54,36 +57,36 @@ public class RaceController : PigeonPulseBaseController
     public async Task<IActionResult> UpdateRace(int raceId, [FromBody] UpdateRaceRequest request)
     {
         var userId = GetCurrentUserId();
-        var race = await _raceService.UpdateRaceAsync(userId, raceId, _mapper.Map<UpdateRaceDto>(request));
-        return Ok(race);
+        var updated = await _raceService.UpdateRaceAsync(userId, raceId, _mapper.Map<UpdateRaceDto>(request));
+        if (updated) return Ok();
+        return NotFound($"Race with id {raceId} not found");
     }
 
     [HttpDelete("{raceId}")]
     public async Task<IActionResult> DeleteRace(int raceId)
     {
         var userId = GetCurrentUserId();
-        await _raceService.DeleteRaceAsync(userId, raceId);
-        return NoContent();
+        var deleted = await _raceService.DeleteRaceAsync(userId, raceId);
+        if (deleted) return NoContent();
+        return NotFound($"Race with id {raceId} not found");
     }
 
     [HttpPost("{raceId}/results")]
     public async Task<IActionResult> AddRaceResult([FromBody] CreateRaceResultRequest request)
     {
-        if (request.TimeRecorded == default)
-        {
-            return BadRequest("TimeRecorded must be in HH:mm:ss format.");
-        }
         var userId = GetCurrentUserId();
         var result = await _raceService.AddRaceResultAsync(userId, _mapper.Map<CreateRaceResultDto>(request));
-        return Ok(result);
+        
+        return Ok(_mapper.Map<RaceResultViewModel>(result));
     }
     
     [HttpDelete("{raceId}/results/{resultId}")]
     public async Task<IActionResult> RemoveRaceResult(int raceId, int resultId)
     {
         var userId = GetCurrentUserId();
-        await _raceService.RemoveRaceResultAsync(userId, raceId, resultId);
-        return NoContent();
+        var deleted = await _raceService.RemoveRaceResultAsync(userId, raceId, resultId);
+        if (deleted) return NoContent();
+        return NotFound($"Race Result with id {resultId} not found");
     }
 
 
@@ -91,14 +94,14 @@ public class RaceController : PigeonPulseBaseController
     public async Task<IActionResult> GetRaceResults(int raceId)
     {
         var results = await _raceService.GetRaceResultsByRaceIdAsync(raceId);
-        return Ok(results);
+        return Ok(_mapper.Map<List<RaceResultViewModel>>(results));
     }
 
     [HttpGet("pigeon/{pigeonId}/results")]
     public async Task<IActionResult> GetPigeonRaceResults(int pigeonId)
     {
         var results = await _raceService.GetRaceResultsByPigeonIdAsync(pigeonId);
-        return Ok(results);
+        return Ok(_mapper.Map<List<RaceResultViewModel>>(results));
     }
 
     [HttpGet("{raceId}/baskets")]

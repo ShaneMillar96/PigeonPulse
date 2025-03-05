@@ -7,11 +7,11 @@ public interface IRaceService
 {
     Task<List<RaceDto>> GetAllRacesAsync(int currentUser);
     Task<RaceDto> GetRaceByIdAsync(int raceId);
-    Task<RaceDto> CreateRaceAsync(int currentUser, CreateRaceDto raceDto);
-    Task<RaceDto> UpdateRaceAsync(int currentUser, int raceId, UpdateRaceDto raceDto);
-    Task DeleteRaceAsync(int currentUser, int raceId);
+    Task<int> CreateRaceAsync(int currentUser, CreateRaceDto raceDto);
+    Task<bool> UpdateRaceAsync(int currentUser, int raceId, UpdateRaceDto raceDto);
+    Task<bool> DeleteRaceAsync(int currentUser, int raceId);
     Task<RaceResultDto> AddRaceResultAsync(int currentUser, CreateRaceResultDto raceResultDto);
-    Task RemoveRaceResultAsync(int currentUser, int raceId, int resultId);
+    Task<bool> RemoveRaceResultAsync(int currentUser, int raceId, int resultId);
     Task<List<RaceResultDto>> GetRaceResultsByPigeonIdAsync(int pigeonId);
     Task<List<RaceResultDto>> GetRaceResultsByRaceIdAsync(int raceId);
     Task<List<BasketDto>> GetBasketsByRaceIdAsync(int currentUser, int raceId);

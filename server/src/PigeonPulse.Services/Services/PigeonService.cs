@@ -25,16 +25,16 @@ namespace PigeonPulse.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<PigeonDto> CreatePigeonAsync(int userId, CreatePigeonDto pigeonDto)
+        public async Task<int> CreatePigeonAsync(int userId, CreatePigeonDto pigeonDto)
         {
             if (await _context.Get<Pigeon>().AnyAsync(p => p.RingNumber == pigeonDto.RingNumber))
                 throw new Exception("Pigeon with this ring number already exists.");
 
-            var pigeon = _mapper.Map<Pigeon>(pigeonDto);
-            pigeon.UserId = userId;
-            await _context.AddAsync(pigeon);
+            var newPigeon = _mapper.Map<Pigeon>(pigeonDto);
+            newPigeon.UserId = userId;
+            await _context.AddAsync(newPigeon);
             await _context.SaveChangesAsync();
-            return _mapper.Map<PigeonDto>(pigeon);
+            return newPigeon.Id;
         }
 
         public async Task<PaginatedDto<PigeonDto>> GetPigeonsByUserIdAsync(int userId, PaginationDto pagination)
@@ -58,25 +58,25 @@ namespace PigeonPulse.Services.Services
             return pigeon == null ? null : _mapper.Map<PigeonDto>(pigeon);
         }
 
-        public async Task<PigeonDto> UpdatePigeonAsync(int userId, int pigeonId, UpdatePigeonDto pigeonDto)
+        public async Task<bool> UpdatePigeonAsync(int userId, int pigeonId, UpdatePigeonDto pigeonDto)
         {
-            var pigeon = await _context.Get<Pigeon>().FirstOrDefaultAsync(p => p.Id == pigeonId && p.UserId == userId);
-            if (pigeon == null) throw new Exception("Pigeon not found.");
+            var currentPigeon = await _context.Get<Pigeon>().FirstOrDefaultAsync(p => p.Id == pigeonId && p.UserId == userId);
+            if (currentPigeon == null) return false;
+            
+            _mapper.Map(pigeonDto, currentPigeon);
 
-            pigeon.Name = pigeonDto.Name;
-            pigeon.Color = pigeonDto.Color;
-            pigeon.Strain = pigeonDto.Strain;
             await _context.SaveChangesAsync();
-            return _mapper.Map<PigeonDto>(pigeon);
+            return true;
         }
 
-        public async Task DeletePigeonAsync(int userId, int pigeonId)
+        public async Task<bool> DeletePigeonAsync(int userId, int pigeonId)
         {
             var pigeon = await _context.Get<Pigeon>().FirstOrDefaultAsync(p => p.Id == pigeonId && p.UserId == userId);
-            if (pigeon == null) throw new Exception("Pigeon not found.");
+            if (pigeon == null) return false;
 
             _context.Delete(pigeon);
             await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

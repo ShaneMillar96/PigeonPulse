@@ -1,4 +1,4 @@
-namespace PigeonPulse.Api.Models.View;
+namespace PigeonPulse.Api.Models.View.Race;
 
 public class RaceStatusViewModel
 {

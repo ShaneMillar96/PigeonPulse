@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using PigeonPulse.Dal.Contexts;
 using PigeonPulse.Dal.Enums;
+using PigeonPulse.Dal.Interfaces;
 using PigeonPulse.Dal.Models.application;
 using PigeonPulse.Services.Dtos.Leaderboard;
 using PigeonPulse.Services.Dtos.Race;
@@ -11,10 +11,10 @@ namespace PigeonPulse.Services.Services
 {
     public class RaceService : IRaceService
     {
-        private readonly PigeonPulseDbContext _context;
+        private readonly IPigeonPulseDbContext _context;
         private readonly IMapper _mapper;
 
-        public RaceService(PigeonPulseDbContext context, IMapper mapper)
+        public RaceService(IPigeonPulseDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -22,7 +22,7 @@ namespace PigeonPulse.Services.Services
 
         public async Task<List<RaceDto>> GetAllRacesAsync(int currentUser)
         {
-            var races = await _context.Races
+            var races = await _context.Get<Race>()
                 .Include(x => x.RaceStatus)
                 .Where(r => r.UserId == currentUser)
                 .ToListAsync();
@@ -31,66 +31,66 @@ namespace PigeonPulse.Services.Services
 
         public async Task<RaceDto> GetRaceByIdAsync(int raceId)
         {
-            var race = await _context.Races.FindAsync(raceId);
+            var race = await _context.Get<Race>().FirstOrDefaultAsync(r => r.Id == raceId);
             return _mapper.Map<RaceDto>(race);
         }
 
-        public async Task<RaceDto> CreateRaceAsync(int userId, CreateRaceDto raceDto)
+        public async Task<int> CreateRaceAsync(int userId, CreateRaceDto raceDto)
         {
-            var race = _mapper.Map<Race>(raceDto);
-            race.UserId = userId;
-            race.RaceStatusId = (int)RaceStatusEnum.New;
-            _context.Races.Add(race);
+            var newRace = _mapper.Map<Race>(raceDto);
+            newRace.UserId = userId;
+            newRace.RaceStatusId = (int)RaceStatusEnum.New;
+            await _context.AddAsync(newRace);
             await _context.SaveChangesAsync();
-            return _mapper.Map<RaceDto>(race);
+            return newRace.Id;
         }
 
-        public async Task<RaceDto> UpdateRaceAsync(int userId, int raceId, UpdateRaceDto raceDto)
+        public async Task<bool> UpdateRaceAsync(int userId, int raceId, UpdateRaceDto raceDto)
         {
-            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceId && r.UserId == userId);
-            if (race == null) throw new Exception("Race not found or not authorized to update.");
+            var currentRace = await _context.Get<Race>().FirstOrDefaultAsync(r => r.Id == raceId && r.UserId == userId);
+            if (currentRace == null) return false;
 
-            race.Name = raceDto.Name;
-            race.Date = raceDto.Date;
-            race.Distance = raceDto.Distance;
-            _context.Races.Update(race);
+            _mapper.Map(raceDto, currentRace);
+
             await _context.SaveChangesAsync();
-            return _mapper.Map<RaceDto>(race);
+            return true;
         }
 
-        public async Task DeleteRaceAsync(int userId, int raceId)
+        public async Task<bool> DeleteRaceAsync(int userId, int raceId)
         {
-            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceId && r.UserId == userId);
-            if (race == null) throw new Exception("Race not found or not authorized to delete.");
+            var race = await _context.Get<Race>().FirstOrDefaultAsync(r => r.Id == raceId && r.UserId == userId);
+            if (race == null) return false;
 
-            _context.Races.Remove(race);
+            _context.Delete(race);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<RaceResultDto> AddRaceResultAsync(int currentUser, CreateRaceResultDto raceResultDto)
         {
             var result = _mapper.Map<RaceResult>(raceResultDto);
             result.UserId = currentUser;
-            _context.RaceResults.Add(result);
+            await _context.AddAsync(result);
             await _context.SaveChangesAsync();
             return _mapper.Map<RaceResultDto>(result);
         }
         
-        public async Task RemoveRaceResultAsync(int currentUser, int raceId, int resultId)
+        public async Task<bool> RemoveRaceResultAsync(int currentUser, int raceId, int resultId)
         {
-            var result = await _context.RaceResults
+            var result = await _context.Get<RaceResult>()
                 .FirstOrDefaultAsync(r => r.Id == resultId && r.RaceId == raceId && r.UserId == currentUser);
 
-            if (result == null) throw new Exception("Race result not found or not authorized to remove.");
+            if (result == null) return false;
 
-            _context.RaceResults.Remove(result);
+            _context.Delete(result);
             await _context.SaveChangesAsync();
+            return true;
         }
 
 
         public async Task<List<RaceResultDto>> GetRaceResultsByPigeonIdAsync(int pigeonId)
         {
-            var results = await _context.RaceResults
+            var results = await _context.Get<RaceResult>()
                 .Where(r => r.PigeonId == pigeonId)
                 .ToListAsync();
             return _mapper.Map<List<RaceResultDto>>(results);
@@ -98,7 +98,7 @@ namespace PigeonPulse.Services.Services
 
         public async Task<List<RaceResultDto>> GetRaceResultsByRaceIdAsync(int raceId)
         {
-            var results = await _context.RaceResults
+            var results = await _context.Get<RaceResult>()
                 .Include(x => x.Pigeon)
                 .Where(r => r.RaceId == raceId)
                 .ToListAsync();
@@ -107,7 +107,7 @@ namespace PigeonPulse.Services.Services
 
         public async Task<List<BasketDto>> GetBasketsByRaceIdAsync(int currentUser, int raceId)
         {
-            var baskets = await _context.Baskets
+            var baskets = await _context.Get<Basket>()
                 .Include(x=>x.Pigeon)
                 .Where(b => b.RaceId == raceId && b.UserId == currentUser)
                 .ToListAsync();
@@ -119,23 +119,23 @@ namespace PigeonPulse.Services.Services
             var basket = _mapper.Map<Basket>(basketPigeonDto);
             basket.UserId = userId;
             basket.BasketedAt = DateTime.Now;
-            _context.Baskets.Add(basket);
+            await _context.AddAsync(basket);
             await _context.SaveChangesAsync();
             return _mapper.Map<BasketDto>(basket);
         }
 
         public async Task RemovePigeonFromBasketAsync(int currentUser, int basketId)
         {
-            var basket = await _context.Baskets.FirstOrDefaultAsync(b => b.Id == basketId && b.UserId == currentUser);
+            var basket = await _context.Get<Basket>().FirstOrDefaultAsync(b => b.Id == basketId && b.UserId == currentUser);
             if (basket == null) throw new Exception("Basket entry not found or not authorized to remove.");
 
-            _context.Baskets.Remove(basket);
+            _context.Delete(basket);
             await _context.SaveChangesAsync();
         }
 
         public async Task<RaceDto> UpdateRaceStatusAsync(int currentUser, UpdateRaceStatusDto raceStatusDto)
         {
-            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceStatusDto.RaceId && r.UserId == currentUser);
+            var race = await _context.Get<Race>().FirstOrDefaultAsync(r => r.Id == raceStatusDto.RaceId && r.UserId == currentUser);
             if (race == null) throw new Exception("Race not found or not authorized to update status.");
 
             race.RaceStatusId = raceStatusDto.StatusId;
@@ -145,7 +145,7 @@ namespace PigeonPulse.Services.Services
 
         public async Task<LeaderboardDto> GetRaceLeaderBoardAsync(int userId, int raceId)
         {
-            var race = await _context.Races
+            var race = await _context.Get<Race>()
                 .Include(r => r.RaceResults)
                 .ThenInclude(rr => rr.Pigeon)
                 .FirstOrDefaultAsync(r => r.Id == raceId);
