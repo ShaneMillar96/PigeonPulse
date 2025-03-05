@@ -167,3 +167,8 @@ server/src/PigeonPulse.Dal/obj/
 *.AssemblyInfo.cs
 *.AssemblyReference.cache
 
+# Ignore build output directories
+**/obj/
+**/bin/
+**/Debug/
+**/Release/

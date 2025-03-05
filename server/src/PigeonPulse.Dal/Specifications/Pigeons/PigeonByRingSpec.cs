@@ -14,7 +14,7 @@ public class PigeonByRingSpec : Specification<Pigeon>
     {
         if (string.IsNullOrEmpty(_ringNumber)) return ShowAll;
         
-        return x => x.RingNumber.ToLower().StartsWith(_ringNumber);
+        return x => x.RingNumber.ToLower().Contains(_ringNumber);
     }
 
 }
