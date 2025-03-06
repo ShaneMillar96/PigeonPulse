@@ -4,10 +4,10 @@ import { usePigeons } from '../hooks/usePigeons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { FaTrash, FaCheckCircle } from 'react-icons/fa';
-import { toast } from 'react-toastify'; // For error notifications
+import { FaPlus, FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
-import {Pigeon} from "../interfaces/race.ts"; // For animations
+import { Pigeon } from '../interfaces/race';
 
 export const RaceBasket: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
@@ -17,10 +17,7 @@ export const RaceBasket: React.FC = () => {
 
     const [baskets, setBaskets] = useState<any[]>([]);
     const [pigeons, setPigeons] = useState<Pigeon[]>([]);
-
-    const [selectedPigeonId, setSelectedPigeonId] = useState<number | null>(null);
     const [canCompleteBasket, setCanCompleteBasket] = useState(false);
-    const [isDraggingOver, setIsDraggingOver] = useState(false); 
 
     useEffect(() => {
         fetchAllPigeons().then(setPigeons);
@@ -36,31 +33,13 @@ export const RaceBasket: React.FC = () => {
         (pigeon) => !baskets.some((basket) => basket.pigeonId === pigeon.id)
     );
 
-    const handleDragStart = (event: React.DragEvent<HTMLDivElement>, pigeonId: number) => {
-        event.dataTransfer.setData('pigeonId', pigeonId.toString());
-    };
-
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setIsDraggingOver(true);
-    };
-
-    const handleDragLeave = () => {
-        setIsDraggingOver(false);
-    };
-
-    const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setIsDraggingOver(false);
-        const pigeonId = event.dataTransfer.getData('pigeonId');
-        if (!pigeonId || !raceId) return;
-
+    const handleAddPigeon = async (pigeonId: number) => {
+        if (!raceId) return;
         try {
-            await addPigeonToBasket(Number(raceId), Number(pigeonId));
+            await addPigeonToBasket(Number(raceId), pigeonId);
             const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
             setBaskets(updatedBaskets);
             setCanCompleteBasket(updatedBaskets.length > 0);
-            toast.success('Pigeon added to basket!');
         } catch (err) {
             toast.error('Failed to add pigeon to basket.');
         }
@@ -72,7 +51,6 @@ export const RaceBasket: React.FC = () => {
             const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
             setBaskets(updatedBaskets);
             setCanCompleteBasket(updatedBaskets.length > 0);
-            toast.success('Pigeon removed from basket.');
         } catch (err) {
             toast.error('Failed to remove pigeon.');
         }
@@ -96,105 +74,109 @@ export const RaceBasket: React.FC = () => {
             <main className="flex-grow container mx-auto p-6">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Manage Race Basket</h1>
 
-                {/* Pigeon Selection - Horizontal Scrollable Cards */}
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-lg font-semibold mb-3">Drag a Pigeon to Add</h2>
-                    {loading ? (
-                        <p className="text-center text-gray-500">Loading pigeons...</p>
-                    ) : (
-                        <div className="flex overflow-x-auto space-x-4 p-3 bg-gray-200 rounded-md">
-                            {availablePigeons.length === 0 ? (
-                                <p className="text-gray-600">No available pigeons.</p>
-                            ) : (
-                                availablePigeons.map((pigeon) => (
-                                    <motion.div
-                                        key={pigeon.id}
-                                        draggable
-                                        onDragStart={(e) => handleDragStart(e, pigeon.id)}
-                                        className="bg-white shadow-md rounded-md p-4 flex flex-col items-center cursor-grab w-32"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <img
-                                            src="/placeholder-pigeon.png"
-                                            alt={`Pigeon ${pigeon.name}`}
-                                            className="w-16 h-16 rounded-full mb-2"
-                                        />
-                                        <p className="text-sm font-medium">{pigeon.name}</p>
-                                        <p className="text-xs text-gray-500">Ring: {pigeon.ringNumber}</p>
-                                    </motion.div>
-                                ))
-                            )}
-                        </div>
-                    )}
+                {/* Dual-Pane Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Available Pigeons Pane */}
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h2 className="text-lg font-semibold mb-4 text-center">Available Pigeons</h2>
+                        {loading ? (
+                            <p className="text-center text-gray-500">Loading pigeons...</p>
+                        ) : availablePigeons.length === 0 ? (
+                            <p className="text-gray-600 text-center">No available pigeons.</p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <AnimatePresence>
+                                    {availablePigeons.map((pigeon) => (
+                                        <motion.div
+                                            key={pigeon.id}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            className="bg-gray-50 p-4 rounded-lg shadow-sm flex flex-col items-center relative"
+                                        >
+                                            <img
+                                                src="/placeholder-pigeon.png"
+                                                alt={`Pigeon ${pigeon.name}`}
+                                                className="w-16 h-16 rounded-full mb-2"
+                                            />
+                                            <p className="text-sm font-medium text-gray-800">{pigeon.name}</p>
+                                            <p className="text-xs text-gray-500">Ring: {pigeon.ringNumber}</p>
+                                            <motion.button
+                                                onClick={() => handleAddPigeon(pigeon.id)}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="mt-2 flex items-center bg-blue-500 text-white px-3 py-1 rounded shadow hover:bg-blue-600 transition"
+                                                aria-label={`Add ${pigeon.name} to basket`}
+                                            >
+                                                <FaPlus className="mr-1" />
+                                                Add
+                                            </motion.button>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Basketed Pigeons Pane */}
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h2 className="text-lg font-semibold mb-4 text-center">Pigeons in Basket</h2>
+                        {baskets.length === 0 ? (
+                            <p className="text-gray-600 text-center py-4">No pigeons in basket yet.</p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <AnimatePresence>
+                                    {baskets.map((basket) => (
+                                        <motion.div
+                                            key={basket.id}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            className="bg-gray-50 p-4 rounded-lg shadow-sm flex flex-col items-center relative"
+                                        >
+                                            <img
+                                                src="/placeholder-pigeon.png"
+                                                alt={`Pigeon ${basket.pigeonName}`}
+                                                className="w-16 h-16 rounded-full mb-2"
+                                            />
+                                            <p className="text-sm font-medium text-gray-800">{basket.pigeonName}</p>
+                                            <p className="text-xs text-gray-500">Ring: {basket.ringNumber}</p>
+                                            <motion.button
+                                                onClick={() => handleRemovePigeon(basket.id)}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="mt-2 flex items-center bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600 transition"
+                                                aria-label={`Remove ${basket.pigeonName} from basket`}
+                                            >
+                                                <FaTrash className="mr-1" />
+                                                Remove
+                                            </motion.button>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Basketed Pigeons - Droppable Area */}
-                <div
-                    className={`bg-white p-6 rounded-lg shadow-md min-h-32 flex flex-wrap gap-4 justify-center items-center transition-colors ${
-                        isDraggingOver ? 'border-4 border-green-300 bg-green-50' : ''
-                    }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    role="region"
-                    aria-label="Basketed pigeons drop area"
-                >
-                    <h2 className="text-lg font-semibold w-full text-center">Pigeons in the Race</h2>
-                    {baskets.length === 0 ? (
-                        <p className="text-gray-600 text-center py-4">No pigeons basketed yet.</p>
-                    ) : (
-                        <AnimatePresence>
-                            {baskets.map((basket) => (
-                                <motion.div
-                                    key={basket.id}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    className="bg-gray-50 p-4 rounded-lg shadow-md flex flex-col items-center relative w-32"
-                                >
-                                    <img
-                                        src="/placeholder-pigeon.png"
-                                        alt={`Pigeon ${basket.pigeonName}`}
-                                        className="w-16 h-16 rounded-full mb-2"
-                                    />
-                                    <p className="text-sm font-medium">{basket.pigeonName}</p>
-                                    <p className="text-xs text-gray-500">Ring: {basket.ringNumber}</p>
-                                    <button
-                                        onClick={() => handleRemovePigeon(basket.id)}
-                                        className="absolute top-1 right-1 text-red-500 hover:text-red-700 transition"
-                                        aria-label={`Remove ${basket.pigeonName} from basket`}
-                                    >
-                                        <FaTrash />
-                                    </button>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-                    )}
-                </div>
-
-                {/* Complete Basket Button */}
-                {canCompleteBasket && (
-                    <div className="text-center mt-6">
+                {/* Action Buttons */}
+                <div className="flex justify-center gap-4 mt-6">
+                    {canCompleteBasket && (
                         <motion.button
                             onClick={handleCompleteBasket}
-                            className="flex items-center justify-center bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
+                            className="flex items-center justify-center bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
                         >
                             <FaCheckCircle className="mr-2" />
                             Complete Basket
                         </motion.button>
-                    </div>
-                )}
-
-                {/* Back Button */}
-                <div className="text-center mt-6">
+                    )}
                     <motion.button
                         onClick={() => navigate('/races')}
-                        className="bg-gray-500 text-white px-6 py-3 rounded shadow hover:bg-gray-600 transition"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        className="flex items-center justify-center bg-gray-500 text-white px-6 py-3 rounded shadow hover:bg-gray-600 transition"
                     >
                         Back to Races
                     </motion.button>

@@ -9,7 +9,7 @@ import {FaCheckCircle, FaArrowLeft, FaTrash} from 'react-icons/fa';
 export const RecordRaceResults: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
     const { fetchBasketsByRaceId, getRaceResults, addRaceResult, removeRaceResult, updateRaceStatus } = useRaces();
-    const { pigeons, fetchPigeons } = usePigeons();
+    const { pigeons, fetchAllPigeons } = usePigeons();
     const navigate = useNavigate();
 
     const [baskets, setBaskets] = useState<any[]>([]);
@@ -18,7 +18,7 @@ export const RecordRaceResults: React.FC = () => {
     const [recordedTime, setRecordedTime] = useState('');
 
     useEffect(() => {
-        fetchPigeons();
+        fetchAllPigeons();
         if (raceId) {
             fetchBasketsByRaceId(Number(raceId)).then(setBaskets);
             getRaceResults(Number(raceId)).then(setRaceResults);

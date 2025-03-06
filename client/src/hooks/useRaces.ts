@@ -106,7 +106,6 @@ export const useRaces = () => {
     const addPigeonToBasket = async (raceId: number, pigeonId: number) => {
         try {
             await axiosInstance.post(`/race/${raceId}/baskets`, { raceId, pigeonId });
-            toast.success('Pigeon added to race');
             await fetchRaces();
         } catch (err: any) {
             setError('Error adding pigeon to basket');
@@ -118,7 +117,6 @@ export const useRaces = () => {
     const removePigeonFromBasket = async (basketId: number) => {
         try {
             await axiosInstance.delete(`/race/baskets/${basketId}`);
-            toast.success('Pigeon removed from basket');
             await fetchRaces();
         } catch (err: any) {
             setError('Error removing pigeon from basket');
