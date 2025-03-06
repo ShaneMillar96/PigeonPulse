@@ -124,13 +124,14 @@ namespace PigeonPulse.Services.Services
             return _mapper.Map<BasketDto>(basket);
         }
 
-        public async Task RemovePigeonFromBasketAsync(int currentUser, int basketId)
+        public async Task<bool> RemovePigeonFromBasketAsync(int currentUser, int basketId)
         {
             var basket = await _context.Get<Basket>().FirstOrDefaultAsync(b => b.Id == basketId && b.UserId == currentUser);
-            if (basket == null) throw new Exception("Basket entry not found or not authorized to remove.");
+            if (basket == null) return false;
 
             _context.Delete(basket);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<RaceDto> UpdateRaceStatusAsync(int currentUser, UpdateRaceStatusDto raceStatusDto)

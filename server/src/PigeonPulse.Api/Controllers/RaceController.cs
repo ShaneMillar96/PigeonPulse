@@ -124,8 +124,9 @@ public class RaceController : PigeonPulseBaseController
     public async Task<IActionResult> RemovePigeonFromBasket(int basketId)
     {
         var userId = GetCurrentUserId();
-        await _raceService.RemovePigeonFromBasketAsync(userId, basketId);
-        return NoContent();
+        var deleted = await _raceService.RemovePigeonFromBasketAsync(userId, basketId);
+        if (deleted) return NoContent();
+        return NotFound($"Basket with id {basketId} not found");
     }
 
     [HttpPut("{raceId}/status")]

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import axiosInstance from '../utils/axiosInstance';
-import { Pigeon, PigeonRequest } from '../interfaces/pigeon';
+import { Pigeon, PigeonRequest, PigeonResponse } from '../interfaces/pigeon';
 import { toast } from 'react-toastify';
 
 export const usePigeons = () => {
@@ -11,31 +11,32 @@ export const usePigeons = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
-
     // Fetch pigeons (supports pagination)
-    const fetchPigeons = useCallback(async () => {
-        if (!hasMore || loading) return;
+    const fetchPaginatedPigeons = useCallback(async () => {
+        if (!hasMore || loading) return { data: [], totalCount: 0 }; // Return empty response if no more data
         setLoading(true);
         try {
-            const response = await axiosInstance.get<Pigeon[]>(`/pigeon`, {
+            const response = await axiosInstance.get<PigeonResponse>('/pigeon', {
                 params: { pageSize: 10, pageNumber, searchQuery },
             });
 
-            setPigeons(prev => [...prev, ...response.data.data]);
+            setPigeons((prev) => [...prev, ...response.data.data]);
             setHasMore(response.data.totalCount > pigeons.length + response.data.data.length);
-            setPageNumber(prev => prev + 1);
+            setPageNumber((prev) => prev + 1);
+            return response.data; // Return the full response
         } catch (error) {
             console.error('Error fetching pigeons:', error);
+            return { data: [], totalCount: 0 }; // Return empty response on error
         } finally {
             setLoading(false);
         }
-    }, [pageNumber, hasMore, loading, searchQuery]);
+    }, [pageNumber, hasMore, loading, searchQuery, pigeons.length]);
 
-    // fetch list of all pigeons
+    // Fetch list of all pigeons
     const fetchAllPigeons = async () => {
         try {
-            const response = await axiosInstance.get(`/pigeon`, {
-                params: { pageSize: 1000, pageNumber: 1 }, // Large limit to fetch all pigeons
+            const response = await axiosInstance.get<PigeonResponse>('/pigeon', {
+                params: { pageSize: 1000, pageNumber: 1 },
             });
             return response.data.data; // Return only pigeon list
         } catch (error) {
@@ -43,8 +44,6 @@ export const usePigeons = () => {
             return [];
         }
     };
-
-
 
     // Search pigeons by ring number
     const searchPigeons = async (query: string) => {
@@ -55,7 +54,7 @@ export const usePigeons = () => {
         setPigeons([]); // Clear the pigeon list before new search
 
         try {
-            const response = await axiosInstance.get(`/pigeon`, {
+            const response = await axiosInstance.get<PigeonResponse>('/pigeon', {
                 params: { pageSize: 10, pageNumber: 1, searchQuery: query },
             });
 
@@ -68,12 +67,11 @@ export const usePigeons = () => {
         }
     };
 
-
     // Delete pigeon
     const deletePigeon = async (pigeonId: number) => {
         try {
             await axiosInstance.delete(`/pigeon/${pigeonId}`);
-            setPigeons(prev => prev.filter(p => p.id !== pigeonId));
+            setPigeons((prev) => prev.filter((p) => p.id !== pigeonId));
         } catch (error) {
             console.error('Error deleting pigeon:', error);
         }
@@ -97,5 +95,5 @@ export const usePigeons = () => {
         }
     };
 
-    return { pigeons, searchPigeons, loading, deletePigeon, hasMore, error, fetchPigeons, fetchAllPigeons, createPigeon };
+    return { pigeons, searchPigeons, loading, deletePigeon, hasMore, error, fetchPaginatedPigeons, fetchAllPigeons, createPigeon };
 };

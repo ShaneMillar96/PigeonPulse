@@ -16,7 +16,7 @@ public interface IRaceService
     Task<List<RaceResultDto>> GetRaceResultsByRaceIdAsync(int raceId);
     Task<List<BasketDto>> GetBasketsByRaceIdAsync(int currentUser, int raceId);
     Task<BasketDto> AddPigeonToBasketAsync(int userId, BasketPigeonDto basketPigeonDto);
-    Task RemovePigeonFromBasketAsync(int currentUser, int basketId);
+    Task<bool> RemovePigeonFromBasketAsync(int currentUser, int basketId);
     Task<RaceDto> UpdateRaceStatusAsync(int currentUser, UpdateRaceStatusDto raceStatusDto);
     Task<LeaderboardDto> GetRaceLeaderBoardAsync(int userId, int raceId);
 }

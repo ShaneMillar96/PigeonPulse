@@ -42,6 +42,7 @@ public abstract class BaseContext : DbContext
 
     public void Delete<T>(params T[] items) where T : class
     {
+        Set<T>().RemoveRange(items);
     }
 
     public bool ExecuteWithinTransaction(Action action)

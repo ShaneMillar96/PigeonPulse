@@ -7,7 +7,7 @@ import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import PlaceHolder from '../../public/placeholder-pigeon.png';
 
 export const Pigeons: React.FC = () => {
-    const { pigeons, fetchPigeons, deletePigeon, loading, hasMore, searchPigeons } = usePigeons();
+    const { pigeons, fetchPaginatedPigeons, deletePigeon, loading, hasMore, searchPigeons } = usePigeons();
     const [searchQuery, setSearchQuery] = useState('');
     const observer = useRef<IntersectionObserver | null>(null);
 
@@ -24,17 +24,17 @@ export const Pigeons: React.FC = () => {
             if (observer.current) observer.current.disconnect();
             observer.current = new IntersectionObserver(entries => {
                 if (entries[0].isIntersecting) {
-                    fetchPigeons(); // Load next page
+                    fetchPaginatedPigeons(); // Load next page
                 }
             });
             if (node) observer.current.observe(node);
         },
-        [loading, hasMore, fetchPigeons]
+        [loading, hasMore, fetchPaginatedPigeons]
     );
 
     useEffect(() => {
-        fetchPigeons();
-    }, [fetchPigeons]);
+        fetchPaginatedPigeons();
+    }, [fetchPaginatedPigeons]);
 
     const handleDelete = async (pigeonId: number) => {
         if (window.confirm('Are you sure you want to delete this pigeon?')) {

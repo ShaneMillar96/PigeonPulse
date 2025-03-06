@@ -37,5 +37,10 @@ export interface Pigeon {
     userId: number;
     name: string;
     ringNumber: string;
-    createdDate: string;
+    createdDate: string; 
+}
+
+export interface PigeonResponse {
+    data: Pigeon[];
+    totalCount: number;
 }

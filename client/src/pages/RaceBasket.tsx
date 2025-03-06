@@ -4,13 +4,15 @@ import { usePigeons } from '../hooks/usePigeons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { FaTrash, FaPlusCircle, FaCheckCircle } from 'react-icons/fa';
-import {Pigeon} from "../interfaces/race.ts";
+import { FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { toast } from 'react-toastify'; // For error notifications
+import { motion, AnimatePresence } from 'framer-motion';
+import {Pigeon} from "../interfaces/race.ts"; // For animations
 
 export const RaceBasket: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
     const { fetchBasketsByRaceId, addPigeonToBasket, removePigeonFromBasket, updateRaceStatus } = useRaces();
-    const { fetchAllPigeons } = usePigeons();
+    const { fetchAllPigeons, loading } = usePigeons();
     const navigate = useNavigate();
 
     const [baskets, setBaskets] = useState<any[]>([]);
@@ -18,9 +20,10 @@ export const RaceBasket: React.FC = () => {
 
     const [selectedPigeonId, setSelectedPigeonId] = useState<number | null>(null);
     const [canCompleteBasket, setCanCompleteBasket] = useState(false);
+    const [isDraggingOver, setIsDraggingOver] = useState(false); 
 
     useEffect(() => {
-        fetchAllPigeons().then(setPigeons); // Fetch all pigeons for selection
+        fetchAllPigeons().then(setPigeons);
         if (raceId) {
             fetchBasketsByRaceId(Number(raceId)).then((data) => {
                 setBaskets(data);
@@ -28,34 +31,62 @@ export const RaceBasket: React.FC = () => {
             });
         }
     }, [raceId]);
-
-
-    // Get only pigeons that have NOT been basketed yet
+    
     const availablePigeons = pigeons.filter(
         (pigeon) => !baskets.some((basket) => basket.pigeonId === pigeon.id)
     );
 
-    const handleAddPigeon = async () => {
-        if (!selectedPigeonId || !raceId) return;
-        await addPigeonToBasket(Number(raceId), selectedPigeonId);
-        fetchBasketsByRaceId(Number(raceId)).then((data) => {
-            setBaskets(data);
-            setCanCompleteBasket(data.length > 0);
-        });
+    const handleDragStart = (event: React.DragEvent<HTMLDivElement>, pigeonId: number) => {
+        event.dataTransfer.setData('pigeonId', pigeonId.toString());
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDraggingOver(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDraggingOver(false);
+    };
+
+    const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDraggingOver(false);
+        const pigeonId = event.dataTransfer.getData('pigeonId');
+        if (!pigeonId || !raceId) return;
+
+        try {
+            await addPigeonToBasket(Number(raceId), Number(pigeonId));
+            const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
+            setBaskets(updatedBaskets);
+            setCanCompleteBasket(updatedBaskets.length > 0);
+            toast.success('Pigeon added to basket!');
+        } catch (err) {
+            toast.error('Failed to add pigeon to basket.');
+        }
     };
 
     const handleRemovePigeon = async (basketId: number) => {
-        await removePigeonFromBasket(basketId);
-        fetchBasketsByRaceId(Number(raceId)).then((data) => {
-            setBaskets(data);
-            setCanCompleteBasket(data.length > 0);
-        });
+        try {
+            await removePigeonFromBasket(basketId);
+            const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
+            setBaskets(updatedBaskets);
+            setCanCompleteBasket(updatedBaskets.length > 0);
+            toast.success('Pigeon removed from basket.');
+        } catch (err) {
+            toast.error('Failed to remove pigeon.');
+        }
     };
 
     const handleCompleteBasket = async () => {
         if (raceId) {
-            await updateRaceStatus(Number(raceId), '2');
-            navigate('/races');
+            try {
+                await updateRaceStatus(Number(raceId), '2');
+                navigate('/races');
+                toast.success('Basket completed successfully!');
+            } catch (err) {
+                toast.error('Failed to complete basket.');
+            }
         }
     };
 
@@ -65,78 +96,108 @@ export const RaceBasket: React.FC = () => {
             <main className="flex-grow container mx-auto p-6">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Manage Race Basket</h1>
 
-                {/* Pigeon Selection */}
+                {/* Pigeon Selection - Horizontal Scrollable Cards */}
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-lg font-semibold mb-3">Select a Pigeon to Add</h2>
-                    <div className="flex items-center space-x-4">
-                        <select
-                            className="border p-3 w-full rounded-md"
-                            onChange={(e) => setSelectedPigeonId(Number(e.target.value))}
-                        >
-                            <option value="">Select a Pigeon</option>
-                            {availablePigeons.map((pigeon) => (
-                                <option key={pigeon.id} value={pigeon.id}>
-                                    {pigeon.name} (Ring: {pigeon.ringNumber})
-                                </option>
-                            ))}
-                        </select>
-                        <button
-                            onClick={handleAddPigeon}
-                            className="flex items-center bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
-                            disabled={!selectedPigeonId}
-                        >
-                            <FaPlusCircle className="mr-2" />
-                            Add
-                        </button>
-                    </div>
+                    <h2 className="text-lg font-semibold mb-3">Drag a Pigeon to Add</h2>
+                    {loading ? (
+                        <p className="text-center text-gray-500">Loading pigeons...</p>
+                    ) : (
+                        <div className="flex overflow-x-auto space-x-4 p-3 bg-gray-200 rounded-md">
+                            {availablePigeons.length === 0 ? (
+                                <p className="text-gray-600">No available pigeons.</p>
+                            ) : (
+                                availablePigeons.map((pigeon) => (
+                                    <motion.div
+                                        key={pigeon.id}
+                                        draggable
+                                        onDragStart={(e) => handleDragStart(e, pigeon.id)}
+                                        className="bg-white shadow-md rounded-md p-4 flex flex-col items-center cursor-grab w-32"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        <img
+                                            src="/placeholder-pigeon.png"
+                                            alt={`Pigeon ${pigeon.name}`}
+                                            className="w-16 h-16 rounded-full mb-2"
+                                        />
+                                        <p className="text-sm font-medium">{pigeon.name}</p>
+                                        <p className="text-xs text-gray-500">Ring: {pigeon.ringNumber}</p>
+                                    </motion.div>
+                                ))
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                {/* Basketed Pigeons */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-lg font-semibold mb-3">Pigeons in the Race</h2>
+                {/* Basketed Pigeons - Droppable Area */}
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-md min-h-32 flex flex-wrap gap-4 justify-center items-center transition-colors ${
+                        isDraggingOver ? 'border-4 border-green-300 bg-green-50' : ''
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    role="region"
+                    aria-label="Basketed pigeons drop area"
+                >
+                    <h2 className="text-lg font-semibold w-full text-center">Pigeons in the Race</h2>
                     {baskets.length === 0 ? (
                         <p className="text-gray-600 text-center py-4">No pigeons basketed yet.</p>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <AnimatePresence>
                             {baskets.map((basket) => (
-                                <div key={basket.id} className="bg-gray-50 p-4 rounded-lg shadow-md flex justify-between items-center">
-                                    <div>
-                                        <p className="text-lg font-medium">{basket.pigeonName}</p>
-                                        <p className="text-gray-600 text-sm">Ring: {basket.ringNumber}</p>
-                                    </div>
+                                <motion.div
+                                    key={basket.id}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    className="bg-gray-50 p-4 rounded-lg shadow-md flex flex-col items-center relative w-32"
+                                >
+                                    <img
+                                        src="/placeholder-pigeon.png"
+                                        alt={`Pigeon ${basket.pigeonName}`}
+                                        className="w-16 h-16 rounded-full mb-2"
+                                    />
+                                    <p className="text-sm font-medium">{basket.pigeonName}</p>
+                                    <p className="text-xs text-gray-500">Ring: {basket.ringNumber}</p>
                                     <button
                                         onClick={() => handleRemovePigeon(basket.id)}
-                                        className="text-red-500 hover:text-red-700 transition"
+                                        className="absolute top-1 right-1 text-red-500 hover:text-red-700 transition"
+                                        aria-label={`Remove ${basket.pigeonName} from basket`}
                                     >
                                         <FaTrash />
                                     </button>
-                                </div>
+                                </motion.div>
                             ))}
-                        </div>
+                        </AnimatePresence>
                     )}
                 </div>
 
                 {/* Complete Basket Button */}
                 {canCompleteBasket && (
                     <div className="text-center mt-6">
-                        <button
+                        <motion.button
                             onClick={handleCompleteBasket}
                             className="flex items-center justify-center bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                         >
                             <FaCheckCircle className="mr-2" />
                             Complete Basket
-                        </button>
+                        </motion.button>
                     </div>
                 )}
 
                 {/* Back Button */}
                 <div className="text-center mt-6">
-                    <button
+                    <motion.button
                         onClick={() => navigate('/races')}
                         className="bg-gray-500 text-white px-6 py-3 rounded shadow hover:bg-gray-600 transition"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                     >
                         Back to Races
-                    </button>
+                    </motion.button>
                 </div>
             </main>
             <Footer />
