@@ -3,13 +3,11 @@ import { useDashboard } from '../hooks/useDashboard';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { FaTrophy, FaDove, FaChartLine, FaClock, FaPlane, FaFlagCheckered } from 'react-icons/fa';
-import RaceParticipationChart from '../components/charts/RaceParticipationChart';
-import PigeonActivityChart from '../components/charts/PigeonActivityChart';
 import StatCard from '../components/common/StatCard';
 
 export const Dashboard: React.FC = () => {
     const { dashboardData, fetchDashboard, loading, error } = useDashboard();
-    
+
     useEffect(() => {
         fetchDashboard();
     }, []);
@@ -27,15 +25,37 @@ export const Dashboard: React.FC = () => {
                     <>
                         {/* Stat Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                            <StatCard icon={<FaDove/>} title="Best Pigeon"
-                                      text={`${dashboardData.bestPigeon.name} (${dashboardData.bestPigeon.ringNumber})`}/>
-                            <StatCard icon={<FaTrophy/>} title="Best Race" text={dashboardData.bestRace.name}/>
-                            <StatCard icon={<FaChartLine/>} title="Overview"
-                                      text={`Pigeons: ${dashboardData.totalPigeons}, Races: ${dashboardData.totalRaces}`}/>
-                            <StatCard icon={<FaFlagCheckered/>} title="Best Long-Range Pigeon"
-                                      text={`${dashboardData.bestLongRangePigeon.name} (${dashboardData.bestLongRangePigeon.ringNumber}) - ${dashboardData.bestLongRangePigeon.raceDistance} km`}/>
-                            <StatCard icon={<FaPlane/>} title="Most Active Pigeon"
-                                      text={`${dashboardData.mostActivePigeon.name} (${dashboardData.mostActivePigeon.ringNumber}) - ${dashboardData.mostActivePigeon.raceCount} Races`}/>
+                            <StatCard
+                                icon={<FaDove/>}
+                                title="Best Pigeon"
+                                text={dashboardData.bestPigeon
+                                    ? `${dashboardData.bestPigeon.name} (${dashboardData.bestPigeon.ringNumber})`
+                                    : 'N/A'}
+                            />
+                            <StatCard
+                                icon={<FaTrophy/>}
+                                title="Best Race"
+                                text={dashboardData.bestRace?.name || 'N/A'}
+                            />
+                            <StatCard
+                                icon={<FaChartLine/>}
+                                title="Overview"
+                                text={`Pigeons: ${dashboardData.totalPigeons ?? 0}, Races: ${dashboardData.totalRaces ?? 0}`}
+                            />
+                            <StatCard
+                                icon={<FaFlagCheckered/>}
+                                title="Best Long-Range Pigeon"
+                                text={dashboardData.bestLongRangePigeon
+                                    ? `${dashboardData.bestLongRangePigeon.name} (${dashboardData.bestLongRangePigeon.ringNumber}) - ${dashboardData.bestLongRangePigeon.raceDistance} km`
+                                    : 'N/A'}
+                            />
+                            <StatCard
+                                icon={<FaPlane/>}
+                                title="Most Active Pigeon"
+                                text={dashboardData.mostActivePigeon
+                                    ? `${dashboardData.mostActivePigeon.name} (${dashboardData.mostActivePigeon.ringNumber}) - ${dashboardData.mostActivePigeon.raceCount} Races`
+                                    : 'N/A'}
+                            />
                         </div>
 
                         {/* Upcoming Races */}
@@ -52,12 +72,12 @@ export const Dashboard: React.FC = () => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {dashboardData.upcomingRaces.map((race, index) => (
+                                {dashboardData.upcomingRaces?.map((race, index) => (
                                     <tr key={index} className="border border-gray-300">
                                         <td className="px-4 py-2">{race.name}</td>
                                         <td className="px-4 py-2">{new Date(race.date).toLocaleDateString()}</td>
                                     </tr>
-                                ))}
+                                )) || <tr><td colSpan={2} className="text-center py-2">No upcoming races</td></tr>}
                                 </tbody>
                             </table>
                         </div>

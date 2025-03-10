@@ -4,29 +4,38 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa';
+import { PigeonRequest } from '../interfaces/pigeon';
 
 export const AddPigeon: React.FC = () => {
     const { createPigeon, updatePigeon, getPigeonById } = usePigeons();
     const navigate = useNavigate();
     const { pigeonId } = useParams<{ pigeonId: string }>();
 
-    const [pigeon, setPigeon] = useState({
+    const [pigeon, setPigeon] = useState<PigeonRequest>({
         name: '',
         ringNumber: '',
         color: '',
         strain: '',
-        imageUrl: '', // New field for image upload
+        imageUrl: '',
     });
+    const [isLoaded, setIsLoaded] = useState(false); // Track if data is already fetched
 
     useEffect(() => {
-        if (pigeonId) {
+        if (pigeonId && !isLoaded) {
             getPigeonById(Number(pigeonId)).then((data) => {
                 if (data) {
-                    setPigeon(data);
+                    setPigeon({
+                        name: data.name,
+                        ringNumber: data.ringNumber,
+                        color: data.color || '',
+                        strain: data.strain || '',
+                        imageUrl: data.imageUrl || '',
+                    });
+                    setIsLoaded(true); // Mark as loaded to prevent re-fetching
                 }
             });
         }
-    }, [pigeonId]);
+    }, [pigeonId, getPigeonById, isLoaded]); // Add isLoaded to dependencies
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPigeon({ ...pigeon, [e.target.name]: e.target.value });
@@ -35,19 +44,23 @@ export const AddPigeon: React.FC = () => {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const imageUrl = URL.createObjectURL(file); // Temporary preview
+            const imageUrl = URL.createObjectURL(file);
             setPigeon({ ...pigeon, imageUrl });
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (pigeonId) {
-            await updatePigeon(Number(pigeonId), pigeon);
-        } else {
-            await createPigeon(pigeon);
+        try {
+            if (pigeonId) {
+                await updatePigeon(Number(pigeonId), pigeon);
+            } else {
+                await createPigeon(pigeon);
+            }
+            navigate('/pigeons');
+        } catch (error) {
+            console.error('Error saving pigeon:', error);
         }
-        navigate('/pigeons');
     };
 
     return (
@@ -64,7 +77,6 @@ export const AddPigeon: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Pigeon Image Upload */}
                     <div className="flex flex-col items-center mb-4">
                         <div className="w-32 h-32 border border-gray-300 rounded-full overflow-hidden">
                             <img
@@ -98,7 +110,7 @@ export const AddPigeon: React.FC = () => {
                             onChange={handleChange}
                             className="border p-3 w-full rounded-md"
                             required
-                            disabled={!!pigeonId} // Prevent changing ring number on edit
+                            disabled={!!pigeonId}
                         />
                         <input
                             type="text"
@@ -117,7 +129,6 @@ export const AddPigeon: React.FC = () => {
                             className="border p-3 w-full rounded-md"
                         />
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             className="bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600 transition"

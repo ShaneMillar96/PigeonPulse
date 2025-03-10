@@ -26,6 +26,8 @@ public class PigeonProfile : Profile
     private void ConfigureModelToDto()
     {
         CreateMap<CreatePigeonRequest, CreatePigeonDto>();
+        CreateMap<UpdatePigeonRequest, UpdatePigeonDto>();
+
     }
     
     private void ConfigurePaginateMapping()

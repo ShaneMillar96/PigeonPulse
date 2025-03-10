@@ -6,4 +6,5 @@ public class CreatePigeonRequest
     public string RingNumber { get; set; }
     public string Strain { get; set; }
     public string Color { get; set; }
+    public string ImageUrl { get; set; }
 }
