@@ -3,13 +3,9 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 9.0
+      dotnet: 8.0
       nodejs: 18
     commands:
-      - echo "Installing .NET 9.0 SDK..."
-      - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 9.0.0
-      - export PATH=$HOME/.dotnet:$PATH
-      - dotnet --version
       - echo "Installing dependencies..."
       - npm install --prefix client
       - dotnet restore server/src/PigeonPulse.Api
