@@ -6,4 +6,5 @@ nohup dotnet run --urls "http://0.0.0.0:5264" > backend.log 2>&1 &
 
 echo "Starting Frontend (React)..."
 cd /home/ec2-user/PigeonPulse/client
+rm -rf node_modules package-lock.json
 nohup npm install && npm run build && npm start > frontend.log 2>&1 &
