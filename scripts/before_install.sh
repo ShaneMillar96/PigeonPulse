@@ -1,17 +1,16 @@
 #!/bin/bash
 set -e  # Stop script on first error
 
-# Check if curl-minimal is installed and remove it
+echo "Checking if curl-minimal is installed..."
 if rpm -q curl-minimal; then
-  echo "Removing curl-minimal to prevent conflicts..."
-  sudo yum remove -y curl-minimal
+  echo "Replacing curl-minimal with curl..."
+  sudo dnf swap -y curl-minimal curl
 fi
 
-# Ensure curl is installed
-echo "Installing curl..."
+echo "Ensuring curl is installed..."
 sudo yum install -y curl
 
-echo "Curl installed successfully."
+echo "Curl installation complete."
 
 echo "Stopping existing application (if running)..."
 sudo pkill -f "dotnet" || true
