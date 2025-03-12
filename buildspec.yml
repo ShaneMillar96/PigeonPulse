@@ -6,7 +6,7 @@ phases:
       nodejs: 18
     commands:
       - echo "Installing dependencies..."
-      - curl -fsSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 8.0.201
+      - curl -fsSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir $HOME/.dotnet --version 8.0.201
       - export PATH="$HOME/.dotnet:$PATH"
       - dotnet --version
       - npm install --prefix client
@@ -22,12 +22,12 @@ phases:
   post_build:
     commands:
       - echo "Publishing ASP.NET backend..."
-      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
+      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish
 
 artifacts:
   files:
-    - 'appspec.yml'
-    - 'scripts/*'
-    - '**/*'
-  base-directory: publish
+    - appspec.yml
+    - scripts/**/*
+    - client/**/*
+    - server-publish/**/*
   discard-paths: no
