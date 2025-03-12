@@ -12,19 +12,18 @@ phases:
 
   build:
     commands:
-      - echo "Building frontend..."
+      - echo "Building the React frontend..."
       - npm run build --prefix client
-      - echo "Building backend..."
-      - dotnet publish server/src/PigeonPulse.Api -c Release -o published
+      - echo "Building the ASP.NET backend..."
+      - dotnet build server/src/PigeonPulse.Api --configuration Release
 
   post_build:
     commands:
-      - echo "Build completed on $(date)"
-      - echo "Preparing artifacts..."
+      - echo "Publishing ASP.NET backend..."
+      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
 
 artifacts:
   files:
-    - client/dist/**/*
-    - published/**/*
-    - scripts/**
+    - '**/*'
+  base-directory: publish
   discard-paths: no
