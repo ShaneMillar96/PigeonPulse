@@ -15,8 +15,8 @@ nohup dotnet PigeonPulse.Api.dll --urls "http://0.0.0.0:5264" > $LOG_DIR/backend
 echo "Preparing Frontend (React)..."
 cd /home/ec2-user/PigeonPulse/client
 
-echo "Cleaning old dependencies..."
-rm -rf node_modules package-lock.json || echo "Failed to remove node_modules/package-lock.json"
+#echo "Cleaning old dependencies..."
+#rm -rf node_modules package-lock.json || echo "Failed to remove node_modules/package-lock.json"
 
 echo "Installing dependencies..."
 npm install || { echo "NPM install failed"; exit 1; }
