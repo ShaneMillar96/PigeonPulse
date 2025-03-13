@@ -1,34 +1,28 @@
 #!/bin/bash
-set -e  # Exit immediately if any command fails
+set -e
 
-echo "Checking if curl-minimal is installed..."
+echo "Checking if curl-minimal is installed..." >> /home/ec2-user/before_install.log
 if rpm -q curl-minimal; then
-  echo "Replacing curl-minimal with curl..."
+  echo "Replacing curl-minimal with curl..." >> /home/ec2-user/before_install.log
   sudo dnf swap -y curl-minimal curl
 fi
 
-echo "Ensuring curl is installed..."
-sudo yum install -y curl
+echo "Ensuring curl is installed..." >> /home/ec2-user/before_install.log
+sudo yum install -y curl || { echo "Failed to install curl" >> /home/ec2-user/before_install.log; exit 1; }
 
-echo "Stopping existing application (if running)..."
+echo "Stopping existing application (if running)..." >> /home/ec2-user/before_install.log
 sudo pkill -f "dotnet" || true
 sudo pkill -f "node" || true
 
-echo "Updating system packages..."
-sudo yum update -y
-
-echo "Installing dependencies..."
-sudo yum install -y git unzip curl
-
-echo "Cleaning up previous deployment..."
+echo "Cleaning up previous deployment..." >> /home/ec2-user/before_install.log
 DEPLOY_DIR="/home/ec2-user/PigeonPulse"
 if [ -d "$DEPLOY_DIR" ]; then
-  echo "Removing old deployment files..."
-  sudo rm -rf "$DEPLOY_DIR"
+  echo "Removing old deployment files..." >> /home/ec2-user/before_install.log
+  sudo rm -rf "$DEPLOY_DIR"/*
 fi
 
-echo "Creating fresh deployment directory..."
+echo "Creating fresh deployment directory..." >> /home/ec2-user/before_install.log
 sudo mkdir -p "$DEPLOY_DIR"
 sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
 
-echo "Before install steps completed successfully."
+echo "Before install steps completed successfully." >> /home/ec2-user/before_install.log

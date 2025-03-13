@@ -6,23 +6,23 @@ phases:
       nodejs: 18
     commands:
       - echo "Installing dependencies..."
-      - curl -fsSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir $HOME/.dotnet --version 8.0.201
+      - curl -fsSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir $HOME/.dotnet --version 8.0.204
       - export PATH="$HOME/.dotnet:$PATH"
       - dotnet --version
       - npm install --prefix client
-      - dotnet restore server/src/PigeonPulse.Api
+      - dotnet restore server/src/PigeonPulse.sln  # Restore the whole solution for consistency
 
   build:
     commands:
       - echo "Building the React frontend..."
       - npm run build --prefix client || { echo "Frontend build failed"; exit 1; }
       - echo "Building the ASP.NET backend..."
-      - dotnet build server/src/PigeonPulse.Api --configuration Release || { echo "Backend build failed"; exit 1; }
+      - dotnet build server/src/PigeonPulse.sln --configuration Release || { echo "Backend build failed"; exit 1; }
 
   post_build:
     commands:
       - echo "Publishing ASP.NET backend..."
-      - rm -rf server-publish  # Clear old publish output
+      - rm -rf server-publish
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
 
 artifacts:
@@ -33,4 +33,4 @@ artifacts:
     - server-publish/**/*
   discard-paths: no
 cache:
-  paths: []  # Disable caching to ensure fresh builds
+  paths: []
