@@ -15,14 +15,15 @@ phases:
   build:
     commands:
       - echo "Building the React frontend..."
-      - npm run build --prefix client || echo "Frontend build failed"
+      - npm run build --prefix client || { echo "Frontend build failed"; exit 1; }
       - echo "Building the ASP.NET backend..."
-      - dotnet build server/src/PigeonPulse.Api --configuration Release || echo "Backend build failed"
+      - dotnet build server/src/PigeonPulse.Api --configuration Release || { echo "Backend build failed"; exit 1; }
 
   post_build:
     commands:
       - echo "Publishing ASP.NET backend..."
-      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish
+      - rm -rf server-publish  # Clear old publish output
+      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
 
 artifacts:
   files:
@@ -31,3 +32,5 @@ artifacts:
     - client/**/*
     - server-publish/**/*
   discard-paths: no
+cache:
+  paths: []  # Disable caching to ensure fresh builds
