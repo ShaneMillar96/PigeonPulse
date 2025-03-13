@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PigeonPulse.Dal.Models.application;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using PigeonPulse.Dal.Interfaces;
 
 namespace PigeonPulse.Dal.Contexts;
