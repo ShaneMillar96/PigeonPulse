@@ -22,7 +22,9 @@ fi
 
 echo "Creating fresh deployment directory..." >> /home/ec2-user/before_install.log
 sudo mkdir -p "$DEPLOY_DIR"
+sudo mkdir -p "$DEPLOY_DIR/static"  # Pre-create static directory
 sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
+sudo chown nginx:nginx "$DEPLOY_DIR/static"  # Set initial ownership
 
 # Ensure /home/ec2-user has proper permissions for Nginx to traverse
 echo "Fixing permissions on /home/ec2-user..." >> /home/ec2-user/before_install.log

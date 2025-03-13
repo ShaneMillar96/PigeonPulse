@@ -10,12 +10,14 @@ phases:
       - export PATH="$HOME/.dotnet:$PATH"
       - dotnet --version
       - npm install --prefix client
-      - dotnet restore server/src/PigeonPulse.sln  # Restore the whole solution for consistency
+      - dotnet restore server/src/PigeonPulse.sln
 
   build:
     commands:
       - echo "Building the React frontend..."
       - npm run build --prefix client || { echo "Frontend build failed"; exit 1; }
+      - echo "Verifying frontend build output..."
+      - ls -la client/dist || { echo "dist directory missing after build"; exit 1; }
       - echo "Building the ASP.NET backend..."
       - dotnet build server/src/PigeonPulse.sln --configuration Release || { echo "Backend build failed"; exit 1; }
 
@@ -25,7 +27,9 @@ phases:
       - rm -rf server-publish
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
       - echo "Verifying publish output..."
-      - ls -la server-publish  # Debug step to ensure files are generated
+      - ls -la server-publish
+      - echo "Copying dist to server-publish for deployment..."
+      - cp -r client/dist ./server-publish/static || { echo "Failed to copy dist to static"; exit 1; }
 
 artifacts:
   files:

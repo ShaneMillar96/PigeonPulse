@@ -5,6 +5,8 @@ files:
     destination: /home/ec2-user/PigeonPulse/client
   - source: server-publish
     destination: /home/ec2-user/PigeonPulse/server-publish
+  - source: server-publish/static
+    destination: /home/ec2-user/PigeonPulse/static
   - source: scripts/deploy.sh
     destination: /home/ec2-user/PigeonPulse/scripts
   - source: scripts/before_install.sh
@@ -20,6 +22,7 @@ permissions:
     group: nginx
     type: directory
     pattern: "*"
+    mode: 755
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
