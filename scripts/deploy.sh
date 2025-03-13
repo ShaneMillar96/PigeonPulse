@@ -12,11 +12,15 @@ sudo systemctl stop pigeonpulse.service 2>> "$LOG_DIR/deploy.log" || true
 # Prepare Frontend (React) first to avoid resource contention
 echo "Preparing Frontend (React)..." >> "$LOG_DIR/deploy.log"
 cd /home/ec2-user/PigeonPulse/client || { echo "Failed to cd into client" >> "$LOG_DIR/deploy.log"; exit 1; }
+# Clean previous node_modules and dist
+rm -rf node_modules dist
 timeout 300 npm install >> "$LOG_DIR/deploy.log" 2>&1 || { echo "NPM install timed out or failed" >> "$LOG_DIR/deploy.log"; exit 1; }
-timeout 300 npm run build >> "$LOG_DIR/deploy.log" 2>&1 || { echo "Frontend build timed out or failed" >> "$LOG_DIR/deploy.log"; exit 1; }
+timeout 300 npm run build >> "$LOG_DIR/deploy.log" 2>&1 || { echo "Frontend build failed" >> "$LOG_DIR/deploy.log"; exit 1; }
+echo "Listing dist directory contents..." >> "$LOG_DIR/deploy.log"
+ls -la dist >> "$LOG_DIR/deploy.log" 2>&1 || { echo "dist directory is empty or missing" >> "$LOG_DIR/deploy.log"; exit 1; }
 sudo mkdir -p /home/ec2-user/PigeonPulse/static
 sudo cp -r dist/* /home/ec2-user/PigeonPulse/static/ || { echo "Failed to copy frontend build" >> "$LOG_DIR/deploy.log"; exit 1; }
-sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static  # Change to nginx user for web server
+sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static
 sudo chmod -R 755 /home/ec2-user/PigeonPulse/static
 
 # Start Backend (.NET API) after frontend is done
