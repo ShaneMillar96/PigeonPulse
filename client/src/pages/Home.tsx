@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
                 {/* Hero Section */}
                 <div className="max-w-3xl">
                     <img src={PigeonLogo} alt="PigeonPulse Logo" className="mx-auto w-40 h-auto" />
-                    <h1 className="text-4xl font-extrabold text-gray-800 mt-6">Welcome to PigeonPulse V1.00</h1>
+                    <h1 className="text-4xl font-extrabold text-gray-800 mt-6">Welcome to PigeonPulse V1.01</h1>
                     <p className="text-lg text-gray-600 mt-4">
                         A modern platform for racing pigeon fanciers to track, manage, and compete in pigeon races.
                     </p>
