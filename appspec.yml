@@ -1,12 +1,25 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /home/ec2-user/PigeonPulse/
+  - source: client
+    destination: /home/ec2-user/PigeonPulse/client
+  - source: server-publish
+    destination: /home/ec2-user/PigeonPulse/server-publish
+  - source: scripts/deploy.sh
+    destination: /home/ec2-user/PigeonPulse/scripts
+  - source: scripts/before_install.sh
+    destination: /home/ec2-user/PigeonPulse/scripts
 permissions:
-  - object: /home/ec2-user/PigeonPulse/
+  - object: /home/ec2-user/PigeonPulse
     owner: ec2-user
     group: ec2-user
+    type: directory
+    pattern: "*"
+  - object: /home/ec2-user/PigeonPulse/static
+    owner: nginx
+    group: nginx
+    type: directory
+    pattern: "*"
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh

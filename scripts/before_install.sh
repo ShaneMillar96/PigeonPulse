@@ -25,4 +25,8 @@ echo "Creating fresh deployment directory..." >> /home/ec2-user/before_install.l
 sudo mkdir -p "$DEPLOY_DIR"
 sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
 
+# Ensure /home/ec2-user has proper permissions for Nginx to traverse
+echo "Fixing permissions on /home/ec2-user..." >> /home/ec2-user/before_install.log
+sudo chmod 755 /home/ec2-user
+
 echo "Before install steps completed successfully." >> /home/ec2-user/before_install.log

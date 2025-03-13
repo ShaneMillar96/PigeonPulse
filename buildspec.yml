@@ -24,13 +24,16 @@ phases:
       - echo "Publishing ASP.NET backend..."
       - rm -rf server-publish
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
+      - echo "Verifying publish output..."
+      - ls -la server-publish  # Debug step to ensure files are generated
 
 artifacts:
   files:
     - appspec.yml
-    - scripts/**/*
-    - client/**/*
-    - server-publish/**/*
+    - scripts/deploy.sh
+    - scripts/before_install.sh
+    - client/**
+    - server-publish/**
   discard-paths: no
 cache:
   paths: []
