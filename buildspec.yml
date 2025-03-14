@@ -1,30 +1,39 @@
 version: 0.2
-
 phases:
   install:
-    runtime-versions:
-      nodejs: 18
-      dotnet: 8.0.100  # Specify a precise version like 8.0.100
     commands:
-      - echo "Installing dependencies..."
+      - echo "Installing .NET SDK 8.0.100..."
+      - wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+      - chmod +x dotnet-install.sh
+      - ./dotnet-install.sh --version 8.0.100
+      - ln -sf $HOME/.dotnet/dotnet /usr/local/bin/dotnet
+      - echo "Verifying .NET SDK installation..."
+      - dotnet --version
+      - echo "Installing Node.js 18.x..."
+      - curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+      - yum install -y nodejs
+      - echo "Verifying Node.js installation..."
+      - node --version
+      - npm --version
+      - echo "Installing frontend dependencies..."
       - npm install --prefix client
+      - echo "Restoring .NET dependencies..."
       - dotnet restore server/src/PigeonPulse.sln
-
   build:
     commands:
       - echo "Building the React frontend..."
       - npm run build --prefix client
+      - if [ $? -ne 0 ]; then echo "Frontend build failed"; exit 1; fi
       - echo "Publishing the ASP.NET backend..."
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
-      - echo "Copying static files to publish directory..."
+      - if [ $? -ne 0 ]; then echo "Backend publish failed"; exit 1; fi
+      - echo "Copying static files to publish/static directory..."
       - mkdir -p publish/static
       - cp -r client/dist/* publish/static/
-      - echo "Build completed."
-
+      - if [ $? -ne 0 ]; then echo "Failed to copy static files"; exit 1; fi
+      - echo "Build completed successfully."
 artifacts:
   files:
     - appspec.yml
+    - scripts/**
     - publish/**
-  discard-paths: no
-cache:
-  paths: []

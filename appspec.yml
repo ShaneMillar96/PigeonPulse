@@ -3,8 +3,14 @@ os: linux
 files:
   - source: publish
     destination: /home/ec2-user/PigeonPulse
+    exclude:
+      - static/**
+  - source: publish/static
+    destination: /home/ec2-user/PigeonPulse/static
   - source: appspec.yml
     destination: /home/ec2-user/PigeonPulse
+  - source: scripts
+    destination: /home/ec2-user/PigeonPulse/scripts
 
 permissions:
   - object: /home/ec2-user/PigeonPulse

@@ -7,7 +7,15 @@ mkdir -p "$LOG_DIR"
 chmod 755 "$LOG_DIR"
 echo "Deployment started at $(date)" >> "$LOG_FILE"
 
-# Set permissions for static files
+# Verify deployed files
+echo "Listing deployed backend files..." >> "$LOG_FILE"
+ls -l /home/ec2-user/PigeonPulse/ >> "$LOG_FILE" 2>&1
+echo "Listing deployed static files..." >> "$LOG_FILE"
+ls -l /home/ec2-user/PigeonPulse/static/ >> "$LOG_FILE" 2>&1
+
+# Ensure static directory exists and set permissions
+echo "Setting permissions for static files..." >> "$LOG_FILE"
+sudo mkdir -p /home/ec2-user/PigeonPulse/static
 sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static
 sudo chmod -R 755 /home/ec2-user/PigeonPulse/static
 
@@ -20,7 +28,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/ec2-user/PigeonPulse
-ExecStart=/usr/bin/dotnet PigeonPulse.Api.dll --urls http://0.0.0.0:5264
+ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
 SyslogIdentifier=pigeonpulse
@@ -37,6 +45,7 @@ sudo systemctl start pigeonpulse.service
 sleep 5
 if ! sudo systemctl status pigeonpulse.service >> "$LOG_FILE" 2>&1; then
   echo "Error: Backend service failed to start" >> "$LOG_FILE"
+  sudo journalctl -u pigeonpulse.service -b >> "$LOG_FILE" 2>&1
   exit 1
 fi
 
