@@ -40,3 +40,4 @@ artifacts:
     - appspec.yml
     - scripts/**
     - publish/**
+  discard-paths: no

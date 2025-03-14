@@ -13,6 +13,16 @@ ls -l /home/ec2-user/PigeonPulse/ >> "$LOG_FILE" 2>&1
 echo "Listing deployed static files..." >> "$LOG_FILE"
 ls -l /home/ec2-user/PigeonPulse/static/ >> "$LOG_FILE" 2>&1
 
+# Validate required files
+if [ ! -f /home/ec2-user/PigeonPulse/PigeonPulse.Api.dll ]; then
+  echo "Error: PigeonPulse.Api.dll not found" >> "$LOG_FILE"
+  exit 1
+fi
+if [ ! -f /home/ec2-user/PigeonPulse/static/index.html ]; then
+  echo "Error: index.html not found in static directory" >> "$LOG_FILE"
+  exit 1
+fi
+
 # Ensure static directory exists and set permissions
 echo "Setting permissions for static files..." >> "$LOG_FILE"
 sudo mkdir -p /home/ec2-user/PigeonPulse/static
