@@ -10,8 +10,9 @@ phases:
       - echo "Verifying .NET SDK installation..."
       - dotnet --version
       - echo "Installing Node.js 18.x..."
-      - curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-      - yum install -y nodejs
+      - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+      - apt-get update
+      - apt-get install -y nodejs
       - echo "Verifying Node.js installation..."
       - node --version
       - npm --version
