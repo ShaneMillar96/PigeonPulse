@@ -27,13 +27,16 @@ phases:
       - echo "Building the React frontend..."
       - npm run build --prefix client
       - if [ $? -ne 0 ]; then echo "Frontend build failed"; exit 1; fi
+      - echo "Listing contents of client/dist/ for debugging..."
+      - ls -l client/dist/ || echo "client/dist/ does not exist or is empty"
       - echo "Publishing the ASP.NET backend..."
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
       - if [ $? -ne 0 ]; then echo "Backend publish failed"; exit 1; fi
       - echo "Copying static files to publish/static directory..."
       - mkdir -p publish/static
-      - cp -r client/dist/* publish/static/
-      - if [ $? -ne 0 ]; then echo "Failed to copy static files"; exit 1; fi
+      - cp -r client/dist/* ./publish/static/ || { echo "Failed to copy static files"; exit 1; }
+      - echo "Listing contents of publish/static/ for debugging..."
+      - ls -l publish/static/ || echo "publish/static/ is empty"
       - echo "Build completed successfully."
 artifacts:
   files:
