@@ -1,14 +1,11 @@
 version: 0.0
 os: linux
 files:
-  - source: server-publish
-    destination: /home/ec2-user/PigeonPulse/server-publish
-  - source: server-publish/static
-    destination: /home/ec2-user/PigeonPulse/static
-  - source: scripts/before_install.sh
-    destination: /home/ec2-user/PigeonPulse/scripts
-  - source: scripts/deploy.sh
-    destination: /home/ec2-user/PigeonPulse/scripts
+  - source: publish
+    destination: /home/ec2-user/PigeonPulse
+  - source: appspec.yml
+    destination: /home/ec2-user/PigeonPulse
+
 permissions:
   - object: /home/ec2-user/PigeonPulse
     owner: ec2-user
@@ -21,6 +18,7 @@ permissions:
     type: directory
     pattern: "*"
     mode: 755
+
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh

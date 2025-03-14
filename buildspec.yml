@@ -13,31 +13,18 @@ phases:
   build:
     commands:
       - echo "Building the React frontend..."
-      - npm run build --prefix client || { echo "Frontend build failed"; exit 1; }
-      - echo "Verifying frontend build output..."
-      - ls -la client/dist || { echo "dist directory missing after build"; exit 1; }
-      - echo "Building the ASP.NET backend..."
-      - dotnet build server/src/PigeonPulse.sln --configuration Release || { echo "Backend build failed"; exit 1; }
-
-  post_build:
-    commands:
-      - echo "Publishing ASP.NET backend..."
-      - rm -rf server-publish
-      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
-      - echo "Verifying publish output..."
-      - ls -la server-publish || { echo "server-publish directory missing after publish"; exit 1; }
-      - echo "Copying dist to server-publish/static for deployment..."
-      - mkdir -p server-publish/static
-      - cp -r client/dist/* server-publish/static || { echo "Failed to copy dist to static"; exit 1; }
-      - echo "Verifying static contents..."
-      - ls -la server-publish/static || { echo "static directory missing after copy"; exit 1; }
+      - npm run build --prefix client
+      - echo "Publishing the ASP.NET backend..."
+      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
+      - echo "Copying static files to publish directory..."
+      - mkdir -p publish/static
+      - cp -r client/dist/* publish/static/
+      - echo "Build completed."
 
 artifacts:
   files:
     - appspec.yml
-    - scripts/before_install.sh
-    - scripts/deploy.sh
-    - server-publish/**
+    - publish/**  # Include the entire publish directory
   discard-paths: no
 cache:
   paths: []

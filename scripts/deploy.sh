@@ -5,36 +5,21 @@ LOG_DIR="/home/ec2-user/pigeonpulse-logs"
 LOG_FILE="$LOG_DIR/deploy.log"
 mkdir -p "$LOG_DIR"
 chmod 755 "$LOG_DIR"
-
 echo "Deployment started at $(date)" >> "$LOG_FILE"
 
-# Validate static directory
-echo "Validating static directory..." >> "$LOG_FILE"
-if [ ! -f "/home/ec2-user/PigeonPulse/static/index.html" ]; then
-  echo "Error: /home/ec2-user/PigeonPulse/static/index.html not found" >> "$LOG_FILE"
-  ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_FILE" 2>&1
-  exit 1
-fi
+# Set permissions for static files
 sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static
 sudo chmod -R 755 /home/ec2-user/PigeonPulse/static
-echo "Static directory contents:" >> "$LOG_FILE"
-ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_FILE"
 
-# Start backend
+# Create and configure systemd service
 echo "Starting backend service..." >> "$LOG_FILE"
-cd /home/ec2-user/PigeonPulse/server-publish || { echo "Failed to cd into server-publish" >> "$LOG_FILE"; exit 1; }
-if [ ! -f "PigeonPulse.Api.dll" ]; then
-  echo "Error: PigeonPulse.Api.dll not found in server-publish" >> "$LOG_FILE"
-  ls -la /home/ec2-user/PigeonPulse/server-publish >> "$LOG_FILE"
-  exit 1
-fi
 sudo bash -c "cat > /etc/systemd/system/pigeonpulse.service <<EOF
 [Unit]
 Description=PigeonPulse API Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ec2-user/PigeonPulse/server-publish
+WorkingDirectory=/home/ec2-user/PigeonPulse
 ExecStart=/usr/bin/dotnet PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
@@ -45,6 +30,7 @@ Environment=ASPNETCORE_ENVIRONMENT=Production
 [Install]
 WantedBy=multi-user.target
 EOF"
+
 sudo systemctl daemon-reload
 sudo systemctl enable pigeonpulse.service
 sudo systemctl start pigeonpulse.service
