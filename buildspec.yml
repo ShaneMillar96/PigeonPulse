@@ -4,11 +4,9 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
+      dotnet: 8.0
     commands:
       - echo "Installing dependencies..."
-      - curl -fsSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir $HOME/.dotnet --version 8.0.204
-      - export PATH="$HOME/.dotnet:$PATH"
-      - dotnet --version
       - npm install --prefix client
       - dotnet restore server/src/PigeonPulse.sln
 
@@ -27,16 +25,18 @@ phases:
       - rm -rf server-publish
       - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./server-publish --no-restore
       - echo "Verifying publish output..."
-      - ls -la server-publish
-      - echo "Copying dist to server-publish for deployment..."
-      - cp -r client/dist ./server-publish/static || { echo "Failed to copy dist to static"; exit 1; }
+      - ls -la server-publish || { echo "server-publish directory missing after publish"; exit 1; }
+      - echo "Copying dist to server-publish/static for deployment..."
+      - mkdir -p server-publish/static
+      - cp -r client/dist/* server-publish/static || { echo "Failed to copy dist to static"; exit 1; }
+      - echo "Verifying static contents..."
+      - ls -la server-publish/static || { echo "static directory missing after copy"; exit 1; }
 
 artifacts:
   files:
     - appspec.yml
-    - scripts/deploy.sh
     - scripts/before_install.sh
-    - client/**
+    - scripts/deploy.sh
     - server-publish/**
   discard-paths: no
 cache:

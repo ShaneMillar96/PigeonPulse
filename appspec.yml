@@ -1,15 +1,13 @@
 version: 0.0
 os: linux
 files:
-  - source: client
-    destination: /home/ec2-user/PigeonPulse/client
   - source: server-publish
     destination: /home/ec2-user/PigeonPulse/server-publish
   - source: server-publish/static
     destination: /home/ec2-user/PigeonPulse/static
-  - source: scripts/deploy.sh
-    destination: /home/ec2-user/PigeonPulse/scripts
   - source: scripts/before_install.sh
+    destination: /home/ec2-user/PigeonPulse/scripts
+  - source: scripts/deploy.sh
     destination: /home/ec2-user/PigeonPulse/scripts
 permissions:
   - object: /home/ec2-user/PigeonPulse
@@ -26,7 +24,7 @@ permissions:
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
-      timeout: 900
+      timeout: 300
       runas: ec2-user
   AfterInstall:
     - location: scripts/deploy.sh

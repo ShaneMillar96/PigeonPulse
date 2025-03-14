@@ -2,37 +2,40 @@
 set -e
 
 LOG_DIR="/home/ec2-user/pigeonpulse-logs"
+LOG_FILE="$LOG_DIR/deploy.log"
 mkdir -p "$LOG_DIR"
 chmod 755 "$LOG_DIR"
 
-# Log start time
-echo "Deployment started at $(date)" >> "$LOG_DIR/deploy.log"
+echo "Deployment started at $(date)" >> "$LOG_FILE"
 
-# Verify static directory (populated by appspec.yml)
-echo "Verifying static directory..." >> "$LOG_DIR/deploy.log"
+# Validate static directory
+echo "Validating static directory..." >> "$LOG_FILE"
 if [ ! -f "/home/ec2-user/PigeonPulse/static/index.html" ]; then
-  echo "Error: static directory is missing index.html - deployment artifact may be incomplete" >> "$LOG_DIR/deploy.log"
-  ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_DIR/deploy.log" 2>&1
+  echo "Error: /home/ec2-user/PigeonPulse/static/index.html not found" >> "$LOG_FILE"
+  ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_FILE" 2>&1
   exit 1
 fi
 sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static
 sudo chmod -R 755 /home/ec2-user/PigeonPulse/static
-echo "Static directory contents:" >> "$LOG_DIR/deploy.log"
-ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_DIR/deploy.log" 2>&1
+echo "Static directory contents:" >> "$LOG_FILE"
+ls -la /home/ec2-user/PigeonPulse/static >> "$LOG_FILE"
 
-# Start Backend (.NET API)
-echo "Starting Backend (.NET API)..." >> "$LOG_DIR/deploy.log"
-cd /home/ec2-user/PigeonPulse/server-publish || { echo "Failed to cd into server-publish" >> "$LOG_DIR/deploy.log"; exit 1; }
-export ASPNETCORE_ENVIRONMENT=Production
-if [ ! -f /etc/systemd/system/pigeonpulse.service ]; then
-  cat <<EOF | sudo tee /etc/systemd/system/pigeonpulse.service
+# Start backend
+echo "Starting backend service..." >> "$LOG_FILE"
+cd /home/ec2-user/PigeonPulse/server-publish || { echo "Failed to cd into server-publish" >> "$LOG_FILE"; exit 1; }
+if [ ! -f "PigeonPulse.Api.dll" ]; then
+  echo "Error: PigeonPulse.Api.dll not found in server-publish" >> "$LOG_FILE"
+  ls -la /home/ec2-user/PigeonPulse/server-publish >> "$LOG_FILE"
+  exit 1
+fi
+sudo bash -c "cat > /etc/systemd/system/pigeonpulse.service <<EOF
 [Unit]
 Description=PigeonPulse API Service
 After=network.target
 
 [Service]
 WorkingDirectory=/home/ec2-user/PigeonPulse/server-publish
-ExecStart=/usr/bin/dotnet PigeonPulse.Api.dll --urls "http://0.0.0.0:5264"
+ExecStart=/usr/bin/dotnet PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
 SyslogIdentifier=pigeonpulse
@@ -41,27 +44,53 @@ Environment=ASPNETCORE_ENVIRONMENT=Production
 
 [Install]
 WantedBy=multi-user.target
-EOF
-  sudo systemctl daemon-reload
-  sudo systemctl enable pigeonpulse.service
-fi
-sudo systemctl restart pigeonpulse.service
+EOF"
+sudo systemctl daemon-reload
+sudo systemctl enable pigeonpulse.service
+sudo systemctl start pigeonpulse.service
 sleep 5
-if ! sudo systemctl status pigeonpulse.service >> "$LOG_DIR/deploy.log" 2>&1; then
-  echo "Backend service failed to start" >> "$LOG_DIR/deploy.log"
+if ! sudo systemctl status pigeonpulse.service >> "$LOG_FILE" 2>&1; then
+  echo "Error: Backend service failed to start" >> "$LOG_FILE"
   exit 1
 fi
 
-# Restart Nginx with validation
-echo "Restarting Nginx..." >> "$LOG_DIR/deploy.log"
-if ! sudo systemctl restart nginx 2>> "$LOG_DIR/deploy.log"; then
-  echo "Nginx restart failed" >> "$LOG_DIR/deploy.log"
+# Update Nginx configuration
+echo "Updating Nginx configuration..." >> "$LOG_FILE"
+sudo bash -c "cat > /etc/nginx/conf.d/pigeonpulse.conf <<EOF
+server {
+    listen 80;
+    server_name 13.48.248.248;
+
+    root /home/ec2-user/PigeonPulse/static;
+    index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:5264;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF"
+
+# Restart Nginx
+echo "Restarting Nginx..." >> "$LOG_FILE"
+if ! sudo nginx -t >> "$LOG_FILE" 2>&1; then
+  echo "Error: Nginx configuration test failed" >> "$LOG_FILE"
   exit 1
 fi
-if ! sudo nginx -t >> "$LOG_DIR/deploy.log" 2>&1; then
-  echo "Nginx configuration test failed" >> "$LOG_DIR/deploy.log"
+if ! sudo systemctl restart nginx >> "$LOG_FILE" 2>&1; then
+  echo "Error: Nginx restart failed" >> "$LOG_FILE"
   exit 1
 fi
 
-echo "Deployment completed successfully at $(date)" >> "$LOG_DIR/deploy.log"
+echo "Deployment completed at $(date)" >> "$LOG_FILE"
 exit 0
