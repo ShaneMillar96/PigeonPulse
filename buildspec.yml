@@ -22,6 +22,9 @@ phases:
       - npm install --prefix client
       - echo "Restoring .NET dependencies..."
       - dotnet restore server/src/PigeonPulse.sln
+      - echo "Listing final contents of publish/ for debugging..."
+      - ls -laR publish/ || echo "publish/ directory issue"
+      - echo "Build completed successfully."
   build:
     commands:
       - echo "Building the React frontend..."
@@ -43,4 +46,5 @@ artifacts:
     - appspec.yml
     - scripts/**
     - publish/**
+    - publish/static/**  
   discard-paths: no
