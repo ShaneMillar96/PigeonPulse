@@ -13,6 +13,8 @@ phases:
       - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
       - apt-get update
       - apt-get install -y nodejs
+      - echo "Updating PATH to use Node.js 18.x..."
+      - export PATH=/usr/bin:$PATH
       - echo "Verifying Node.js installation..."
       - node --version
       - npm --version
