@@ -1,32 +1,50 @@
 version: 0.2
-
 phases:
   install:
-    runtime-versions:
-      nodejs: 18
     commands:
-      - echo "Installing dependencies..."
-      - npm install -g yarn
-
-  pre_build:
-    commands:
-      - echo "Running pre-build tasks..."
-      - yarn install --frozen-lockfile
-
+      - echo "Installing .NET SDK 8.0.100..."
+      - wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+      - chmod +x dotnet-install.sh
+      - ./dotnet-install.sh --version 8.0.100
+      - ln -sf $HOME/.dotnet/dotnet /usr/local/bin/dotnet
+      - echo "Verifying .NET SDK installation..."
+      - dotnet --version
+      - echo "Installing Node.js 18.x..."
+      - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+      - apt-get update
+      - apt-get install -y nodejs
+      - echo "Updating PATH to use Node.js 18.x..."
+      - export PATH=/usr/bin:$PATH
+      - echo "Verifying Node.js installation..."
+      - node --version
+      - npm --version
+      - echo "Installing frontend dependencies..."
+      - npm install --prefix client
+      - echo "Restoring .NET dependencies..."
+      - dotnet restore server/src/PigeonPulse.sln
+      - echo "Listing final contents of publish/ for debugging..."
+      - ls -laR publish/ || echo "publish/ directory issue"
+      - echo "Build completed successfully."
   build:
     commands:
-      - echo "Building the frontend..."
-      - yarn build
-      - echo "Building the backend..."
-      - dotnet publish -c Release -o publish
-
-  post_build:
-    commands:
-      - echo "Packaging application..."
-      - zip -r deploy.zip .
-      - echo "Build completed."
-
+      - echo "Building the React frontend..."
+      - npm run build --prefix client
+      - if [ $? -ne 0 ]; then echo "Frontend build failed"; exit 1; fi
+      - echo "Listing contents of client/dist/ for debugging..."
+      - ls -l client/dist/ || echo "client/dist/ does not exist or is empty"
+      - echo "Publishing the ASP.NET backend..."
+      - dotnet publish server/src/PigeonPulse.Api --configuration Release --output ./publish
+      - if [ $? -ne 0 ]; then echo "Backend publish failed"; exit 1; fi
+      - echo "Copying static files to publish/static directory..."
+      - mkdir -p publish/static
+      - cp -r client/dist/* ./publish/static/ || { echo "Failed to copy static files"; exit 1; }
+      - echo "Listing contents of publish/static/ for debugging..."
+      - ls -l publish/static/ || echo "publish/static/ is empty"
+      - echo "Build completed successfully."
 artifacts:
   files:
-    - deploy.zip
+    - appspec.yml
+    - scripts/**
+    - publish/**
+    - publish/static/**  
   discard-paths: no

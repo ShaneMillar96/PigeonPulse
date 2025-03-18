@@ -1,27 +1,38 @@
 #!/bin/bash
+echo "Making scripts executable..."
+chmod +x /home/ec2-user/PigeonPulse/scripts/deploy.sh
+chmod +x /home/ec2-user/PigeonPulse/scripts/before_install.sh
 
-LOG_FILE="/home/ec2-user/PigeonPulse/deploy.log"
-DEPLOY_DIR="/home/ec2-user/PigeonPulse"
+set +e  # Disable automatic exit on error
 
-# Ensure scripts directory exists
-if [ ! -d "$DEPLOY_DIR/scripts" ]; then
-  mkdir -p "$DEPLOY_DIR/scripts"
-  sudo chown ec2-user:ec2-user "$DEPLOY_DIR/scripts"
-fi
+LOG_FILE="/home/ec2-user/before_install.log"
+echo "BeforeInstall started at $(date)" >> "$LOG_FILE"
+
+# Log environment variables and deployment details
+echo "Environment: $DEPLOYMENT_GROUP_NAME, $LIFECYCLE_EVENT" >> "$LOG_FILE"
+echo "Current directory: $(pwd)" >> "$LOG_FILE"
+
+# Clean up any ongoing deployment state
+echo "Cleaning up any ongoing deployment state..." >> "$LOG_FILE"
+sudo rm -f /opt/codedeploy-agent/deployment-root/ongoing-deployment 2>> "$LOG_FILE" || true
 
 # Stop services
-sudo systemctl stop nginx
-sudo systemctl stop pigeonpulse.service
-sleep 2
+echo "Stopping Nginx and pigeonpulse services..." >> "$LOG_FILE"
+sudo systemctl stop nginx 2>> "$LOG_FILE" || true
+sudo systemctl stop pigeonpulse.service 2>> "$LOG_FILE" || true
 
-if sudo systemctl is-active --quiet nginx || sudo systemctl is-active --quiet pigeonpulse.service; then
-  echo "Error: Services did not stop properly." >> "$LOG_FILE"
-  exit 1
+# Clean deployment directory without deleting it
+DEPLOY_DIR="/home/ec2-user/PigeonPulse"
+echo "Cleaning up contents of $DEPLOY_DIR..." >> "$LOG_FILE"
+if [ -d "$DEPLOY_DIR" ]; then
+  sudo find "$DEPLOY_DIR" -mindepth 1 -delete 2>> "$LOG_FILE" || { echo "Failed to clean contents of $DEPLOY_DIR" >> "$LOG_FILE"; exit 1; }
+else
+  echo "Creating $DEPLOY_DIR..." >> "$LOG_FILE"
+  sudo mkdir -p "$DEPLOY_DIR"
+  sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
 fi
 
-# Clean old deployment, but keep logs/configs
-sudo find "$DEPLOY_DIR" -mindepth 1 ! -path "$DEPLOY_DIR/pigeonpulse-logs/*" -delete
 
-# Ensure correct permissions for scripts
-sudo chown -R ec2-user:ec2-user "$DEPLOY_DIR"
-sudo chmod +x "$DEPLOY_DIR/scripts"/*.sh
+echo "BeforeInstall completed at $(date)" >> "$LOG_FILE"
+
+exit 0
