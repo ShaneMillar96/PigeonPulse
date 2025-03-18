@@ -44,7 +44,8 @@ phases:
 artifacts:
   files:
     - appspec.yml
-    - before_install.sh
-    - deploy.sh
+    - scripts/before_install.sh
+    - scripts/deploy.sh
     - publish/**/*
     - client/dist/**/*
+
