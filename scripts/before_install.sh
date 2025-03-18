@@ -17,11 +17,11 @@ echo "Stopping Nginx and pigeonpulse services..." >> "$LOG_FILE"
 sudo systemctl stop nginx 2>> "$LOG_FILE" || true
 sudo systemctl stop pigeonpulse.service 2>> "$LOG_FILE" || true
 
-# Clean deployment directory contents
+# Clean deployment directory without deleting it
 DEPLOY_DIR="/home/ec2-user/PigeonPulse"
 echo "Cleaning up contents of $DEPLOY_DIR..." >> "$LOG_FILE"
 if [ -d "$DEPLOY_DIR" ]; then
-  sudo rm -rf "$DEPLOY_DIR"/* 2>> "$LOG_FILE" || { echo "Failed to clean contents of $DEPLOY_DIR" >> "$LOG_FILE"; exit 1; }
+  sudo find "$DEPLOY_DIR" -mindepth 1 -delete 2>> "$LOG_FILE" || { echo "Failed to clean contents of $DEPLOY_DIR" >> "$LOG_FILE"; exit 1; }
 else
   echo "Creating $DEPLOY_DIR..." >> "$LOG_FILE"
   sudo mkdir -p "$DEPLOY_DIR"

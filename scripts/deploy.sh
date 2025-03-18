@@ -37,8 +37,8 @@ Description=PigeonPulse API Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ec2-user/PigeonPulse/server-publish
-ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/server-publish/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
+WorkingDirectory=/home/ec2-user/PigeonPulse/publish
+ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/publish/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
 SyslogIdentifier=pigeonpulse
@@ -60,6 +60,10 @@ if ! sudo systemctl status pigeonpulse.service >> "$LOG_FILE" 2>&1; then
   sudo journalctl -u pigeonpulse.service -b >> "$LOG_FILE" 2>&1
   exit 1
 fi
+
+# Copy static files from the correct location
+echo "Copying static files..." >> "$LOG_FILE"
+sudo cp -r /home/ec2-user/PigeonPulse/publish/static/* /home/ec2-user/PigeonPulse/static/
 
 # Update Nginx configuration
 echo "Updating Nginx configuration..." >> "$LOG_FILE"
