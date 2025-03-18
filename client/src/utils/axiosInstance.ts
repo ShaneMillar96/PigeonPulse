@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://16.170.252.225:5264/api', // Updated to deployed backend IP
+    baseURL: 'http://13.48.248.248:5264/api', // Updated to deployed backend IP
 });
 
 axiosInstance.interceptors.request.use(
