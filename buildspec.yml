@@ -14,7 +14,7 @@ phases:
       - echo "Building frontend..."
       - npm run build  
       - echo "Building backend..."
-      - cd ../server
+      - cd ../server/src
       - dotnet restore
       - dotnet publish -c Release -o ../publish
 
