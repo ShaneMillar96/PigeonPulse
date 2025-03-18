@@ -28,6 +28,9 @@ else
   sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
 fi
 
+echo "Making deploy.sh executable..." >> "$LOG_FILE"
+sudo chmod +x /home/ec2-user/PigeonPulse/scripts/deploy.sh
+
 echo "BeforeInstall completed at $(date)" >> "$LOG_FILE"
 
 exit 0
