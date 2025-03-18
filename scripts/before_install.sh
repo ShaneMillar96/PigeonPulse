@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set +e  # Disable automatic exit on error
 
 LOG_FILE="/home/ec2-user/before_install.log"
 echo "BeforeInstall started at $(date)" >> "$LOG_FILE"
