@@ -1,4 +1,8 @@
 #!/bin/bash
+echo "Making scripts executable..."
+chmod +x /home/ec2-user/PigeonPulse/scripts/deploy.sh
+chmod +x /home/ec2-user/PigeonPulse/scripts/before_install.sh
+
 set +e  # Disable automatic exit on error
 
 LOG_FILE="/home/ec2-user/before_install.log"
@@ -28,8 +32,6 @@ else
   sudo chown ec2-user:ec2-user "$DEPLOY_DIR"
 fi
 
-echo "Making deploy.sh executable..." >> "$LOG_FILE"
-sudo chmod +x /home/ec2-user/PigeonPulse/scripts/deploy.sh
 
 echo "BeforeInstall completed at $(date)" >> "$LOG_FILE"
 

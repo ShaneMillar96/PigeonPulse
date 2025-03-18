@@ -2,10 +2,11 @@ version: 0.0
 os: linux
 
 files:
-  - source: /
-    destination: /home/ec2-user/PigeonPulse
-    overwrite: yes
-
+  - source: scripts/deploy.sh
+    destination: /home/ec2-user/PigeonPulse/scripts/
+    owner: ec2-user
+    mode: 755
+    
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
