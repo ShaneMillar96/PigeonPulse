@@ -29,3 +29,5 @@ else
 fi
 
 echo "BeforeInstall completed at $(date)" >> "$LOG_FILE"
+
+exit 0
