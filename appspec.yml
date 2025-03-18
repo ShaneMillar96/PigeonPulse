@@ -34,6 +34,9 @@ hooks:
     - location: scripts/build_frontend.sh
       timeout: 300
       runas: ec2-user
+    - location: scripts/copy_static.sh
+      timeout: 300
+      runas: ec2-user
     - location: scripts/deploy.sh
       timeout: 300
       runas: ec2-user

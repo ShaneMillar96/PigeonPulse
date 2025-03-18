@@ -4,6 +4,10 @@ set -e
 LOG_FILE="/home/ec2-user/before_install.log"
 echo "BeforeInstall started at $(date)" >> "$LOG_FILE"
 
+# Log environment variables and deployment details
+echo "Environment: $DEPLOYMENT_GROUP_NAME, $LIFECYCLE_EVENT" >> "$LOG_FILE"
+echo "Current directory: $(pwd)" >> "$LOG_FILE"
+
 # Clean up any ongoing deployment state
 echo "Cleaning up any ongoing deployment state..." >> "$LOG_FILE"
 sudo rm -f /opt/codedeploy-agent/deployment-root/ongoing-deployment 2>> "$LOG_FILE" || true
