@@ -2,51 +2,35 @@
 
 set -e
 
-LOG_DIR="/home/ec2-user/pigeonpulse-logs"
-LOG_FILE="$LOG_DIR/deploy.log"
-mkdir -p "$LOG_DIR"
-chmod 755 "$LOG_DIR"
+LOG_FILE="/home/ec2-user/pigeonpulse-logs/deploy.log"
+mkdir -p /home/ec2-user/pigeonpulse-logs
+chmod 755 /home/ec2-user/pigeonpulse-logs
 echo "Deployment started at $(date)" >> "$LOG_FILE"
 
-# Verify deployed files
-echo "Listing deployed backend files..." >> "$LOG_FILE"
-ls -l /home/ec2-user/PigeonPulse/ >> "$LOG_FILE" 2>&1
-echo "Listing deployed frontend files..." >> "$LOG_FILE"
-ls -l /home/ec2-user/PigeonPulse/client/dist/ >> "$LOG_FILE" 2>&1
-
 # Validate required files
-if [ ! -f /home/ec2-user/PigeonPulse/server-publish/PigeonPulse.Api.dll ]; then
+if [ ! -f /home/ec2-user/PigeonPulse/publish/PigeonPulse.Api.dll ]; then
   echo "Error: PigeonPulse.Api.dll not found" >> "$LOG_FILE"
   exit 1
 fi
-if [ ! -f /home/ec2-user/PigeonPulse/client/dist/index.html ]; then
-  echo "Error: index.html not found in frontend build directory" >> "$LOG_FILE"
+if [ ! -f /home/ec2-user/PigeonPulse/publish/static/index.html ]; then
+  echo "Error: index.html not found" >> "$LOG_FILE"
   exit 1
 fi
 
-# Ensure frontend static directory exists and set permissions
-echo "Setting permissions for frontend files..." >> "$LOG_FILE"
-sudo mkdir -p /home/ec2-user/PigeonPulse/static
-sudo cp -r /home/ec2-user/PigeonPulse/client/dist/* /home/ec2-user/PigeonPulse/static/
-sudo chown -R nginx:nginx /home/ec2-user/PigeonPulse/static
-sudo chmod -R 755 /home/ec2-user/PigeonPulse/static
-
-# Create and configure systemd service for backend API
-echo "Creating backend service..." >> "$LOG_FILE"
+# Create and configure systemd service
 sudo bash -c "cat > /etc/systemd/system/pigeonpulse.service <<EOF
 [Unit]
 Description=PigeonPulse API Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ec2-user/PigeonPulse/server-publish
-ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/server-publish/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
+WorkingDirectory=/home/ec2-user/PigeonPulse/publish
+ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/publish/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
 SyslogIdentifier=pigeonpulse
 User=ec2-user
 Environment=ASPNETCORE_ENVIRONMENT=Production
-Environment=ASPNETCORE_LOGGING__CONSOLE__LOGLEVEL__DEFAULT=Debug
 
 [Install]
 WantedBy=multi-user.target
@@ -56,28 +40,14 @@ sudo systemctl daemon-reload
 sudo systemctl restart pigeonpulse
 sudo systemctl enable pigeonpulse.service
 
-# Check if backend service is running
-sleep 5
-if ! sudo systemctl status pigeonpulse.service >> "$LOG_FILE" 2>&1; then
-  echo "Error: Backend service failed to start" >> "$LOG_FILE"
-  sudo journalctl -u pigeonpulse.service -b >> "$LOG_FILE" 2>&1
-  exit 1
-fi
-
 # Update Nginx configuration
-echo "Updating Nginx configuration..." >> "$LOG_FILE"
 sudo bash -c "cat > /etc/nginx/conf.d/pigeonpulse.conf <<EOF
 server {
     listen 80;
     server_name dev.pigeonpulse.com;
-
-    root /home/ec2-user/PigeonPulse/static;
+    root /home/ec2-user/PigeonPulse/publish/static;
     index index.html index.htm;
-
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-
+    location / { try_files \$uri \$uri/ /index.html; }
     location /api/ {
         proxy_pass http://localhost:5264;
         proxy_http_version 1.1;
@@ -91,16 +61,7 @@ server {
 }
 EOF"
 
-# Restart Nginx
-echo "Restarting Nginx..." >> "$LOG_FILE"
-if ! sudo nginx -t >> "$LOG_FILE" 2>&1; then
-  echo "Error: Nginx configuration test failed" >> "$LOG_FILE"
-  exit 1
-fi
-if ! sudo systemctl restart nginx >> "$LOG_FILE" 2>&1; then
-  echo "Error: Nginx restart failed" >> "$LOG_FILE"
-  exit 1
-fi
+sudo systemctl restart nginx
 
 echo "Deployment completed successfully at $(date)" >> "$LOG_FILE"
 exit 0
