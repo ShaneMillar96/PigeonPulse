@@ -31,6 +31,9 @@ hooks:
       timeout: 300
       runas: ec2-user
   AfterInstall:
+    - location: scripts/build_frontend.sh
+      timeout: 300
+      runas: ec2-user
     - location: scripts/deploy.sh
       timeout: 300
       runas: ec2-user

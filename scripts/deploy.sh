@@ -37,19 +37,21 @@ Description=PigeonPulse API Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ec2-user/PigeonPulse
-ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
+WorkingDirectory=/home/ec2-user/PigeonPulse/server-publish
+ExecStart=/usr/bin/dotnet /home/ec2-user/PigeonPulse/server-publish/PigeonPulse.Api.dll --urls http://0.0.0.0:5264
 Restart=always
 RestartSec=10
 SyslogIdentifier=pigeonpulse
 User=ec2-user
 Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_LOGGING__CONSOLE__LOGLEVEL__DEFAULT=Debug
 
 [Install]
 WantedBy=multi-user.target
 EOF"
-
 sudo systemctl daemon-reload
+sudo systemctl restart pigeonpulse
+
 sudo systemctl enable pigeonpulse.service
 sudo systemctl start pigeonpulse.service
 sleep 5
