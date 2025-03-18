@@ -2,15 +2,17 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 18  # ✅ Ensures CodeBuild uses Node.js 18
     commands:
       - echo "Installing dependencies..."
-      - cd client # Ensure we are in the correct directory
+      - cd client
       - npm install
   
   build:
     commands:
       - echo "Building frontend..."
-      - npm run build
+      - npm run build -- --openssl-legacy-provider
       - echo "Building backend..."
       - cd ../server # Adjust if needed
       - dotnet restore
