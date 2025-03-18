@@ -17,11 +17,23 @@ permissions:
     owner: ec2-user
     group: ec2-user
     type: directory
+    mode: 755
   - object: /home/ec2-user/PigeonPulse/static
     owner: nginx
     group: nginx
     type: directory
     mode: 755
+  - object: /home/ec2-user/PigeonPulse/scripts
+    owner: ec2-user
+    group: ec2-user
+    type: directory
+    mode: 755
+  - object: /home/ec2-user/PigeonPulse/scripts
+    pattern: "*.sh"
+    owner: ec2-user
+    group: ec2-user
+    type: file
+    mode: 755  # Ensure scripts are executable
 
 hooks:
   BeforeInstall:
