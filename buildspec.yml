@@ -2,27 +2,28 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      nodejs: 16
     commands:
       - echo "Installing dependencies..."
+      - cd client # Ensure we are in the correct directory
       - npm install
-
+  
   build:
     commands:
-      - echo "Building React frontend..."
+      - echo "Building frontend..."
       - npm run build
-      - echo "Building .NET backend..."
-      - dotnet publish -c Release -o publish
-
+      - echo "Building backend..."
+      - cd ../server # Adjust if needed
+      - dotnet restore
+      - dotnet publish -c Release -o ../publish
+  
   post_build:
     commands:
-      - echo "Build complete, preparing for deployment..."
+      - echo "Build complete, preparing artifacts..."
 
 artifacts:
   files:
-    - publish/**
-    - scripts/**
     - appspec.yml
-    - buildspec.yml
-  discard-paths: no
+    - before_install.sh
+    - deploy.sh
+    - publish/**/*
+    - client/dist/**/* # Ensure the frontend is included
