@@ -1,8 +1,11 @@
-version: 0.0
+version: 0.1
 os: linux
 files:
-  - source: /
-    destination: /home/ec2-user/PigeonPulse
+  - source: scripts/
+    destination: /home/ec2-user/PigeonPulse/scripts
+    overwrite: yes
+  - source: static/
+    destination: /home/ec2-user/PigeonPulse/static
     overwrite: yes
 
 permissions:
@@ -10,27 +13,27 @@ permissions:
     owner: ec2-user
     group: ec2-user
     mode: 755
-    type:
-      - directory
+    type: directory
   - object: /home/ec2-user/PigeonPulse/static
     owner: nginx
     group: nginx
     mode: 755
-    type:
-      - directory
+    type: directory
   - object: /home/ec2-user/PigeonPulse/scripts
     owner: ec2-user
     group: ec2-user
     mode: 755
-    type:
-      - directory
-  - object: /home/ec2-user/PigeonPulse/scripts
-    pattern: "*.sh"
+    type: directory
+  - object: /home/ec2-user/PigeonPulse/scripts/before_install.sh
     owner: ec2-user
     group: ec2-user
     mode: 755
-    type:
-      - file
+    type: file
+  - object: /home/ec2-user/PigeonPulse/scripts/deploy.sh
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+    type: file
 
 hooks:
   BeforeInstall:
