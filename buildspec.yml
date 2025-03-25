@@ -46,6 +46,7 @@ artifacts:
     - appspec.yml
     - scripts/before_install.sh
     - scripts/deploy.sh
+    - scripts/migrate.sh
     - publish/**/*
     - client/dist/**/*
 
