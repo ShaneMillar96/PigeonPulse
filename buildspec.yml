@@ -47,6 +47,7 @@ artifacts:
     - scripts/before_install.sh
     - scripts/deploy.sh
     - scripts/migrate.sh
+    - database/application/migrations/**/*
     - publish/**/*
     - client/dist/**/*
 
