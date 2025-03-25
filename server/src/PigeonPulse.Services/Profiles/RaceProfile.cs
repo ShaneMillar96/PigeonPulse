@@ -23,12 +23,12 @@ public class RaceProfile : Profile
         CreateMap<Race, RaceDto>();
         
         CreateMap<RaceResult, RaceResultDto>()
-            .ForMember(d => d.TimeRecorded, o => o.MapFrom(x => x.FinishTime.ToTimeSpan())); 
-        
+            .ForMember(d => d.TimeRecorded, o => o.MapFrom(x => x.FinishTime.ToTimeSpan()))
+            .ForMember(d => d.RingNumber, o => o.MapFrom(x => x.Pigeon.RingNumber));
+
         CreateMap<RaceStatus, RaceStatusDto>();
         
         CreateMap<Basket, BasketDto>()
-            .ForMember(d => d.PigeonName, o => o.MapFrom(x => x.Pigeon.Name))
             .ForMember(d => d.RingNumber, o => o.MapFrom(x => x.Pigeon.RingNumber));
     }
 

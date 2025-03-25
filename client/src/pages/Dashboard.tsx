@@ -29,13 +29,13 @@ export const Dashboard: React.FC = () => {
                                 icon={<FaDove/>}
                                 title="Best Pigeon"
                                 text={dashboardData.bestPigeon
-                                    ? `${dashboardData.bestPigeon.name} (${dashboardData.bestPigeon.ringNumber})`
+                                    ? `${dashboardData.bestPigeon.ringNumber}`
                                     : 'N/A'}
                             />
                             <StatCard
                                 icon={<FaTrophy/>}
                                 title="Best Race"
-                                text={dashboardData.bestRace?.name || 'N/A'}
+                                text={dashboardData.bestRace?.ringNumber || 'N/A'}
                             />
                             <StatCard
                                 icon={<FaChartLine/>}
@@ -46,14 +46,14 @@ export const Dashboard: React.FC = () => {
                                 icon={<FaFlagCheckered/>}
                                 title="Best Long-Range Pigeon"
                                 text={dashboardData.bestLongRangePigeon
-                                    ? `${dashboardData.bestLongRangePigeon.name} (${dashboardData.bestLongRangePigeon.ringNumber}) - ${dashboardData.bestLongRangePigeon.raceDistance} km`
+                                    ? `${dashboardData.bestLongRangePigeon.ringNumber} - ${dashboardData.bestLongRangePigeon.raceDistance} km`
                                     : 'N/A'}
                             />
                             <StatCard
                                 icon={<FaPlane/>}
                                 title="Most Active Pigeon"
                                 text={dashboardData.mostActivePigeon
-                                    ? `${dashboardData.mostActivePigeon.name} (${dashboardData.mostActivePigeon.ringNumber}) - ${dashboardData.mostActivePigeon.raceCount} Races`
+                                    ? `${dashboardData.mostActivePigeon.ringNumber} - ${dashboardData.mostActivePigeon.raceCount} Races`
                                     : 'N/A'}
                             />
                         </div>

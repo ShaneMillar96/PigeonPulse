@@ -96,17 +96,16 @@ export const RaceBasket: React.FC = () => {
                                         >
                                             <img
                                                 src="/placeholder-pigeon.png"
-                                                alt={`Pigeon ${pigeon.name}`}
+                                                alt={`Pigeon ${pigeon.ringNumber}`}
                                                 className="w-16 h-16 rounded-full mb-2"
                                             />
-                                            <p className="text-sm font-medium text-gray-800">{pigeon.name}</p>
                                             <p className="text-xs text-gray-500">Ring: {pigeon.ringNumber}</p>
                                             <motion.button
                                                 onClick={() => handleAddPigeon(pigeon.id)}
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 className="mt-2 flex items-center bg-blue-500 text-white px-3 py-1 rounded shadow hover:bg-blue-600 transition"
-                                                aria-label={`Add ${pigeon.name} to basket`}
+                                                aria-label={`Add ${pigeon.ringNumber} to basket`}
                                             >
                                                 <FaPlus className="mr-1" />
                                                 Add

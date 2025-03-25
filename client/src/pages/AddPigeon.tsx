@@ -12,7 +12,6 @@ export const AddPigeon: React.FC = () => {
     const { pigeonId } = useParams<{ pigeonId: string }>();
 
     const [pigeon, setPigeon] = useState<PigeonRequest>({
-        name: '',
         ringNumber: '',
         color: '',
         sex: '',
@@ -36,7 +35,7 @@ export const AddPigeon: React.FC = () => {
         }
     }, [pigeonId, getPigeonById, isLoaded]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setPigeon({ ...pigeon, [e.target.name]: e.target.value });
     };
 
@@ -110,14 +109,17 @@ export const AddPigeon: React.FC = () => {
                             onChange={handleChange}
                             className="border p-3 w-full rounded-md"
                         />
-                        <input
-                            type="text"
+                        <select
                             name="sex"
-                            placeholder="Sex"
                             value={pigeon.sex}
                             onChange={handleChange}
                             className="border p-3 w-full rounded-md"
-                        />
+                            required
+                        >
+                            <option value="">Select Sex</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
 
                         <button
                             type="submit"

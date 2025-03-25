@@ -79,7 +79,7 @@ export const Leaderboard: React.FC = () => {
                                             {index + 1}{" "}
                                             {index === 0 && <FaMedal className="inline text-yellow-500 ml-1" />}
                                         </td>
-                                        <td className="p-3 border">{entry.pigeonName}</td>
+                                        <td className="p-3 border">{entry.ringNumber}</td>
                                         <td className="p-3 border text-center">{entry.timeRecorded}</td>
                                     </tr>
                                 ))}
