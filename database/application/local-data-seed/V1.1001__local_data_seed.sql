@@ -1,36 +1,35 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-
 INSERT INTO users (id, email, username, password_hash, created_date)
 VALUES
     (1, 'shane_millar96@hotmail.com', 'shanemillar', crypt('password', gen_salt('bf', 8)), NOW());
 
 ALTER SEQUENCE users_id_seq RESTART WITH 2;
 
-INSERT INTO pigeons (id, user_id, name, ring_number, color, strain, created_date)
+INSERT INTO pigeons (id, user_id, ring_number, color, sex, created_date)
 VALUES
-    (1, 1, 'Skyhawk', 'RNG1001', 'Blue', 'Janssen', NOW()),
-    (2, 1, 'Storm', 'RNG1002', 'Red', 'Van Loon', NOW()),
-    (3, 1, 'Thunderbolt', 'RNG1003', 'White', 'Houben', NOW()),
-    (4, 1, 'Flash', 'RNG1004', 'Black', 'Janssen', NOW()),
-    (5, 1, 'Falcon', 'RNG1005', 'Grey', 'Meuleman', NOW()),
-    (6, 1, 'Lightning', 'RNG1006', 'Silver', 'Janssen', NOW()),
-    (7, 1, 'Eagle', 'RNG1007', 'Blue Bar', 'Stichelbaut', NOW()),
-    (8, 1, 'Phantom', 'RNG1008', 'White', 'Janssen', NOW()),
-    (9, 1, 'Rocket', 'RNG1009', 'Black', 'Van Loon', NOW()),
-    (10, 1, 'Comet', 'RNG1010', 'Brown', 'Houben', NOW()),
-    (11, 1, 'Vortex', 'RNG1011', 'Red', 'Meuleman', NOW()),
-    (12, 1, 'Cyclone', 'RNG1012', 'Grey', 'Janssen', NOW()),
-    (13, 1, 'Tornado', 'RNG1013', 'Blue', 'Houben', NOW()),
-    (14, 1, 'Blaze', 'RNG1014', 'Yellow', 'Van Loon', NOW()),
-    (15, 1, 'Meteor', 'RNG1015', 'Silver', 'Stichelbaut', NOW()),
-    (16, 1, 'Pegasus', 'RNG1016', 'Blue Bar', 'Janssen', NOW()),
-    (17, 1, 'Shadow', 'RNG1017', 'Black', 'Houben', NOW()),
-    (18, 1, 'Specter', 'RNG1018', 'White', 'Van Loon', NOW()),
-    (19, 1, 'Nova', 'RNG1019', 'Grey', 'Meuleman', NOW()),
-    (20, 1, 'Glider', 'RNG1020', 'Brown', 'Janssen', NOW());
+    (1, 1, 'RNG1001', 'Blue', 'Male', NOW()),
+    (2, 1, 'RNG1002', 'Red', 'Female', NOW()),
+    (3, 1, 'RNG1003', 'White', 'Male', NOW()),
+    (4, 1, 'RNG1004', 'Black', 'Female', NOW()),
+    (5, 1, 'RNG1005', 'Grey', 'Male', NOW()),
+    (6, 1, 'RNG1006', 'Silver', 'Female', NOW()),
+    (7, 1, 'RNG1007', 'Blue Bar', 'Male', NOW()),
+    (8, 1, 'RNG1008', 'White', 'Female', NOW()),
+    (9, 1, 'RNG1009', 'Black', 'Male', NOW()),
+    (10, 1, 'RNG1010', 'Brown', 'Female', NOW()),
+    (11, 1, 'RNG1011', 'Red', 'Male', NOW()),
+    (12, 1, 'RNG1012', 'Grey', 'Female', NOW()),
+    (13, 1, 'RNG1013', 'Blue', 'Male', NOW()),
+    (14, 1, 'RNG1014', 'Yellow', 'Female', NOW()),
+    (15, 1, 'RNG1015', 'Silver', 'Male', NOW()),
+    (16, 1, 'RNG1016', 'Blue Bar', 'Female', NOW()),
+    (17, 1, 'RNG1017', 'Black', 'Male', NOW()),
+    (18, 1, 'RNG1018', 'White', 'Female', NOW()),
+    (19, 1, 'RNG1019', 'Grey', 'Male', NOW()),
+    (20, 1, 'RNG1020', 'Brown', 'Female', NOW());
 
- ALTER SEQUENCE pigeons_id_seq RESTART WITH 21;
+ALTER SEQUENCE pigeons_id_seq RESTART WITH 21;
 
 INSERT INTO races (id, user_id, name, date, distance, weather_conditions, race_status_id, created_date)
 VALUES

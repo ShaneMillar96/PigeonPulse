@@ -1,19 +1,19 @@
 export interface Pigeon {
     id: number;
-    name: string;
     ringNumber: string;
     color?: string;
     strain?: string;
     imageUrl?: string;
     createdDate?: string;
+    sex?: string;
 }
 
 export interface PigeonRequest {
-    name: string;
     ringNumber: string;
     color?: string;
     strain?: string;
     imageUrl?: string;
+    sex?: string;
 }
 
 export interface PigeonResponse {

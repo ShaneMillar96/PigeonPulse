@@ -15,27 +15,26 @@ export const AddPigeon: React.FC = () => {
         name: '',
         ringNumber: '',
         color: '',
-        strain: '',
+        sex: '',
         imageUrl: '',
     });
-    const [isLoaded, setIsLoaded] = useState(false); // Track if data is already fetched
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         if (pigeonId && !isLoaded) {
             getPigeonById(Number(pigeonId)).then((data) => {
                 if (data) {
                     setPigeon({
-                        name: data.name,
                         ringNumber: data.ringNumber,
                         color: data.color || '',
-                        strain: data.strain || '',
+                        sex: data.sex || '',
                         imageUrl: data.imageUrl || '',
                     });
-                    setIsLoaded(true); // Mark as loaded to prevent re-fetching
+                    setIsLoaded(true);
                 }
             });
         }
-    }, [pigeonId, getPigeonById, isLoaded]); // Add isLoaded to dependencies
+    }, [pigeonId, getPigeonById, isLoaded]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPigeon({ ...pigeon, [e.target.name]: e.target.value });
@@ -95,15 +94,6 @@ export const AddPigeon: React.FC = () => {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <input
                             type="text"
-                            name="name"
-                            placeholder="Pigeon Name"
-                            value={pigeon.name}
-                            onChange={handleChange}
-                            className="border p-3 w-full rounded-md"
-                            required
-                        />
-                        <input
-                            type="text"
                             name="ringNumber"
                             placeholder="Ring Number"
                             value={pigeon.ringNumber}
@@ -122,9 +112,9 @@ export const AddPigeon: React.FC = () => {
                         />
                         <input
                             type="text"
-                            name="strain"
-                            placeholder="Strain"
-                            value={pigeon.strain}
+                            name="sex"
+                            placeholder="Sex"
+                            value={pigeon.sex}
                             onChange={handleChange}
                             className="border p-3 w-full rounded-md"
                         />
