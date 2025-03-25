@@ -6,6 +6,8 @@ files:
     destination: /home/ec2-user/PigeonPulse/publish
   - source: /scripts
     destination: /home/ec2-user/PigeonPulse/scripts
+  - source: /database/application/migrations          
+    destination: /home/ec2-user/PigeonPulse/database/application/migrations
 
 hooks:
   BeforeInstall:
