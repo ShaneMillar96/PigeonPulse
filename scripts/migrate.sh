@@ -7,7 +7,7 @@ echo "Starting Flyway migration..."
 # Example: these should be passed in securely via env vars in CodeBuild or SSM
 FLYWAY_URL="jdbc:postgresql://pigeonpulse-dev.cbiqqummoi67.eu-north-1.rds.amazonaws.com:5432/pigeonpulse-dev"
 FLYWAY_USER="pigeonpulse"
-FLYWAY_PASSWORD="password1"
+FLYWAY_PASSWORD="pigeonpulse96"
 
 docker run --rm \
   -v /home/ec2-user/PigeonPulse/database/application/migrations:/flyway/sql \
