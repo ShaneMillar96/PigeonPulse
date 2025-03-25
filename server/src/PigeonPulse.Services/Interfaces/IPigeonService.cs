@@ -10,4 +10,6 @@ public interface IPigeonService
     Task<PigeonDto?> GetPigeonByIdAsync(int pigeonId, int userId);
     Task<bool> UpdatePigeonAsync(int userId, int pigeonId, UpdatePigeonDto pigeon);
     Task<bool> DeletePigeonAsync(int userId, int pigeonId);
+
+    Task<int> CreatePairedPigeonAsync(int userId, CreatePairedPigeonDto dto);
 }

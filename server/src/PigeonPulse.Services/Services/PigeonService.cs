@@ -78,5 +78,17 @@ namespace PigeonPulse.Services.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        
+        public async Task<int> CreatePairedPigeonAsync(int userId, CreatePairedPigeonDto createPairedPigeonDto)
+        {
+            
+            var newPigeon = _mapper.Map<Pigeon>(createPairedPigeonDto);
+            newPigeon.UserId = userId;
+
+            await _context.AddAsync(newPigeon);
+            await _context.SaveChangesAsync();
+            return newPigeon.Id;
+        }
+
     }
 }

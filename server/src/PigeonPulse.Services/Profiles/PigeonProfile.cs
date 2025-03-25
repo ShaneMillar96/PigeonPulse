@@ -24,5 +24,9 @@ public class PigeonProfile : Profile
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
 
         CreateMap<UpdatePigeonDto, Pigeon>();
+        
+        CreateMap<CreatePairedPigeonDto, Pigeon>()
+            .ForMember(d => d.CreatedDate,
+                o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
     }
 }

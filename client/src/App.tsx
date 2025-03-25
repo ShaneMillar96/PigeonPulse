@@ -11,6 +11,8 @@ import { RaceBasket } from './pages/RaceBasket';
 import { RecordRaceResults } from './pages/RecordRaceResults';
 import { Leaderboard } from './pages/Leaderboard';
 import { Dashboard } from './pages/Dashboard';
+import { Pairing } from './pages/Pairing'; 
+
 
 function App() {
     return (
@@ -29,7 +31,7 @@ function App() {
                 <Route path="/race/:raceId/results" element={<RecordRaceResults />} />
                 <Route path="/race/:raceId/leaderboard" element={<Leaderboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-
+                <Route path="/pair-pigeons" element={<Pairing />} />
             </Routes>
         </Router>
     );

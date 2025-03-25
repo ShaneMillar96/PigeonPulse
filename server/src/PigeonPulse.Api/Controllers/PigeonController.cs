@@ -120,5 +120,22 @@ namespace PigeonPulse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        
+        [HttpPost("pair")]
+        public async Task<IActionResult> CreatePairedPigeon([FromBody] CreatePairedPigeonDto dto)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var pigeonId = await _pigeonService.CreatePairedPigeonAsync(userId, dto);
+                return CreatedAtAction(nameof(GetPigeonById), new { pigeonId }, pigeonId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating paired pigeon.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }

@@ -30,8 +30,28 @@ public partial class Pigeon : ICreatedByTracking
     [StringLength(10)]
     public string Sex { get; set; } = null!;
 
+    [Column("fatherid")]
+    public int? Fatherid { get; set; }
+
+    [Column("motherid")]
+    public int? Motherid { get; set; }
+
     [InverseProperty("Pigeon")]
     public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
+
+    [ForeignKey("Fatherid")]
+    [InverseProperty("InverseFather")]
+    public virtual Pigeon? Father { get; set; }
+
+    [InverseProperty("Father")]
+    public virtual ICollection<Pigeon> InverseFather { get; set; } = new List<Pigeon>();
+
+    [InverseProperty("Mother")]
+    public virtual ICollection<Pigeon> InverseMother { get; set; } = new List<Pigeon>();
+
+    [ForeignKey("Motherid")]
+    [InverseProperty("InverseMother")]
+    public virtual Pigeon? Mother { get; set; }
 
     [InverseProperty("Pigeon")]
     public virtual ICollection<RaceResult> RaceResults { get; set; } = new List<RaceResult>();
