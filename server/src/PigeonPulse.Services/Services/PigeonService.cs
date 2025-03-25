@@ -89,6 +89,43 @@ namespace PigeonPulse.Services.Services
             await _context.SaveChangesAsync();
             return newPigeon.Id;
         }
+        
+        public async Task<PedigreeDto?> GetPedigreeTreeAsync(int pigeonId, int userId, int generations = 4)
+        {
+            var pigeon = await _context.Get<Pigeon>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == pigeonId && p.UserId == userId);
+
+            return pigeon == null ? null : await BuildPedigreeAsync(pigeon, generations);
+        }
+
+        private async Task<PedigreeDto?> BuildPedigreeAsync(Pigeon pigeon, int generationsLeft)
+        {
+            if (pigeon == null || generationsLeft == 0) return null;
+
+            var dto = new PedigreeDto
+            {
+                PigeonId = pigeon.Id,
+                RingNumber = pigeon.RingNumber,
+                Color = pigeon.Color,
+                Sex = pigeon.Sex
+            };
+
+            if (pigeon.Fatherid.HasValue)
+            {
+                var father = await _context.Get<Pigeon>().AsNoTracking().FirstOrDefaultAsync(p => p.Id == pigeon.Fatherid.Value);
+                dto.Father = await BuildPedigreeAsync(father, generationsLeft - 1);
+            }
+
+            if (pigeon.Motherid.HasValue)
+            {
+                var mother = await _context.Get<Pigeon>().AsNoTracking().FirstOrDefaultAsync(p => p.Id == pigeon.Motherid.Value);
+                dto.Mother = await BuildPedigreeAsync(mother, generationsLeft - 1);
+            }
+
+            return dto;
+        }
+
 
     }
 }

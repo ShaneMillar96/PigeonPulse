@@ -5,6 +5,8 @@ export interface Pigeon {
     imageUrl?: string;
     createdDate?: string;
     sex?: string;
+    fatherId?: number;
+    motherId?: number;
 }
 
 export interface PigeonRequest {

@@ -11,7 +11,9 @@ import { RaceBasket } from './pages/RaceBasket';
 import { RecordRaceResults } from './pages/RecordRaceResults';
 import { Leaderboard } from './pages/Leaderboard';
 import { Dashboard } from './pages/Dashboard';
-import { Pairing } from './pages/Pairing'; 
+import { Pairing } from './pages/Pairing';
+import { Pedigree } from './pages/Pedigree';
+
 
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
                 <Route path="/race/:raceId/leaderboard" element={<Leaderboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/pair-pigeons" element={<Pairing />} />
+                <Route path="/pedigree/:pigeonId" element={<Pedigree />} />
             </Routes>
         </Router>
     );

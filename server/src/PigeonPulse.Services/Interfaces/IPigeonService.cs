@@ -12,4 +12,6 @@ public interface IPigeonService
     Task<bool> DeletePigeonAsync(int userId, int pigeonId);
 
     Task<int> CreatePairedPigeonAsync(int userId, CreatePairedPigeonDto dto);
+
+    Task<PedigreeDto?> GetPedigreeTreeAsync(int pigeonId, int userId, int generations = 4);
 }

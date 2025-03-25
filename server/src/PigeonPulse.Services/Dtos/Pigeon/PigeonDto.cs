@@ -7,5 +7,7 @@ public class PigeonDto
     public string RingNumber { get; set; }
     public string Sex { get; set; }
     public string Color { get; set; }
+    public int? FatherId { get; set; }
+    public int? MotherId { get; set; }
     public DateTime CreatedDate { get; set; }
 }

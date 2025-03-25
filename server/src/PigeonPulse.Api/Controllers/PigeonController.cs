@@ -136,6 +136,27 @@ namespace PigeonPulse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        
+        [HttpGet("{pigeonId}/pedigree")]
+        public async Task<IActionResult> GetPedigree(int pigeonId, [FromQuery] int generations = 4)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var pedigree = await _pigeonService.GetPedigreeTreeAsync(pigeonId, userId, generations);
+
+                if (pedigree == null)
+                    return NotFound("Pigeon or pedigree not found.");
+
+                return Ok(pedigree);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching pedigree.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
 
     }
 }
