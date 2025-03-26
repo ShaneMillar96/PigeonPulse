@@ -41,7 +41,7 @@ export const Pedigree: React.FC = () => {
         const hasChildren = node.father || node.mother;
 
         return (
-            <div className="relative flex flex-col items-center">
+            <div className="relative flex flex-row items-center">
                 {/* Pigeon Card */}
                 <div
                     className={`border rounded-lg shadow-md p-3 md:p-4 w-36 md:w-48 text-center ${
@@ -55,24 +55,24 @@ export const Pedigree: React.FC = () => {
 
                 {/* Connector Lines and Children */}
                 {hasChildren && (
-                    <div className="relative mt-2 md:mt-4 w-full flex justify-center">
-                        {/* Vertical Line to Children */}
-                        <div className="absolute top-0 left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+                    <div className="relative ml-2 md:ml-4 h-full flex flex-col justify-center">
+                        {/* Horizontal Line to Children */}
+                        <div className="absolute top-1/2 left-0 w-2 md:w-4 h-px bg-gray-300"></div>
 
-                        <div className="flex flex-row space-x-4 md:space-x-8 relative">
-                            {/* Horizontal Line Connecting Children */}
-                            <div className="absolute top-2 md:top-4 left-1/4 w-1/2 h-px bg-gray-300"></div>
+                        <div className="flex flex-col space-y-4 md:space-y-8 relative">
+                            {/* Vertical Line Connecting Children */}
+                            <div className="absolute top-1/4 left-2 md:left-4 w-px h-1/2 bg-gray-300"></div>
 
                             <div className="relative flex-1">
                                 {renderPedigree(node.father, level + 1, 'Father')}
-                                {/* Vertical Line to Father */}
-                                <div className="absolute top-[-8px] md:top-[-16px] left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+                                {/* Horizontal Line to Father */}
+                                <div className="absolute top-1/2 left-[-8px] md:left-[-16px] w-2 md:w-4 h-px bg-gray-300"></div>
                             </div>
 
                             <div className="relative flex-1">
                                 {renderPedigree(node.mother, level + 1, 'Mother')}
-                                {/* Vertical Line to Mother */}
-                                <div className="absolute top-[-8px] md:top-[-16px] left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+                                {/* Horizontal Line to Mother */}
+                                <div className="absolute top-1/2 left-[-8px] md:left-[-16px] w-2 md:w-4 h-px bg-gray-300"></div>
                             </div>
                         </div>
                     </div>
