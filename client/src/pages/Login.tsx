@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useLogin } from '../hooks/useLogin';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 export const Login: React.FC = () => {
     const [form, setForm] = useState({ email: '', password: '' });
-    const { login, loading, error } = useAuth();
+    const { login, loading, error } = useLogin();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm({ ...form, [e.target.name]: e.target.value });
