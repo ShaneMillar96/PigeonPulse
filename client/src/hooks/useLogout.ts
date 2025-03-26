@@ -1,4 +1,4 @@
-import { useAuthState } from './useAuthState';
+import { useAuthState } from '../states/useAuthState';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

@@ -1,4 +1,4 @@
-import { useAuthState } from './useAuthState';
+import { useAuthState } from '../states/useAuthState';
 import { useRegister } from './useRegister';
 import { useLogin } from './useLogin';
 import { useLogout } from './useLogout';

@@ -1,4 +1,4 @@
-import { useAuthState } from './useAuthState';
+import { useAuthState } from '../states/useAuthState';
 import axiosInstance from '../utils/axiosInstance';
 import { RegisterRequest } from '../interfaces/auth';
 import { useNavigate } from 'react-router-dom';

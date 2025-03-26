@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { usePigeons } from '../hooks/usePigeons';
+import { usePigeons } from '../hooks/usePigeons'; // Replace individual hooks with usePigeons
 import { useNavigate, useParams } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
@@ -7,7 +7,7 @@ import { FaArrowLeft, FaUpload } from 'react-icons/fa';
 import { PigeonRequest } from '../interfaces/pigeon';
 
 export const AddPigeon: React.FC = () => {
-    const { createPigeon, updatePigeon, getPigeonById } = usePigeons();
+    const { createPigeon, updatePigeon, getPigeonById } = usePigeons(); // Extract functions from usePigeons
     const navigate = useNavigate();
     const { pigeonId } = useParams<{ pigeonId: string }>();
 
