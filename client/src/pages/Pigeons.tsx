@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { usePigeons } from '../hooks/usePigeons';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
@@ -7,8 +7,17 @@ import { FaPlus, FaEdit, FaTrash, FaSearch, FaSitemap } from 'react-icons/fa';
 import PlaceHolder from '../../public/placeholder-pigeon.png';
 
 export const Pigeons: React.FC = () => {
-    const { pigeons, fetchPaginatedPigeons, deletePigeon, loading, hasMore, searchPigeons } = usePigeons();
-    const [searchQuery, setSearchQuery] = useState('');
+    const {
+        pigeons,
+        loading,
+        hasMore,
+        searchQuery,
+        setSearchQuery,
+        fetchPaginatedPigeons,
+        deletePigeon,
+        searchPigeons,
+    } = usePigeons();
+
     const observer = useRef<IntersectionObserver | null>(null);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,13 +28,13 @@ export const Pigeons: React.FC = () => {
     const lastPigeonRef = useCallback(
         (node: HTMLElement | null) => {
             if (loading || !hasMore) return;
-            if (observer.current) observer.current.disconnect();
+            if (observer.current) observer.current.disconnect?.();
             observer.current = new IntersectionObserver(entries => {
                 if (entries[0].isIntersecting) {
                     fetchPaginatedPigeons();
                 }
             });
-            if (node) observer.current.observe(node);
+            if (node) observer.current.observe?.(node);
         },
         [loading, hasMore, fetchPaginatedPigeons]
     );
@@ -33,6 +42,7 @@ export const Pigeons: React.FC = () => {
     useEffect(() => {
         fetchPaginatedPigeons();
     }, [fetchPaginatedPigeons]);
+
 
     const handleDelete = async (pigeonId: number) => {
         if (window.confirm('Are you sure you want to delete this pigeon?')) {
@@ -75,13 +85,15 @@ export const Pigeons: React.FC = () => {
                         >
                             <div className="w-24 h-24 mb-4">
                                 <img
-                                    src={pigeon.imageUrl || PlaceHolder}
+                                    src={pigeon.imageUrl || (PlaceHolder as string)}
                                     alt={pigeon.ringNumber}
                                     className="rounded-full border border-gray-300 object-cover w-full h-full"
                                 />
                             </div>
                             <h2 className="text-2xl font-semibold text-gray-800">{pigeon.ringNumber}</h2>
-                            <p className="text-gray-600">Ring Number: <span className="font-medium">{pigeon.ringNumber}</span></p>
+                            <p className="text-gray-600">
+                                Ring Number: <span className="font-medium">{pigeon.ringNumber}</span>
+                            </p>
 
                             <div className="flex space-x-4 mt-4">
                                 <Link to={`/edit-pigeon/${pigeon.id}`} className="text-blue-500 hover:text-blue-700">
@@ -94,7 +106,11 @@ export const Pigeons: React.FC = () => {
                                     <FaTrash size={20} />
                                 </button>
                                 {pigeon.fatherId && pigeon.motherId && (
-                                    <Link to={`/pedigree/${pigeon.id}`} className="text-green-600 hover:text-green-800" title="View Pedigree">
+                                    <Link
+                                        to={`/pedigree/${pigeon.id}`}
+                                        className="text-green-600 hover:text-green-800"
+                                        title="View Pedigree"
+                                    >
                                         <FaSitemap size={20} />
                                     </Link>
                                 )}
