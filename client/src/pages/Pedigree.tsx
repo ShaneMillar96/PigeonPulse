@@ -51,7 +51,6 @@ export const Pedigree: React.FC = () => {
                     <p className="text-[10px] md:text-xs text-gray-500 mb-1">{label}</p>
                     <p className="font-bold text-xs md:text-sm">{node.ringNumber}</p>
                     <p className="text-xs md:text-sm">{node.color}</p>
-             
                 </div>
 
                 {/* Connector Lines and Children */}
@@ -91,9 +90,14 @@ export const Pedigree: React.FC = () => {
                 {loading ? (
                     <p className="text-center text-gray-500">Loading pedigree...</p>
                 ) : pedigree ? (
-                    <div className="overflow-x-auto">
-                        <div className="flex justify-center min-w-[300px] md:min-w-[600px] scale-75 md:scale-100 transform origin-top">
-                            {renderPedigree(pedigree)}
+                    <div className="relative w-full overflow-x-auto">
+                        {/* Scrollable Container */}
+                        <div className="flex justify-center min-w-fit">
+                            <div className="inline-block p-6">
+                                <div className="flex justify-center transform scale-75 md:scale-100 origin-center">
+                                    {renderPedigree(pedigree)}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ) : (
