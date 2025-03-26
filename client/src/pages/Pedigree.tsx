@@ -4,9 +4,18 @@ import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import axiosInstance from '../utils/axiosInstance';
 
+interface PigeonNode {
+    pigeonId: number;
+    ringNumber: string;
+    color: string;
+    sex: string;
+    father?: PigeonNode;
+    mother?: PigeonNode;
+}
+
 export const Pedigree: React.FC = () => {
-    const { pigeonId } = useParams();
-    const [pedigree, setPedigree] = useState(null);
+    const { pigeonId } = useParams<{ pigeonId: string }>();
+    const [pedigree, setPedigree] = useState<PigeonNode | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,29 +35,48 @@ export const Pedigree: React.FC = () => {
         }
     }, [pigeonId]);
 
-    const renderPedigree = (node, level = 0, label = 'Pigeon') => {
+    const renderPedigree = (node: PigeonNode | undefined, level = 0, label = 'Pigeon') => {
         if (!node) return null;
 
-        return (
-            <div className="flex items-center space-x-4">
-                <div className="flex flex-col items-center text-center">
-                    <div className="bg-white border border-gray-300 p-4 rounded shadow w-44">
-                        <p className="text-xs text-gray-500 mb-1">{label}</p>
-                        <p className="font-bold text-sm">{node.ringNumber}</p>
-                        <p className="text-sm">{node.color}</p>
-                        <p className="text-xs italic text-gray-500">{node.sex}</p>
-                    </div>
+        const hasChildren = node.father || node.mother;
 
-                    {(node.father || node.mother) && (
-                        <div className="mt-2 flex space-x-6">
-                            {renderPedigree(node.father, level + 1, 'Father')}
-                            {renderPedigree(node.mother, level + 1, 'Mother')}
-                        </div>
-                    )}
+        return (
+            <div className="relative flex flex-col items-center">
+                {/* Pigeon Card */}
+                <div
+                    className={`border rounded-lg shadow-md p-3 md:p-4 w-36 md:w-48 text-center ${
+                        node.sex === 'Male' ? 'bg-blue-50 border-blue-300' : 'bg-pink-50 border-pink-300'
+                    }`}
+                >
+                    <p className="text-[10px] md:text-xs text-gray-500 mb-1">{label}</p>
+                    <p className="font-bold text-xs md:text-sm">{node.ringNumber}</p>
+                    <p className="text-xs md:text-sm">{node.color}</p>
+             
                 </div>
 
-                {level === 0 && (node.father || node.mother) && (
-                    <div className="h-px bg-gray-400 flex-1 mx-2" />
+                {/* Connector Lines and Children */}
+                {hasChildren && (
+                    <div className="relative mt-2 md:mt-4 w-full flex justify-center">
+                        {/* Vertical Line to Children */}
+                        <div className="absolute top-0 left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+
+                        <div className="flex flex-row space-x-4 md:space-x-8 relative">
+                            {/* Horizontal Line Connecting Children */}
+                            <div className="absolute top-2 md:top-4 left-1/4 w-1/2 h-px bg-gray-300"></div>
+
+                            <div className="relative flex-1">
+                                {renderPedigree(node.father, level + 1, 'Father')}
+                                {/* Vertical Line to Father */}
+                                <div className="absolute top-[-8px] md:top-[-16px] left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+                            </div>
+
+                            <div className="relative flex-1">
+                                {renderPedigree(node.mother, level + 1, 'Mother')}
+                                {/* Vertical Line to Mother */}
+                                <div className="absolute top-[-8px] md:top-[-16px] left-1/2 w-px h-2 md:h-4 bg-gray-300"></div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         );
@@ -64,7 +92,7 @@ export const Pedigree: React.FC = () => {
                     <p className="text-center text-gray-500">Loading pedigree...</p>
                 ) : pedigree ? (
                     <div className="overflow-x-auto">
-                        <div className="flex items-start space-x-6 justify-center">
+                        <div className="flex justify-center min-w-[300px] md:min-w-[600px] scale-75 md:scale-100 transform origin-top">
                             {renderPedigree(pedigree)}
                         </div>
                     </div>
