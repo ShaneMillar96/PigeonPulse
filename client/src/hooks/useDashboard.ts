@@ -1,27 +1,34 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import { useDashboardState } from '../states/useDashboardState';
 
 export const useDashboard = () => {
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [hasFetched, setHasFetched] = useState(false);  // New state to prevent multiple calls
+    const {
+        dashboardData,
+        setDashboardData,
+        loading,
+        setLoading,
+        error,
+        setError,
+        hasFetched,
+        setHasFetched,
+    } = useDashboardState();
 
     const fetchDashboard = useCallback(async () => {
-        if (hasFetched) return;  // Prevent duplicate fetches
+        if (hasFetched) return;
 
         setLoading(true);
         try {
             const response = await axiosInstance.get('/dashboard');
             setDashboardData(response.data);
-            setHasFetched(true);  // Ensure we don't fetch again
+            setHasFetched(true);
         } catch (err) {
             setError('Failed to fetch dashboard data');
             console.error('Dashboard API Error:', err);
         } finally {
             setLoading(false);
         }
-    }, [hasFetched]);  // Only run if `hasFetched` is false
+    }, [hasFetched, setDashboardData, setLoading, setError, setHasFetched]);
 
     return { dashboardData, fetchDashboard, loading, error };
 };

@@ -11,8 +11,8 @@ import { Pigeon } from '../interfaces/race';
 
 export const RaceBasket: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
-    const { fetchBasketsByRaceId, addPigeonToBasket, removePigeonFromBasket, updateRaceStatus } = useRaces();
-    const { fetchAllPigeons, loading } = usePigeons();
+    const { fetchBasketsByRaceId, addPigeonToBasket, removePigeonFromBasket, updateRaceStatus, loading: racesLoading } = useRaces();
+    const { fetchAllPigeons, loading: pigeonsLoading } = usePigeons();
     const navigate = useNavigate();
 
     const [baskets, setBaskets] = useState<any[]>([]);
@@ -20,11 +20,15 @@ export const RaceBasket: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'available' | 'basketed'>('available');
 
     useEffect(() => {
-        fetchAllPigeons().then(setPigeons);
-        if (raceId) {
-            fetchBasketsByRaceId(Number(raceId)).then(setBaskets);
-        }
-    }, [raceId]);
+        // Only run once on mount or when raceId changes
+        Promise.all([
+            fetchAllPigeons().then(setPigeons),
+            raceId ? fetchBasketsByRaceId(Number(raceId)).then(setBaskets) : Promise.resolve(),
+        ]).catch((err) => {
+            console.error('Error in initial fetch:', err);
+            toast.error('Failed to load initial data');
+        });
+    }, [raceId]); // Only depend on raceId
 
     const availablePigeons = pigeons.filter((pigeon) => !baskets.some((basket) => basket.pigeonId === pigeon.id));
 
@@ -35,7 +39,7 @@ export const RaceBasket: React.FC = () => {
             const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
             setBaskets(updatedBaskets);
         } catch (err) {
-            toast.error('Failed to add pigeon.');
+            console.error('Error adding pigeon:', err);
         }
     };
 
@@ -45,18 +49,19 @@ export const RaceBasket: React.FC = () => {
             const updatedBaskets = await fetchBasketsByRaceId(Number(raceId));
             setBaskets(updatedBaskets);
         } catch (err) {
-            toast.error('Failed to remove pigeon.');
+            console.error('Error removing pigeon:', err);
         }
     };
 
     const handleCompleteBasket = async () => {
         if (raceId) {
             try {
-                await updateRaceStatus(Number(raceId), '2');
+                await updateRaceStatus(Number(raceId), '2'); // '2' for Basketed status
                 navigate('/races');
                 toast.success('Basket completed successfully!');
             } catch (err) {
-                toast.error('Failed to complete basket.');
+                console.error('Error completing basket:', err);
+                toast.error('Failed to complete basket');
             }
         }
     };
@@ -85,10 +90,10 @@ export const RaceBasket: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="bg-white rounded-lg shadow-md p-4 max-h-[60vh] overflow-y-auto">
-                    {activeTab === 'available' ? (
-                        loading ? (
-                            <p className="text-center text-gray-500">Loading pigeons...</p>
-                        ) : availablePigeons.length === 0 ? (
+                    {pigeonsLoading || racesLoading ? (
+                        <p className="text-center text-gray-500">Loading...</p>
+                    ) : activeTab === 'available' ? (
+                        availablePigeons.length === 0 ? (
                             <p className="text-center text-gray-600">No available pigeons.</p>
                         ) : (
                             <div className="grid grid-cols-1 gap-3">

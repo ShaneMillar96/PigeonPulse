@@ -4,12 +4,12 @@ import { usePigeons } from '../hooks/usePigeons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import {FaCheckCircle, FaArrowLeft, FaTrash} from 'react-icons/fa';
+import { FaCheckCircle, FaArrowLeft, FaTrash } from 'react-icons/fa';
 
 export const RecordRaceResults: React.FC = () => {
     const { raceId } = useParams<{ raceId: string }>();
-    const { fetchBasketsByRaceId, getRaceResults, addRaceResult, removeRaceResult, updateRaceStatus } = useRaces();
-    const { pigeons, fetchAllPigeons } = usePigeons();
+    const { fetchBasketsByRaceId, getRaceResults, addRaceResult, removeRaceResult, updateRaceStatus, loading: racesLoading } = useRaces();
+    const { pigeons, fetchAllPigeons, loading: pigeonsLoading } = usePigeons();
     const navigate = useNavigate();
 
     const [baskets, setBaskets] = useState<any[]>([]);
@@ -23,11 +23,11 @@ export const RecordRaceResults: React.FC = () => {
             fetchBasketsByRaceId(Number(raceId)).then(setBaskets);
             getRaceResults(Number(raceId)).then(setRaceResults);
         }
-    }, [raceId]);
+    }, [raceId, fetchAllPigeons, fetchBasketsByRaceId, getRaceResults]);
 
     const handleAddResult = async () => {
-        if (!selectedPigeonId || !recordedTime) return;
-        await addRaceResult(Number(raceId), { raceId: raceId, pigeonId: selectedPigeonId, timeRecorded: recordedTime });
+        if (!raceId || !selectedPigeonId || !recordedTime) return;
+        await addRaceResult(Number(raceId), { raceId: Number(raceId), pigeonId: selectedPigeonId, timeRecorded: recordedTime });
         const updatedResults = await getRaceResults(Number(raceId));
         setRaceResults(updatedResults);
         setSelectedPigeonId(null);
@@ -41,10 +41,9 @@ export const RecordRaceResults: React.FC = () => {
         setRaceResults(updatedResults);
     };
 
-
     const handleCompleteRace = async () => {
         if (raceId) {
-            await updateRaceStatus(Number(raceId), '3');
+            await updateRaceStatus(Number(raceId), '3'); // '3' for Finished status
             navigate('/races');
         }
     };
@@ -61,91 +60,95 @@ export const RecordRaceResults: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Select Pigeon */}
-                    <div className="mb-4">
-                        <label className="text-gray-700 font-medium">Select Pigeon</label>
-                        <select
-                            className="border p-3 w-full rounded-md"
-                            value={selectedPigeonId || ''}
-                            onChange={(e) => setSelectedPigeonId(Number(e.target.value))}
-                        >
-                            <option value="">Select a Pigeon</option>
-                            {baskets
-                                .filter((basket) => !raceResults.some(result => result.pigeonId === basket.pigeonId))
-                                .map((basket) => (
-                                    <option key={basket.id} value={basket.pigeonId}>
-                                        {basket.pigeonName} (Ring: {basket.ringNumber})
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
+                    {pigeonsLoading || racesLoading ? (
+                        <p className="text-center text-gray-600">Loading...</p>
+                    ) : (
+                        <>
+                            {/* Select Pigeon */}
+                            <div className="mb-4">
+                                <label className="text-gray-700 font-medium">Select Pigeon</label>
+                                <select
+                                    className="border p-3 w-full rounded-md"
+                                    value={selectedPigeonId || ''}
+                                    onChange={(e) => setSelectedPigeonId(Number(e.target.value))}
+                                >
+                                    <option value="">Select a Pigeon</option>
+                                    {baskets
+                                        .filter((basket) => !raceResults.some((result) => result.pigeonId === basket.pigeonId))
+                                        .map((basket) => (
+                                            <option key={basket.id} value={basket.pigeonId}>
+                                                {basket.pigeonName} (Ring: {basket.ringNumber})
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
 
+                            {/* Input Time */}
+                            <div className="mb-4">
+                                <label className="text-gray-700 font-medium">Recorded Time</label>
+                                <input
+                                    type="time"
+                                    step="1"
+                                    className="border p-3 w-full rounded-md"
+                                    value={recordedTime}
+                                    onChange={(e) => setRecordedTime(e.target.value)}
+                                />
+                            </div>
 
-                    {/* Input Time */}
-                    <div className="mb-4">
-                        <label className="text-gray-700 font-medium">Recorded Time</label>
-                        <input
-                            type="time"
-                            step="1" 
-                            className="border p-3 w-full rounded-md"
-                            value={recordedTime}
-                            onChange={(e) => setRecordedTime(e.target.value)}
-                        />
-                    </div>
+                            {/* Add Result Button */}
+                            <button
+                                onClick={handleAddResult}
+                                className="bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600 transition"
+                            >
+                                Add Result
+                            </button>
 
-                    {/* Add Result Button */}
-                    <button
-                        onClick={handleAddResult}
-                        className="bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600 transition"
-                    >
-                        Add Result
-                    </button>
+                            {/* Race Results Table */}
+                            <div className="mt-6">
+                                <h2 className="text-lg font-bold mb-2">Race Results</h2>
+                                {raceResults.length === 0 ? (
+                                    <p className="text-gray-600 text-center">No results recorded yet.</p>
+                                ) : (
+                                    <table className="w-full border-collapse border border-gray-300">
+                                        <thead>
+                                        <tr className="bg-gray-200">
+                                            <th className="p-3 border">Pigeon</th>
+                                            <th className="p-3 border">Time Recorded</th>
+                                            <th className="p-3 border">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {raceResults.map((result) => (
+                                            <tr key={result.id} className="border">
+                                                <td className="p-3 border">{result.pigeonName}</td>
+                                                <td className="p-3 border">{result.timeRecorded}</td>
+                                                <td className="p-3 border text-center">
+                                                    <button
+                                                        onClick={() => handleRemoveResult(result.id)}
+                                                        className="text-red-500 hover:text-red-700 transition"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
 
-                    {/* Race Results Table */}
-                    <div className="mt-6">
-                        <h2 className="text-lg font-bold mb-2">Race Results</h2>
-                        {raceResults.length === 0 ? (
-                            <p className="text-gray-600 text-center">No results recorded yet.</p>
-                        ) : (
-                            <table className="w-full border-collapse border border-gray-300">
-                                <thead>
-                                <tr className="bg-gray-200">
-                                    <th className="p-3 border">Pigeon</th>
-                                    <th className="p-3 border">Time Recorded</th>
-                                    <th className="p-3 border">Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {raceResults.map((result, index) => (
-                                    <tr key={index} className="border">
-                                        <td className="p-3 border">{result.pigeonName}</td>
-                                        <td className="p-3 border">{result.timeRecorded}</td>
-                                        <td className="p-3 border text-center">
-                                            <button
-                                                onClick={() => handleRemoveResult(result.id)}
-                                                className="text-red-500 hover:text-red-700 transition"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-
-
-                    {/* Complete Race Button */}
-                    <div className="mt-6">
-                        <button
-                            onClick={handleCompleteRace}
-                            className="bg-green-500 text-white w-full py-3 rounded-md flex items-center justify-center hover:bg-green-600 transition"
-                        >
-                            <FaCheckCircle className="mr-2" />
-                            Complete Race
-                        </button>
-                    </div>
+                            {/* Complete Race Button */}
+                            <div className="mt-6">
+                                <button
+                                    onClick={handleCompleteRace}
+                                    className="bg-green-500 text-white w-full py-3 rounded-md flex items-center justify-center hover:bg-green-600 transition"
+                                >
+                                    <FaCheckCircle className="mr-2" />
+                                    Complete Race
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </main>
             <Footer />

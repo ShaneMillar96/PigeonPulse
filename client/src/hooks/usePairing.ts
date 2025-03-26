@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../utils/axiosInstance';
+import { usePairingState } from '../states/usePairingState';
 
 export const usePairing = () => {
-    const [loading, setLoading] = useState(false);
+    const { loading, setLoading } = usePairingState();
 
     const pairPigeons = async ({
                                    ringNumber,
