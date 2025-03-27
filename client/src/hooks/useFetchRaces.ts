@@ -3,11 +3,21 @@ import axiosInstance from '../utils/axiosInstance';
 import { Race } from '../interfaces/race';
 import { toast } from 'react-toastify';
 
-// Accept state as an argument instead of calling useRacesState directly
+// Define the expected leaderboard response structure
+interface LeaderboardResponse {
+    raceName: string;
+    results: Array<{
+        id: number;
+        pigeonId: number;
+        ringNumber: string;
+        timeRecorded: string;
+    }>;
+}
+
 export const useFetchRaces = ({ setRaces, setLoading, setError }) => {
     const fetchRaces = useCallback(async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null);
         try {
             const response = await axiosInstance.get<Race[]>('/race');
             setRaces(response.data);
@@ -35,13 +45,13 @@ export const useFetchRaces = ({ setRaces, setLoading, setError }) => {
 
     const getRaceLeaderboard = useCallback(async (raceId: number) => {
         try {
-            const response = await axiosInstance.get(`/race/${raceId}/leaderboard`);
-            return Array.isArray(response.data) ? response.data : [];
+            const response = await axiosInstance.get<LeaderboardResponse>(`/race/${raceId}/leaderboard`);
+            return response.data; // Return the full object { raceName, results }
         } catch (err: any) {
             const errorMessage = 'Failed to fetch leaderboard';
             setError(errorMessage);
             toast.error(errorMessage);
-            return [];
+            return { raceName: 'Error', results: [] }; // Fallback structure
         }
     }, [setError]);
 

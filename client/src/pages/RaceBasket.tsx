@@ -56,7 +56,7 @@ export const RaceBasket: React.FC = () => {
     const handleCompleteBasket = async () => {
         if (raceId) {
             try {
-                await updateRaceStatus(Number(raceId), '2'); // '2' for Basketed status
+                await updateRaceStatus(Number(raceId), '2');
                 navigate('/races');
                 toast.success('Basket completed successfully!');
             } catch (err) {

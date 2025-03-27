@@ -18,33 +18,52 @@ export const RecordRaceResults: React.FC = () => {
     const [recordedTime, setRecordedTime] = useState('');
 
     useEffect(() => {
-        fetchAllPigeons();
-        if (raceId) {
-            fetchBasketsByRaceId(Number(raceId)).then(setBaskets);
-            getRaceResults(Number(raceId)).then(setRaceResults);
-        }
-    }, [raceId, fetchAllPigeons, fetchBasketsByRaceId, getRaceResults]);
+        let mounted = true; // Prevent state updates after unmount
+
+        Promise.all([
+            fetchAllPigeons(), // Fetches pigeons but doesn't set state here
+            raceId ? fetchBasketsByRaceId(Number(raceId)).then((data) => mounted && setBaskets(data)) : Promise.resolve(),
+            raceId ? getRaceResults(Number(raceId)).then((data) => mounted && setRaceResults(data)) : Promise.resolve(),
+        ]).catch((err) => {
+            console.error('Error in initial fetch:', err);
+        });
+
+        return () => {
+            mounted = false; // Cleanup on unmount
+        };
+    }, [raceId]); // Only depend on raceId since functions are stable
 
     const handleAddResult = async () => {
         if (!raceId || !selectedPigeonId || !recordedTime) return;
-        await addRaceResult(Number(raceId), { raceId: Number(raceId), pigeonId: selectedPigeonId, timeRecorded: recordedTime });
-        const updatedResults = await getRaceResults(Number(raceId));
-        setRaceResults(updatedResults);
-        setSelectedPigeonId(null);
-        setRecordedTime('');
+        try {
+            await addRaceResult(Number(raceId), { raceId: Number(raceId), pigeonId: selectedPigeonId, timeRecorded: recordedTime });
+            const updatedResults = await getRaceResults(Number(raceId));
+            setRaceResults(updatedResults);
+            setSelectedPigeonId(null);
+            setRecordedTime('');
+        } catch (err) {
+            console.error('Error adding result:', err);
+        }
     };
 
     const handleRemoveResult = async (resultId: number) => {
         if (!raceId) return;
-        await removeRaceResult(Number(raceId), resultId);
-        const updatedResults = await getRaceResults(Number(raceId));
-        setRaceResults(updatedResults);
+        try {
+            await removeRaceResult(Number(raceId), resultId);
+            const updatedResults = await getRaceResults(Number(raceId));
+            setRaceResults(updatedResults);
+        } catch (err) {
+            console.error('Error removing result:', err);
+        }
     };
 
     const handleCompleteRace = async () => {
-        if (raceId) {
+        if (!raceId) return;
+        try {
             await updateRaceStatus(Number(raceId), '3'); // '3' for Finished status
             navigate('/races');
+        } catch (err) {
+            console.error('Error completing race:', err);
         }
     };
 
@@ -141,7 +160,12 @@ export const RecordRaceResults: React.FC = () => {
                             <div className="mt-6">
                                 <button
                                     onClick={handleCompleteRace}
-                                    className="bg-green-500 text-white w-full py-3 rounded-md flex items-center justify-center hover:bg-green-600 transition"
+                                    disabled={raceResults.length === 0} // Disable if no results
+                                    className={`w-full py-3 rounded-md flex items-center justify-center transition ${
+                                        raceResults.length === 0
+                                            ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                            : 'bg-green-500 text-white hover:bg-green-600'
+                                    }`}
                                 >
                                     <FaCheckCircle className="mr-2" />
                                     Complete Race

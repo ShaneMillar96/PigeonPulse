@@ -77,7 +77,7 @@ export const useRaceActions = ({ setRaces, setLoading, setError }) => {
             setLoading(true);
             setError(null);
             try {
-                await axiosInstance.put(`/race/${raceId}/status`, { statusId });
+                await axiosInstance.put(`/race/${raceId}/status`, { raceId, statusId });
                 toast.success('Race status updated');
                 await fetchRaces();
             } catch (err: any) {

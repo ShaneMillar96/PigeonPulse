@@ -13,9 +13,7 @@ export interface RaceResult {
     id: number;
     pigeonId: number;
     raceId: number;
-    finishTime: string;
-    speed: number | null;
-    pigeonName: string;
+    timeRecorded: string;
 }
 
 export interface RaceStatus {
