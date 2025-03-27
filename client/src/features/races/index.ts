@@ -6,6 +6,8 @@ export { RecordRaceResults } from './components/RecordRaceResults';
 export { Leaderboard } from './components/Leaderboard';
 export { AddRaceCard } from './components/AddRaceCard';
 export { RaceCard } from './components/RaceCard';
+export { BasketPigeonCard } from './components/BasketPigeonCard';
+export { ActionBar } from './components/ActionBar';
 
 // Export hooks
 export { useFetchRaces } from './hooks/useFetchRaces';
@@ -14,6 +16,7 @@ export { useRaceResults } from './hooks/useRaceResults';
 export { useRaceBaskets } from './hooks/useRaceBaskets';
 export { useRaces } from './hooks/useRaces';
 export { usePigeons } from '../pigeons';
+
 // Export state
 export { useRacesState } from './state/useRacesState';
 

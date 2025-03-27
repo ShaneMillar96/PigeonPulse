@@ -4,7 +4,6 @@ import { useRaces } from '../';
 import { Navbar, Footer } from '../../../components';
 import { FaArrowLeft, FaMedal } from 'react-icons/fa';
 
-// Define the shape of each leaderboard entry
 interface LeaderboardEntry {
     id: number;
     pigeonId: number;
@@ -28,10 +27,8 @@ export const Leaderboard: React.FC = () => {
             return;
         }
 
-        console.log("Leaderboard.tsx: Fetching leaderboard...");
         getRaceLeaderboard(Number(raceId))
             .then((data) => {
-                console.log("Leaderboard API Response:", data);
                 if (data && Array.isArray(data.results)) {
                     setLeaderboard(data.results);
                     setRaceName(data.raceName || 'Unknown Race');
@@ -44,12 +41,11 @@ export const Leaderboard: React.FC = () => {
                 }
             })
             .catch((error) => {
-                console.error('Leaderboard.tsx: Error fetching leaderboard:', error);
                 setLeaderboard([]);
                 setRaceName('Error Loading Race');
                 setError('Failed to load leaderboard');
             });
-    }, [raceId, getRaceLeaderboard]); // Include getRaceLeaderboard for correctness
+    }, [raceId, getRaceLeaderboard]); 
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
