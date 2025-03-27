@@ -8,7 +8,6 @@ export const usePigeons = () => {
     const { deletePigeon } = useDeletePigeon(state);
     const { createPigeon } = useCreatePigeon(state);
     const { updatePigeon } = useUpdatePigeon(state);
-
     return {
         ...state,
         fetchPaginatedPigeons,

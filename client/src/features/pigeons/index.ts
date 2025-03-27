@@ -6,6 +6,8 @@ export { Pedigree } from './components/Pedigree';
 export { OffspringForm } from './components/OffspringForm';
 export { ParentCard } from './components/ParentCard';
 export { SelectedParentCard } from './components/SelectedParentCard';
+export { PedigreeNode } from './components/PedigreeNode';
+export { PedigreeTree } from './components/PedigreeTree';
 
 
 // Export hooks
@@ -17,8 +19,8 @@ export { useGetPigeonById } from './hooks/useGetPigeonById';
 export { usePigeons } from './hooks/usePigeons';
 export { useSearchPigeons } from './hooks/useSearchPigeons';
 export {  useUpdatePigeon } from './hooks/useUpdatePigeon';
-export {  usePairing } from './hooks/usePairing.ts';
-
+export {  usePairing } from './hooks/usePairing';
+export {  usePedigree } from './hooks/usePedigree';
 // Export state
 export {usePigeonState } from './state/usePigeonState';
 export {usePairingState } from './state/usePairingState';

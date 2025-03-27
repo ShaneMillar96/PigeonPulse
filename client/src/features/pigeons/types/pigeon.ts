@@ -26,3 +26,8 @@ export interface NewPigeon {
     color: string;
     sex: string;
 }
+
+export interface PedigreeNodeType extends Pigeon {
+    father?: PedigreeNodeType;
+    mother?: PedigreeNodeType;
+}
