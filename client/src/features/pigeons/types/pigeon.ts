@@ -20,3 +20,9 @@ export interface PigeonResponse {
     data: Pigeon[];
     totalCount: number;
 }
+
+export interface NewPigeon {
+    ringNumber: string;
+    color: string;
+    sex: string;
+}

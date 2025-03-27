@@ -1,20 +1,34 @@
 import React from 'react';
 
-interface InputProps {
-    type?: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-    name: string;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    as?: 'input' | 'select';
+    className?: string;
+    icon?: React.ReactNode;
+    children?: React.ReactNode; // For select options
 }
 
-export const Input: React.FC<InputProps> = ({ type = 'text', value, onChange, placeholder, name }) => (
-    <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        name={name}
-        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-);
+export function Input({
+                                  as = 'input',
+                                  className = '',
+                                  icon,
+                                  children,
+                                  ...props
+                              }: InputProps) {
+    const Component = as === 'select' ? 'select' : 'input';
+
+    return (
+        <div className="relative">
+            <Component
+                className={`pr-10 ${className}`}
+                {...props}
+            >
+                {children}
+            </Component>
+            {icon && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {icon}
+                </div>
+            )}
+        </div>
+    );
+}

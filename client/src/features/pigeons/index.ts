@@ -3,6 +3,10 @@ export { AddPigeon } from './components/AddPigeon';
 export { Pigeons } from './components/Pigeons';
 export { Pairing } from './components/Pairing';
 export { Pedigree } from './components/Pedigree';
+export { OffspringForm } from './components/OffspringForm';
+export { ParentCard } from './components/ParentCard';
+export { SelectedParentCard } from './components/SelectedParentCard';
+
 
 // Export hooks
 export {  useCreatePigeon } from './hooks/useCreatePigeon';
