@@ -3,7 +3,9 @@ export { AddRace } from './components/AddRace';
 export { RaceBasket } from './components/RaceBasket';
 export { Races } from './components/Races';
 export { RecordRaceResults } from './components/RecordRaceResults';
-export { Leaderboard } from './components/Leaderboard.tsx';
+export { Leaderboard } from './components/Leaderboard';
+export { AddRaceCard } from './components/AddRaceCard';
+export { RaceCard } from './components/RaceCard';
 
 // Export hooks
 export { useFetchRaces } from './hooks/useFetchRaces';
