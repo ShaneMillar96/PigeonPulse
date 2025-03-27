@@ -1,11 +1,12 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-import { usePigeons } from '../';
-import { Navbar, Footer } from '../../../components';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaSitemap } from 'react-icons/fa';
-import PlaceHolder from '../../../../public/placeholder-pigeon.png';
+import { FaSearch } from 'react-icons/fa';
+import { Navbar, Footer, Input, Modal, Spinner, Button } from '@/components';
+import { usePigeons, Pigeon } from '@/features/pigeons';
+import PigeonCard from './PigeonCard';
+import AddPigeonCard from './AddPigeonCard';
 
-export const Pigeons: React.FC = () => {
+export function Pigeons() {
     const {
         pigeons,
         loading,
@@ -16,6 +17,9 @@ export const Pigeons: React.FC = () => {
         deletePigeon,
         searchPigeons,
     } = usePigeons();
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [pigeonToDelete, setPigeonToDelete] = useState<Pigeon | null>(null);
 
     const observer = useRef<IntersectionObserver | null>(null);
 
@@ -28,7 +32,7 @@ export const Pigeons: React.FC = () => {
         (node: HTMLElement | null) => {
             if (loading || !hasMore) return;
             if (observer.current) observer.current.disconnect?.();
-            observer.current = new IntersectionObserver(entries => {
+            observer.current = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
                     fetchPaginatedPigeons();
                 }
@@ -42,12 +46,23 @@ export const Pigeons: React.FC = () => {
         fetchPaginatedPigeons();
     }, [fetchPaginatedPigeons]);
 
+    const handleDeleteClick = (pigeon: Pigeon) => {
+        setPigeonToDelete(pigeon);
+        setIsDeleteModalOpen(true);
+    };
 
-    const handleDelete = async (pigeonId: number) => {
-        if (window.confirm('Are you sure you want to delete this pigeon?')) {
-            await deletePigeon(pigeonId);
+    const handleDeleteConfirm = async () => {
+        if (pigeonToDelete) {
+            await deletePigeon(pigeonToDelete.id);
             searchPigeons(searchQuery);
+            setIsDeleteModalOpen(false);
+            setPigeonToDelete(null);
         }
+    };
+
+    const handleDeleteCancel = () => {
+        setIsDeleteModalOpen(false);
+        setPigeonToDelete(null);
     };
 
     return (
@@ -57,74 +72,56 @@ export const Pigeons: React.FC = () => {
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">My Pigeons</h1>
 
                 <div className="relative mb-6 max-w-lg mx-auto">
-                    <input
+                    <Input
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
                         placeholder="Search by ring number..."
                         value={searchQuery}
                         onChange={handleSearch}
+                        icon={<FaSearch className="text-gray-500" />}
                     />
-                    <FaSearch className="absolute right-3 top-3 text-gray-500" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Link
-                        to="/add-pigeon"
-                        className="bg-white flex flex-col justify-center items-center h-40 border-2 border-dashed rounded-lg shadow-sm hover:border-gray-400 transition"
-                    >
-                        <FaPlus size={40} className="text-gray-500" />
-                        <p className="text-gray-500">Add New Pigeon</p>
-                    </Link>
+                    <AddPigeonCard />
 
                     {pigeons.map((pigeon, index) => (
-                        <div
+                        <PigeonCard
                             key={pigeon.id}
+                            pigeon={pigeon}
+                            onDelete={handleDeleteClick}
                             ref={index === pigeons.length - 1 ? lastPigeonRef : null}
-                            className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center"
-                        >
-                            <div className="w-24 h-24 mb-4">
-                                <img
-                                    src={pigeon.imageUrl || (PlaceHolder as string)}
-                                    alt={pigeon.ringNumber}
-                                    className="rounded-full border border-gray-300 object-cover w-full h-full"
-                                />
-                            </div>
-                            <h2 className="text-2xl font-semibold text-gray-800">{pigeon.ringNumber}</h2>
-                            <p className="text-gray-600">
-                                Ring Number: <span className="font-medium">{pigeon.ringNumber}</span>
-                            </p>
-
-                            <div className="flex space-x-4 mt-4">
-                                <Link to={`/edit-pigeon/${pigeon.id}`} className="text-blue-500 hover:text-blue-700">
-                                    <FaEdit size={20} />
-                                </Link>
-                                <button
-                                    onClick={() => handleDelete(pigeon.id)}
-                                    className="text-red-500 hover:text-red-700"
-                                >
-                                    <FaTrash size={20} />
-                                </button>
-                                {pigeon.fatherId && pigeon.motherId && (
-                                    <Link
-                                        to={`/pedigree/${pigeon.id}`}
-                                        className="text-green-600 hover:text-green-800"
-                                        title="View Pedigree"
-                                    >
-                                        <FaSitemap size={20} />
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
+                        />
                     ))}
                 </div>
 
                 {loading && (
                     <div className="flex justify-center my-4">
-                        <div className="loader border-t-4 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                        <Spinner />
                     </div>
                 )}
             </main>
             <Footer />
+
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={handleDeleteCancel}
+                title="Confirm Delete"
+                className="max-w-md"
+            >
+                <p className="text-gray-600 mb-4">
+                    Are you sure you want to delete pigeon with ring number{' '}
+                    <span className="font-medium">{pigeonToDelete?.ringNumber}</span>?
+                </p>
+                <div className="flex justify-end space-x-2">
+                    <Button onClick={handleDeleteCancel} className="bg-gray-300 hover:bg-gray-400">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleDeleteConfirm} className="bg-red-500 hover:bg-red-600">
+                        Delete
+                    </Button>
+                </div>
+            </Modal>
         </div>
     );
-};
+}
