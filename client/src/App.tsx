@@ -1,20 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Home } from './pages/Home';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { Pigeons } from './pages/Pigeons';
-import { AddPigeon } from './pages/AddPigeon';
-import { Races } from './pages/Races';
-import { AddRace } from './pages/AddRace';
-import { RaceBasket } from './pages/RaceBasket';
-import { RecordRaceResults } from './pages/RecordRaceResults';
-import { Leaderboard } from './pages/Leaderboard';
-import { Dashboard } from './pages/Dashboard';
-import { Pairing } from './pages/Pairing';
-import { Pedigree } from './pages/Pedigree';
 
-
+// Import components from features
+import { Login, Register } from '@/features/auth';
+import { Pigeons, AddPigeon, Pairing, Pedigree } from '@/features/pigeons';
+import { Races, AddRace, RaceBasket, RecordRaceResults, Leaderboard } from '@/features/races';
+import { Dashboard } from '@/features/dashboard';
+import { Home } from '@/pages/home';
 
 function App() {
     return (
