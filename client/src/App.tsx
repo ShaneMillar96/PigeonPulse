@@ -6,7 +6,7 @@ import { Login, Register } from '@/features/auth';
 import { Pigeons, AddPigeon, Pairing, Pedigree } from '@/features/pigeons';
 import { Races, AddRace, RaceBasket, RecordRaceResults, Leaderboard } from '@/features/races';
 import { Dashboard } from '@/features/dashboard';
-import { Home } from '@/pages/home';
+import { Home } from '@/features/home';
 
 function App() {
     return (

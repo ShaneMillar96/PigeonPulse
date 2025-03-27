@@ -1,7 +1,7 @@
 import React from 'react';
-import { Navbar, Footer } from '../components';
-import { useAuth } from '../features/auth';
-import PigeonLogo from '../../public/pigeonpulse-logo.png';
+import { Navbar, Footer } from '../../../components';
+import { useAuth } from '../../auth';
+import PigeonLogo from '../../../../public/pigeonpulse-logo.png';
 import { Link } from 'react-router-dom';
 import { FaDove, FaFlagCheckered, FaChartLine, FaHeart } from 'react-icons/fa';
 
